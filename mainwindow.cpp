@@ -16,13 +16,16 @@
 #include <QUrl>
 
 QString airportFile;
-QString dataDirectory;
 QString elevationDirectory;
-QString workDirectory;
+QString selectedMaterials;
+
 QString fgfsDirectory;
 QString terragearDirectory;
-QString outputDirectory;
-QString selectedMaterials;
+
+QString projDirectory;
+QString dataDirectory;
+QString outpDirectory;
+QString workDirectory;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -88,10 +91,10 @@ void MainWindow::on_lineEdit_20_editingFinished()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    QString east = ui->lineEdit_5->text();
-    QString north = ui->lineEdit_7->text();
-    QString south = ui->lineEdit_8->text();
-    QString west = ui->lineEdit_6->text();
+    QString east    = ui->lineEdit_5->text();
+    QString north   = ui->lineEdit_7->text();
+    QString south   = ui->lineEdit_8->text();
+    QString west    = ui->lineEdit_6->text();
 
     // check whether boundaries are valid
     if (west > east)
@@ -109,6 +112,14 @@ void MainWindow::on_pushButton_2_clicked()
         QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
         qDebug() << mapserverUrl;
         QDesktopServices::openUrl(mapserverUrl);
+        QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+
+        // set boundarie on FGFS construct page
+        ui->lineEdit_27->setText(west);
+        ui->lineEdit_28->setText(east);
+        ui->lineEdit_29->setText(north);
+        ui->lineEdit_30->setText(south);
+
     }
 }
 
@@ -138,27 +149,33 @@ void MainWindow::on_pushButton_9_clicked()
 
 void MainWindow::on_pushButton_7_clicked()
 {
-    workDirectory = QFileDialog::getExistingDirectory(this,tr("Select work location, everything that is created during the scenery generating process is stored in this location."));
-    ui->lineEdit_4->setText(workDirectory);
-}
+    projDirectory = QFileDialog::getExistingDirectory(this,tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
+    ui->lineEdit_4->setText(projDirectory);
 
-void MainWindow::on_pushButton_10_clicked()
-{
-    outputDirectory = QFileDialog::getExistingDirectory(this,tr("Select output location, this is where the end-scenery will be created."));
-    ui->lineEdit_3->setText(outputDirectory);
+    //set project's directories
+    dataDirectory = projDirectory+"/data";
+    outpDirectory = projDirectory+"/output";
+    workDirectory = projDirectory+"/work";
+
+    ui->lineEdit_4->setText(projDirectory);
+
 }
 
 void MainWindow::on_pushButton_12_clicked()
 {
+
     QDir dir(dataDirectory);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-         for (int i = 0; i < list.size(); ++i) {
-             QFileInfo fileInfo = list.at(i);
-             QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-             new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget);
-         }
+        for (int i = 0; i < list.size(); ++i) {
+            delete ui->listWidget->takeItem(i);
+        }
+        for (int i = 0; i < list.size(); ++i) {
+            QFileInfo fileInfo = list.at(i);
+            QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
+            new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget);
+        }
 }
 
 void MainWindow::on_pushButton_15_clicked()
@@ -173,15 +190,9 @@ void MainWindow::on_pushButton_15_clicked()
          }
 }
 
-void MainWindow::on_pushButton_17_clicked()
-{
-    dataDirectory = QFileDialog::getExistingDirectory(this,tr("Select data location, this will contain all the data used to generate scenery."));
-    ui->lineEdit_21->setText(dataDirectory);
-}
-
 void MainWindow::on_pushButton_13_clicked()
 {
-    QString arguments = terragearDirectory+"/fgfs-construct.exe --work="+workDirectory+" --output="+outputDirectory+" --lon=0 --lat=0 --xdist=1 --ydist=1"+selectedMaterials;
+    QString arguments = terragearDirectory+"/fgfs-construct.exe --work="+workDirectory+" --output="+outpDirectory+" --lon=0 --lat=0 --xdist=1 --ydist=1"+selectedMaterials;
     QProcess proc;
     proc.start(arguments, QIODevice::ReadWrite);
 
@@ -225,14 +236,32 @@ void MainWindow::on_pushButton_14_clicked()
     QString south = ui->lineEdit_30->text();
 }
 
-void MainWindow::on_pushButton_6_clicked()
+void MainWindow::on_pushButton_16_clicked()
 {
-    QProcess proc; // pointer definition
-    QString arguments = "C:/Users/AS9423-ULT/Desktop/Terragear/genapts.exe --input=C:/Users/AS9423-ULT/Desktop/Terragear/Airports/TNCM.dat --work=C:/Users/AS9423-ULT/Desktop/";
-    proc.start(arguments, QIODevice::ReadWrite); // start program
+    QString lineWidth   = ui->lineEdit_25->text();
+    QString material    = ui->listWidget->currentItem()->text();
+    QString shapefile   = ui->listWidget_3->currentItem()->text();
+    QString arguments   = terragearDirectory+"/ogr-decode.exe --line-width "+lineWidth+" "+shapefile+" "+workDirectory+"/"+shapefile+" "+dataDirectory+"/"+material;
+    QMessageBox::about(this, tr("Command line"),
+                     arguments);
+    QProcess proc;
+    proc.start(arguments, QIODevice::ReadWrite);
+
+    // run command
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
     qDebug() << proc.readAllStandardOutput();
+}
 
+// not sure why we need these, but else we cannot build
+void MainWindow::on_pushButton_6_clicked()
+{
+}
 
+void MainWindow::on_pushButton_10_clicked()
+{
+}
+
+void MainWindow::on_pushButton_17_clicked()
+{
 }

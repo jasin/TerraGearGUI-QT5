@@ -41,7 +41,7 @@
      <value key="Qt4ProjectManager.MakeStep.MakeCommand" type="QString"></value>
     </valuemap>
     <value key="ProjectExplorer.BuildConfiguration.CleanStepsCount" type="int">1</value>
-    <value key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment" type="bool">true</value>
+    <value key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment" type="bool">false</value>
     <valuelist key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges" type="QVariantList"/>
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug</value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>

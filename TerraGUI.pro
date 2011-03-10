@@ -4,15 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-CONFIG += console
+QT          += core gui
+CONFIG      += console
 
-TARGET = TerraGUI
-TEMPLATE = app
+TARGET      = TerraGUI
+TEMPLATE    = app
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES     += main.cpp\
+            mainwindow.cpp
 
-HEADERS  += mainwindow.h
+HEADERS     += mainwindow.h
 
-FORMS    += mainwindow.ui
+FORMS       += mainwindow.ui

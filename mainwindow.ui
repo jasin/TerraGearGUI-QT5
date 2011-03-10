@@ -85,7 +85,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -97,6 +97,9 @@
      <bool>false</bool>
     </property>
     <widget class="QWidget" name="tab">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
       <string>Start</string>
      </attribute>
@@ -104,7 +107,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>190</y>
+        <y>130</y>
         <width>481</width>
         <height>161</height>
        </rect>
@@ -270,6 +273,9 @@ download elevation data (SRTM).</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_9">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>260</x>
@@ -280,6 +286,9 @@ download elevation data (SRTM).</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_10">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>350</x>
@@ -290,6 +299,9 @@ download elevation data (SRTM).</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>260</x>
@@ -334,12 +346,15 @@ the following range:</string>
       </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>10</y>
         <width>481</width>
-        <height>171</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
@@ -355,33 +370,7 @@ the following range:</string>
         </rect>
        </property>
        <property name="text">
-        <string>Work directory</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_12">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>110</y>
-         <width>91</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Output directory</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_3">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>110</y>
-         <width>331</width>
-         <height>20</height>
-        </rect>
+        <string>Project directory</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_7">
@@ -475,19 +464,6 @@ the following range:</string>
         <string>...</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_10">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
-         <y>110</y>
-         <width>31</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_8">
        <property name="geometry">
         <rect>
@@ -501,61 +477,12 @@ the following range:</string>
         <string>TerraGear root</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_21">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>140</y>
-         <width>331</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_17">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
-         <y>140</y>
-         <width>31</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_26">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>91</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Data directory</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="geometry">
-       <rect>
-        <x>240</x>
-        <y>410</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>PushButton</string>
-      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
       <string>HGT Chop</string>
      </attribute>
@@ -677,6 +604,9 @@ available in 3. </string>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
       <string>Genapts</string>
      </attribute>
@@ -968,6 +898,9 @@ available in 3. </string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_4">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -1058,6 +991,9 @@ when FlightGear's apt.dat is used!</string>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
       <string>OGR Decode</string>
      </attribute>
@@ -1325,6 +1261,9 @@ You'll have to repeat this procedure for each single shapefile.</string>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
       <string>FGFS Construct</string>
      </attribute>
@@ -1849,8 +1788,6 @@ selected to generate visible scenery.</string>
   <tabstop>pushButton_9</tabstop>
   <tabstop>lineEdit_4</tabstop>
   <tabstop>pushButton_7</tabstop>
-  <tabstop>lineEdit_3</tabstop>
-  <tabstop>pushButton_10</tabstop>
   <tabstop>lineEdit_5</tabstop>
   <tabstop>lineEdit_7</tabstop>
   <tabstop>lineEdit_6</tabstop>
