@@ -2,9 +2,11 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <QApplication>
+#include <QDateTime>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QIcon>
 #include <QIODevice>
@@ -13,7 +15,9 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QProcess>
+#include <QTextStream>
 #include <QUrl>
+#include <QXmlQuery>
 
 QString airportFile;
 QString elevationDirectory;
@@ -164,13 +168,11 @@ void MainWindow::on_pushButton_7_clicked()
 void MainWindow::on_pushButton_12_clicked()
 {
 
+    ui->listWidget->clear();
     QDir dir(dataDirectory);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-        for (int i = 0; i < list.size(); ++i) {
-            delete ui->listWidget->takeItem(i);
-        }
         for (int i = 0; i < list.size(); ++i) {
             QFileInfo fileInfo = list.at(i);
             QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
@@ -180,8 +182,10 @@ void MainWindow::on_pushButton_12_clicked()
 
 void MainWindow::on_pushButton_15_clicked()
 {
+    ui->listWidget_2->clear();
     QDir dir(workDirectory);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
     QFileInfoList list = dir.entryInfoList();
          for (int i = 0; i < list.size(); ++i) {
              QFileInfo fileInfo = list.at(i);
@@ -192,14 +196,43 @@ void MainWindow::on_pushButton_15_clicked()
 
 void MainWindow::on_pushButton_13_clicked()
 {
-    QString arguments = terragearDirectory+"/fgfs-construct.exe --work="+workDirectory+" --output="+outpDirectory+" --lon=0 --lat=0 --xdist=1 --ydist=1"+selectedMaterials;
+    QString lat = ui->lineEdit_31->text();
+    QString lon = ui->lineEdit_32->text();
+    QString x = ui->lineEdit_33->text();
+    QString y = ui->lineEdit_34->text();
+    QString selectedMaterials;
+
+    for (int i = 0; i < ui->listWidget_2->count(); ++i){
+        if (ui->listWidget_2->item(i)->isSelected() == 1){
+           selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
+        }
+    }
+
+    QString arguments = terragearDirectory+"/fgfs-construct.exe --work-dir="+workDirectory+" --output-dir="+outpDirectory+" --lon="+lon+" --lat="+lat+" --xdist="+x+" --ydist="+y+" "+selectedMaterials;
+    QMessageBox::about(this, tr("Command line"),
+                     arguments);
+
+    //output commandline to data.txt
+    QString file = projDirectory+"/data.txt";
+    QFile data(file);
+     if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+         QTextStream out(&data);
+         out << endl;
+         out << endl;
+         out << arguments;
+     }
+
+    //star command
     QProcess proc;
+    proc.setWorkingDirectory(terragearDirectory);
     proc.start(arguments, QIODevice::ReadWrite);
 
-    // run command
-        proc.waitForReadyRead();
-        proc.QProcess::waitForFinished();
-        qDebug() << proc.readAllStandardOutput();
+    //wait for process to finish, before allowing the next action
+    proc.waitForReadyRead();
+    proc.QProcess::waitForFinished();
+    qDebug() << proc.readAllStandardOutput();
+
+
 }
 
 void MainWindow::on_listWidget_2_itemSelectionChanged()
@@ -218,6 +251,8 @@ void MainWindow::on_pushButton_11_clicked()
              QString elevationFile = QString("%1").arg(fileInfo.fileName());
              QString elevationRes = ui->comboBox->currentText();
              QString arguments = terragearDirectory+"/hgtchop.exe 3 "+elevationFile+" "+workDirectory;
+             QMessageBox::about(this, tr("Command line"),
+                              arguments);
              QProcess proc;
              proc.start(arguments, QIODevice::ReadWrite);
 
@@ -234,34 +269,92 @@ void MainWindow::on_pushButton_14_clicked()
     QString west = ui->lineEdit_27->text();
     QString north = ui->lineEdit_29->text();
     QString south = ui->lineEdit_30->text();
+
 }
 
 void MainWindow::on_pushButton_16_clicked()
 {
-    QString lineWidth   = ui->lineEdit_25->text();
-    QString material    = ui->listWidget->currentItem()->text();
-    QString shapefile   = ui->listWidget_3->currentItem()->text();
-    QString arguments   = terragearDirectory+"/ogr-decode.exe --line-width "+lineWidth+" "+shapefile+" "+workDirectory+"/"+shapefile+" "+dataDirectory+"/"+material;
-    QMessageBox::about(this, tr("Command line"),
-                     arguments);
-    QProcess proc;
-    proc.start(arguments, QIODevice::ReadWrite);
+    QString lineWidth       = "--line-width ";
+    QString pointWidth      = "--point-width ";
+    QString continueErrors  = "";
 
-    // run command
-    proc.waitForReadyRead();
-    proc.QProcess::waitForFinished();
-    qDebug() << proc.readAllStandardOutput();
-}
+    if (ui->lineEdit_25->text() == 0){
+        lineWidth += "10 ";
+    }
+    else{
+        lineWidth += ui->lineEdit_25->text();
+    }
+    if (ui->lineEdit_24->text() == 0){
+        pointWidth = "";
+    }
+    else{
+        pointWidth += ui->lineEdit_24->text();
+    }
+    if (ui->checkBox_2->isChecked() == 1){
+        continueErrors = "--continue-on-errors ";
+    }
 
-// not sure why we need these, but else we cannot build
-void MainWindow::on_pushButton_6_clicked()
-{
-}
+    int shapefilesLength    = ui->listWidget->count();
+    int materialsLength     = ui->listWidget_3->count();
 
-void MainWindow::on_pushButton_10_clicked()
-{
+    //check whether both lists have equal length
+    if (shapefilesLength == materialsLength)
+    {
+        for (int i = 0; i < shapefilesLength; ++i)
+        {
+            QString material    = ui->listWidget->item(i)->text();
+            QString shapefile   = ui->listWidget_3->item(i)->text();
+            QString arguments   = terragearDirectory+"/ogr-decode.exe "+lineWidth+pointWidth+continueErrors+"--area-type "+shapefile+" "+workDirectory+"/"+shapefile+" "+dataDirectory+"/"+material;
+            QMessageBox::about(this, tr("Command line"),
+                             arguments);
+            QProcess proc;
+            proc.start(arguments, QIODevice::ReadWrite);
+
+            // run command
+            proc.waitForReadyRead();
+            proc.QProcess::waitForFinished();
+            qDebug() << proc.readAllStandardOutput();
+            QString file = projDirectory+"/data.txt";
+
+            QFile data(file);
+             if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                 QTextStream out(&data);
+                 out << endl;
+                 out << endl;
+                 out << arguments;
+             }
+        }
+    }
+    else{
+        QMessageBox::about(this, tr("Error"),
+                         "You did not specify an equal number of shapefiles and materials.");
+    }
 }
 
 void MainWindow::on_pushButton_17_clicked()
 {
+    //check to make sure there is an equal number of materials and shapefiles
+    int shapefilesLength    = ui->listWidget->count();
+    int materialsLength     = ui->listWidget_3->count();
+    if (shapefilesLength > materialsLength)
+    {
+        QString addMaterial = ui->comboBox_2->currentText();
+        new QListWidgetItem(tr(qPrintable(addMaterial)), ui->listWidget_3);
+    }
+}
+
+void MainWindow::on_listWidget_3_doubleClicked(QModelIndex index)
+{
+    delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
+}
+
+void MainWindow::on_listWidget_doubleClicked(QModelIndex index)
+{
+    int shapefilesLength    = ui->listWidget->count();
+    int materialsLength     = ui->listWidget_3->count();
+    if (shapefilesLength <= materialsLength)
+    {
+        delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
+    }
+    delete ui->listWidget->takeItem(ui->listWidget->currentRow());
 }

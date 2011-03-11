@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT          += core gui
+QT          += xmlpatterns
 CONFIG      += console
 
 TARGET      = TerraGUI
