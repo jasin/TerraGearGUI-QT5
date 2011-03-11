@@ -17,7 +17,6 @@
 #include <QProcess>
 #include <QTextStream>
 #include <QUrl>
-#include <QXmlQuery>
 
 QString airportFile;
 QString elevationDirectory;
@@ -36,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle( tr("TerraGear GUI") );
 }
 
 MainWindow::~MainWindow()
@@ -100,38 +100,23 @@ void MainWindow::on_pushButton_2_clicked()
     QString south   = ui->lineEdit_8->text();
     QString west    = ui->lineEdit_6->text();
 
-    // check whether boundaries are valid
-    if (west > east)
-    {
-        QMessageBox::about(this, tr("Error"),
-                         tr("West cannot be greater than east."));
-    }
-    if (south > north)
-    {
-        QMessageBox::about(this, tr("Error"),
-                         tr("South cannot be greater than north."));
-    }
-    if (west < east and north > south)
-    {
-        QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
-        qDebug() << mapserverUrl;
-        QDesktopServices::openUrl(mapserverUrl);
-        QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+    QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
+    qDebug() << mapserverUrl;
+    QDesktopServices::openUrl(mapserverUrl);
+    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
 
-        // set boundarie on FGFS construct page
-        ui->lineEdit_27->setText(west);
-        ui->lineEdit_28->setText(east);
-        ui->lineEdit_29->setText(north);
-        ui->lineEdit_30->setText(south);
-
-    }
+    // set boundarie on FGFS construct page
+    ui->lineEdit_27->setText(west);
+    ui->lineEdit_28->setText(east);
+    ui->lineEdit_29->setText(north);
+    ui->lineEdit_30->setText(south);
 }
 
 void MainWindow::on_about_triggered()
 {
     QMessageBox::about(this, tr("TerraGUI"),
-                         tr("©2010 Gijs de Rooy for FlightGear\n" \
-                            "GNU General Public License version 3"));
+                         tr("©2010-2011 Gijs de Rooy for FlightGear\n" \
+                            "GNU General Public License version 2"));
 }
 
 void MainWindow::on_wiki_triggered()

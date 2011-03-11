@@ -85,7 +85,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -109,7 +109,7 @@
         <x>10</x>
         <y>130</y>
         <width>481</width>
-        <height>161</height>
+        <height>211</height>
        </rect>
       </property>
       <property name="title">
@@ -342,6 +342,24 @@ the following range:</string>
        </property>
        <property name="orientation">
         <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>160</y>
+         <width>461</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Unpack the data to the above-set [project directory]/data and create subdirectories for each
+single shapefile. Like data/cs_lake, data/cs_golfcourse etc.; and move the shapefiles (three or
+four for each!) to the appropriate subdirectories.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
       </widget>
      </widget>
