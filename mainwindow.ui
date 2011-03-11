@@ -2,24 +2,27 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>505</width>
-    <height>505</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>505</width>
-    <height>505</height>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>505</width>
-    <height>505</height>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -35,7 +38,7 @@
       <x>0</x>
       <y>0</y>
       <width>511</width>
-      <height>491</height>
+      <height>481</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -107,9 +110,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>100</y>
         <width>481</width>
-        <height>211</height>
+        <height>271</height>
        </rect>
       </property>
       <property name="title">
@@ -136,8 +139,8 @@ download elevation data (SRTM).</string>
       <widget class="QPushButton" name="pushButton_2">
        <property name="geometry">
         <rect>
-         <x>90</x>
-         <y>130</y>
+         <x>70</x>
+         <y>180</y>
          <width>101</width>
          <height>23</height>
         </rect>
@@ -149,9 +152,9 @@ download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_10">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>100</x>
          <y>70</y>
-         <width>31</width>
+         <width>41</width>
          <height>21</height>
         </rect>
        </property>
@@ -159,27 +162,14 @@ download elevation data (SRTM).</string>
         <string>North</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="Line" name="line">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>70</y>
-         <width>21</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_9">
        <property name="geometry">
         <rect>
-         <x>50</x>
-         <y>100</y>
+         <x>20</x>
+         <y>110</y>
          <width>31</width>
          <height>21</height>
         </rect>
@@ -194,8 +184,8 @@ download elevation data (SRTM).</string>
       <widget class="QLineEdit" name="lineEdit_5">
        <property name="geometry">
         <rect>
-         <x>90</x>
-         <y>70</y>
+         <x>140</x>
+         <y>110</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -207,8 +197,8 @@ download elevation data (SRTM).</string>
       <widget class="QLineEdit" name="lineEdit_6">
        <property name="geometry">
         <rect>
-         <x>90</x>
-         <y>100</y>
+         <x>60</x>
+         <y>110</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -220,8 +210,8 @@ download elevation data (SRTM).</string>
       <widget class="QLineEdit" name="lineEdit_7">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>70</y>
+         <x>100</x>
+         <y>90</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -230,9 +220,9 @@ download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
         <rect>
-         <x>200</x>
-         <y>100</y>
-         <width>31</width>
+         <x>100</x>
+         <y>150</y>
+         <width>41</width>
          <height>21</height>
         </rect>
        </property>
@@ -240,14 +230,14 @@ download elevation data (SRTM).</string>
         <string>South</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_8">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>100</y>
+         <x>100</x>
+         <y>130</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -259,8 +249,8 @@ download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
-         <x>50</x>
-         <y>70</y>
+         <x>180</x>
+         <y>110</y>
          <width>31</width>
          <height>21</height>
         </rect>
@@ -337,7 +327,7 @@ the following range:</string>
          <x>230</x>
          <y>70</y>
          <width>16</width>
-         <height>81</height>
+         <height>131</height>
         </rect>
        </property>
        <property name="orientation">
@@ -348,7 +338,7 @@ the following range:</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>160</y>
+         <y>220</y>
          <width>461</width>
          <height>41</height>
         </rect>
@@ -372,7 +362,7 @@ four for each!) to the appropriate subdirectories.</string>
         <x>10</x>
         <y>10</y>
         <width>481</width>
-        <height>111</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="title">
@@ -382,7 +372,7 @@ four for each!) to the appropriate subdirectories.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>80</y>
+         <y>50</y>
          <width>91</width>
          <height>21</height>
         </rect>
@@ -395,7 +385,7 @@ four for each!) to the appropriate subdirectories.</string>
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>80</y>
+         <y>50</y>
          <width>31</width>
          <height>23</height>
         </rect>
@@ -404,33 +394,7 @@ four for each!) to the appropriate subdirectories.</string>
         <string>...</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_13">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>91</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>FlightGear root</string>
-       </property>
-      </widget>
       <widget class="QLineEdit" name="lineEdit_4">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>80</y>
-         <width>331</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_2">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -443,7 +407,7 @@ four for each!) to the appropriate subdirectories.</string>
         </rect>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="lineEdit_2">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -460,19 +424,6 @@ four for each!) to the appropriate subdirectories.</string>
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>50</y>
-         <width>31</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_8">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
          <y>20</y>
          <width>31</width>
          <height>23</height>
@@ -486,7 +437,7 @@ four for each!) to the appropriate subdirectories.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
+         <y>20</y>
          <width>91</width>
          <height>21</height>
         </rect>
@@ -2085,6 +2036,16 @@ selected to generate visible scenery.</string>
      </widget>
     </widget>
    </widget>
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>480</y>
+      <width>481</width>
+      <height>91</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -2103,6 +2064,13 @@ selected to generate visible scenery.</string>
     <addaction name="separator"/>
     <addaction name="about"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionHGT_Chop">
@@ -2135,11 +2103,24 @@ selected to generate visible scenery.</string>
     <string>About</string>
    </property>
   </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>pushButton_8</tabstop>
   <tabstop>lineEdit_2</tabstop>
   <tabstop>pushButton_9</tabstop>
   <tabstop>lineEdit_4</tabstop>

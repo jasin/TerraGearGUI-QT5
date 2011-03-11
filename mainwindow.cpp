@@ -3,7 +3,6 @@
 #include <iostream>
 #include <QApplication>
 #include <QDateTime>
-#include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -21,6 +20,7 @@
 QString airportFile;
 QString elevationDirectory;
 QString selectedMaterials;
+QString output;
 
 QString fgfsDirectory;
 QString terragearDirectory;
@@ -54,11 +54,6 @@ void MainWindow::on_tabWidget_selected(QString )
     show();
 }
 
-void MainWindow::on_tabWidget_currentChanged(QWidget* )
-{
-
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), "C:/Users/AS9423-ULT/Desktop/TerraGear/Airports", tr("Airport files (*.dat)"));
@@ -84,7 +79,8 @@ void MainWindow::on_pushButton_5_clicked()
     // run command
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    qDebug() << proc.readAllStandardOutput();
+    QString output = proc.readAllStandardOutput();
+    ui->textBrowser->setText(output);
 
 }
 
@@ -100,10 +96,11 @@ void MainWindow::on_pushButton_2_clicked()
     QString south   = ui->lineEdit_8->text();
     QString west    = ui->lineEdit_6->text();
 
-    QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
-    qDebug() << mapserverUrl;
-    QDesktopServices::openUrl(mapserverUrl);
-    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+    if (east > 0 and north > 0 and south > 0 and west > 0){
+        QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
+        QDesktopServices::openUrl(mapserverUrl);
+        QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+    }
 
     // set boundarie on FGFS construct page
     ui->lineEdit_27->setText(west);
@@ -112,9 +109,14 @@ void MainWindow::on_pushButton_2_clicked()
     ui->lineEdit_30->setText(south);
 }
 
+void MainWindow::on_actionQuit_triggered()
+{
+    MainWindow::close();
+}
+
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI"),
+    QMessageBox::about(this, tr("TerraGUI v1.2"),
                          tr("©2010-2011 Gijs de Rooy for FlightGear\n" \
                             "GNU General Public License version 2"));
 }
@@ -122,12 +124,6 @@ void MainWindow::on_about_triggered()
 void MainWindow::on_wiki_triggered()
 {
     QDesktopServices::openUrl(QUrl(tr("http://wiki.flightgear.org/index.php/TerraGear_GUI")));
-}
-
-void MainWindow::on_pushButton_8_clicked()
-{
-    fgfsDirectory = QFileDialog::getExistingDirectory(this,tr("Select FGFS root, this is the directory in which fgfs.exe lives."));
-    ui->lineEdit->setText(fgfsDirectory);
 }
 
 void MainWindow::on_pushButton_9_clicked()
@@ -215,13 +211,9 @@ void MainWindow::on_pushButton_13_clicked()
     //wait for process to finish, before allowing the next action
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    qDebug() << proc.readAllStandardOutput();
+    output = proc.readAllStandardOutput();
+    ui->textBrowser->setText(output);
 
-
-}
-
-void MainWindow::on_listWidget_2_itemSelectionChanged()
-{
 
 }
 
@@ -235,16 +227,29 @@ void MainWindow::on_pushButton_11_clicked()
              QFileInfo fileInfo = list.at(i);
              QString elevationFile = QString("%1").arg(fileInfo.fileName());
              QString elevationRes = ui->comboBox->currentText();
-             QString arguments = terragearDirectory+"/hgtchop.exe 3 "+elevationFile+" "+workDirectory;
+             QString arguments = terragearDirectory+"/hgtchop.exe "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
              QMessageBox::about(this, tr("Command line"),
                               arguments);
              QProcess proc;
              proc.start(arguments, QIODevice::ReadWrite);
 
-             // run command
-                 proc.waitForReadyRead();
-                 proc.QProcess::waitForFinished();
-                 qDebug() << proc.readAllStandardOutput();
+             // run hgtchop command
+             proc.waitForReadyRead();
+             proc.QProcess::waitForFinished();
+             output = proc.readAllStandardOutput();
+             ui->textBrowser->setText(output);
+
+             // run terrafit command
+
+             QString argumentsTerrafit = terragearDirectory+"/terrafit.exe "+workDirectory+"/SRTM-30";
+             QMessageBox::about(this, tr("Command line"),
+                              argumentsTerrafit);
+             QProcess procTerrafit;
+             procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
+             procTerrafit.waitForReadyRead();
+             procTerrafit.QProcess::waitForFinished();
+             output = procTerrafit.readAllStandardOutput();
+             ui->textBrowser->setText(output);
          }
 }
 
@@ -298,7 +303,9 @@ void MainWindow::on_pushButton_16_clicked()
             // run command
             proc.waitForReadyRead();
             proc.QProcess::waitForFinished();
-            qDebug() << proc.readAllStandardOutput();
+            output = proc.readAllStandardOutput();
+            ui->textBrowser->setText(output);
+
             QString file = projDirectory+"/data.txt";
 
             QFile data(file);
