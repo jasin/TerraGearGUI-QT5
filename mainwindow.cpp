@@ -13,6 +13,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QPalette>
 #include <QProcess>
 #include <QTextStream>
 #include <QUrl>
@@ -96,11 +97,31 @@ void MainWindow::on_pushButton_2_clicked()
     QString south   = ui->lineEdit_8->text();
     QString west    = ui->lineEdit_6->text();
 
-    if (east > 0 and north > 0 and south > 0 and west > 0){
+    int eastInt     = east.toInt();
+    int northInt    = north.toInt();
+    int southInt    = south.toInt();
+    int westInt     = west.toInt();
+
+    QPalette q;
+
+    if (westInt < eastInt and northInt > southInt){
+        q.setColor(QPalette::WindowText, Qt::black);
+
         QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
         QDesktopServices::openUrl(mapserverUrl);
         QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
     }
+    else{
+        QMessageBox::about(this,tr("Error"),
+                             tr("Wrong boundaries"));
+        q.setColor(QPalette::WindowText, Qt::red);
+    }
+
+    // change label colors on error
+    ui->label_7->setPalette(q);
+    ui->label_9->setPalette(q);
+    ui->label_10->setPalette(q);
+    ui->label_11->setPalette(q);
 
     // set boundarie on FGFS construct page
     ui->lineEdit_27->setText(west);
@@ -137,7 +158,7 @@ void MainWindow::on_pushButton_7_clicked()
     projDirectory = QFileDialog::getExistingDirectory(this,tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
     ui->lineEdit_4->setText(projDirectory);
 
-    //set project's directories
+    // set project's directories
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
@@ -189,11 +210,25 @@ void MainWindow::on_pushButton_13_clicked()
         }
     }
 
-    QString arguments = terragearDirectory+"/fgfs-construct.exe --work-dir="+workDirectory+" --output-dir="+outpDirectory+" --lon="+lon+" --lat="+lat+" --xdist="+x+" --ydist="+y+" "+selectedMaterials;
+    QString arguments = terragearDirectory+"/fgfs-construct.exe ";
+    arguments += "--work-dir="+workDirectory+" ";
+    arguments += "--output-dir="+outpDirectory+" ";
+    if (ui->lineEdit_35->text() > 0){
+        arguments += "--tile-id="+ui->lineEdit_35->text();
+    }
+    arguments += "--lon="+lon+" --lat="+lat+" ";
+    arguments += "--xdist="+x+" --ydist="+y+" ";
+    if (ui->checkBox_3->isChecked()){
+        arguments += "--useUKgrid ";
+    }
+    if (ui->checkBox_4->isChecked()){
+        arguments += "--ignore-landmass ";
+    }
+    arguments += selectedMaterials;
     QMessageBox::about(this, tr("Command line"),
                      arguments);
 
-    //output commandline to data.txt
+    // output commandline to data.txt
     QString file = projDirectory+"/data.txt";
     QFile data(file);
      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
@@ -203,12 +238,12 @@ void MainWindow::on_pushButton_13_clicked()
          out << arguments;
      }
 
-    //star command
+    // start command
     QProcess proc;
     proc.setWorkingDirectory(terragearDirectory);
     proc.start(arguments, QIODevice::ReadWrite);
 
-    //wait for process to finish, before allowing the next action
+    // wait for process to finish, before allowing the next action
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
     output = proc.readAllStandardOutput();
@@ -255,46 +290,79 @@ void MainWindow::on_pushButton_11_clicked()
 
 void MainWindow::on_pushButton_14_clicked()
 {
-    QString east = ui->lineEdit_28->text();
-    QString west = ui->lineEdit_27->text();
-    QString north = ui->lineEdit_29->text();
-    QString south = ui->lineEdit_30->text();
+    QString east    = ui->lineEdit_28->text();
+    QString north   = ui->lineEdit_29->text();
+    QString south   = ui->lineEdit_30->text();
+    QString west    = ui->lineEdit_27->text();
+
+    double eastInt     = east.toDouble();
+    double northInt    = north.toDouble();
+    double southInt    = south.toDouble();
+    double westInt     = west.toDouble();
+
+    QPalette p;
+
+    if (westInt < eastInt and northInt > southInt){
+        double latInt      = (northInt + southInt)/2;
+        double lonInt      = (eastInt + westInt)/2;
+
+        QString lat     = QString::number(latInt);
+        QString lon     = QString::number(lonInt);
+        QString xRad     = QString::number(eastInt-lonInt);
+        QString yRad     = QString::number(northInt-latInt);
+
+        ui->lineEdit_31->setText(lat);
+        ui->lineEdit_32->setText(lon);
+        ui->lineEdit_33->setText(xRad);
+        ui->lineEdit_34->setText(yRad);
+
+        p.setColor(QPalette::WindowText, Qt::black);
+    }
+    else{
+        QMessageBox::about(this,tr("Error"),
+                             tr("Wrong boundaries"));
+        p.setColor(QPalette::WindowText, Qt::red);
+    }
+
+    // change label colors on error
+    ui->label_35->setPalette(p);
+    ui->label_36->setPalette(p);
+    ui->label_37->setPalette(p);
+    ui->label_38->setPalette(p);
 
 }
 
 void MainWindow::on_pushButton_16_clicked()
 {
-    QString lineWidth       = "--line-width ";
-    QString pointWidth      = "--point-width ";
-    QString continueErrors  = "";
-
-    if (ui->lineEdit_25->text() == 0){
-        lineWidth += "10 ";
-    }
-    else{
-        lineWidth += ui->lineEdit_25->text();
-    }
-    if (ui->lineEdit_24->text() == 0){
-        pointWidth = "";
-    }
-    else{
-        pointWidth += ui->lineEdit_24->text();
-    }
-    if (ui->checkBox_2->isChecked() == 1){
-        continueErrors = "--continue-on-errors ";
-    }
-
     int shapefilesLength    = ui->listWidget->count();
     int materialsLength     = ui->listWidget_3->count();
 
-    //check whether both lists have equal length
+    // check whether both lists have equal length
     if (shapefilesLength == materialsLength)
     {
         for (int i = 0; i < shapefilesLength; ++i)
         {
             QString material    = ui->listWidget->item(i)->text();
             QString shapefile   = ui->listWidget_3->item(i)->text();
-            QString arguments   = terragearDirectory+"/ogr-decode.exe "+lineWidth+pointWidth+continueErrors+"--area-type "+shapefile+" "+workDirectory+"/"+shapefile+" "+dataDirectory+"/"+material;
+            QString arguments   = terragearDirectory+"/ogr-decode.exe ";
+            if (ui->lineEdit_25->text() == 0){
+                arguments += "--line-width 10 ";
+            }
+            else{
+                arguments += "--line-width "+ui->lineEdit_25->text()+" ";
+            }
+            if (ui->lineEdit_24->text() > 0){
+                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
+            }
+            if (ui->checkBox_2->isChecked() == 1){
+                arguments += "--continue-on-errors ";
+            }
+            if (ui->lineEdit_26->text() > 0){
+                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+            }
+            arguments += "--area-type "+shapefile+" ";
+            arguments += workDirectory+"/"+shapefile+" ";
+            arguments += dataDirectory+"/"+material;
             QMessageBox::about(this, tr("Command line"),
                              arguments);
             QProcess proc;
@@ -306,13 +374,17 @@ void MainWindow::on_pushButton_16_clicked()
             output = proc.readAllStandardOutput();
             ui->textBrowser->setText(output);
 
-            QString file = projDirectory+"/data.txt";
+            QString file        = projDirectory+"/data.txt";
+            QDateTime datetime  = QDateTime::currentDateTime();
+            QString sDateTime   = datetime.toString("yyyy.MM.dd HH:mm:ss");
 
             QFile data(file);
              if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                  QTextStream out(&data);
                  out << endl;
                  out << endl;
+                 out << sDateTime;
+                 out << "  -  ";
                  out << arguments;
              }
         }
@@ -325,7 +397,7 @@ void MainWindow::on_pushButton_16_clicked()
 
 void MainWindow::on_pushButton_17_clicked()
 {
-    //check to make sure there is an equal number of materials and shapefiles
+    // check to make sure there is an equal number of materials and shapefiles
     int shapefilesLength    = ui->listWidget->count();
     int materialsLength     = ui->listWidget_3->count();
     if (shapefilesLength > materialsLength)
