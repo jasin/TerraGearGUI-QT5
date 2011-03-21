@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QPalette>
 #include <QProcess>
+#include <QSettings>
 #include <QTextStream>
 #include <QUrl>
 
@@ -31,12 +32,25 @@ QString dataDirectory;
 QString outpDirectory;
 QString workDirectory;
 
+// save variables for future sessions
+QSettings settings("TerraGear", "TerraGearGUI");
+
+
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle( tr("TerraGear GUI") );
+
+    // restore variables from previous session
+    terragearDirectory = settings.value("paths/terragear").toString();
+    projDirectory = settings.value("paths/project").toString();
+    ui->lineEdit_2->setText(terragearDirectory);
+    ui->lineEdit_4->setText(projDirectory);
+    dataDirectory = projDirectory+"/data";
+    outpDirectory = projDirectory+"/output";
+    workDirectory = projDirectory+"/work";
 }
 
 MainWindow::~MainWindow()
@@ -64,16 +78,18 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_5_clicked()
 {
     QString airportId = ui->lineEdit_18->text();
+    QString startAptId = ui->lineEdit_19->text();
     QString argumentAirportId = "";
-    if (airportId.isEmpty()){
-        argumentAirportId = "";
+
+    QString arguments = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
+    if (airportId > 0){
+        arguments += "--airport="+airportId+" ";
     }
-    else {
-        argumentAirportId = " --airport="+airportId;
+    if (startAptId > 0){
+        arguments += "--start-id="+startAptId+" ";
     }
-    QString arguments = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+""+argumentAirportId;
     QMessageBox::about(this, tr("Command line"),
-                     arguments);
+                       arguments);
     QProcess proc;
     proc.start(arguments, QIODevice::ReadWrite);
 
@@ -97,10 +113,10 @@ void MainWindow::on_pushButton_2_clicked()
     QString south   = ui->lineEdit_8->text();
     QString west    = ui->lineEdit_6->text();
 
-    int eastInt     = east.toInt();
-    int northInt    = north.toInt();
-    int southInt    = south.toInt();
-    int westInt     = west.toInt();
+    double eastInt     = east.toDouble();
+    double northInt    = north.toDouble();
+    double southInt    = south.toDouble();
+    double westInt     = west.toDouble();
 
     QPalette q;
 
@@ -109,11 +125,10 @@ void MainWindow::on_pushButton_2_clicked()
 
         QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
         QDesktopServices::openUrl(mapserverUrl);
-        QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
     }
     else{
         QMessageBox::about(this,tr("Error"),
-                             tr("Wrong boundaries"));
+                           tr("Wrong boundaries"));
         q.setColor(QPalette::WindowText, Qt::red);
     }
 
@@ -123,11 +138,16 @@ void MainWindow::on_pushButton_2_clicked()
     ui->label_10->setPalette(q);
     ui->label_11->setPalette(q);
 
-    // set boundarie on FGFS construct page
+    // set boundarie on FGFS construct and genapts pages
     ui->lineEdit_27->setText(west);
     ui->lineEdit_28->setText(east);
     ui->lineEdit_29->setText(north);
     ui->lineEdit_30->setText(south);
+
+    ui->lineEdit_12->setText(west);
+    ui->lineEdit_14->setText(east);
+    ui->lineEdit_15->setText(north);
+    ui->lineEdit_16->setText(south);
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -137,9 +157,9 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v1.2"),
-                         tr("©2010-2011 Gijs de Rooy for FlightGear\n" \
-                            "GNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.2"),
+                       tr("©2010-2011 Gijs de Rooy for FlightGear\n" \
+                          "GNU General Public License version 2"));
 }
 
 void MainWindow::on_wiki_triggered()
@@ -151,19 +171,19 @@ void MainWindow::on_pushButton_9_clicked()
 {
     terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode.exe, genapts.exe etc. live."));
     ui->lineEdit_2->setText(terragearDirectory);
+    settings.setValue("paths/terragear", terragearDirectory);
 }
 
 void MainWindow::on_pushButton_7_clicked()
 {
     projDirectory = QFileDialog::getExistingDirectory(this,tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
     ui->lineEdit_4->setText(projDirectory);
+    settings.setValue("paths/project", projDirectory);
 
     // set project's directories
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
-
-    ui->lineEdit_4->setText(projDirectory);
 
 }
 
@@ -175,11 +195,11 @@ void MainWindow::on_pushButton_12_clicked()
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-        for (int i = 0; i < list.size(); ++i) {
-            QFileInfo fileInfo = list.at(i);
-            QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-            new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget);
-        }
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
+        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget);
+    }
 }
 
 void MainWindow::on_pushButton_15_clicked()
@@ -189,11 +209,11 @@ void MainWindow::on_pushButton_15_clicked()
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-         for (int i = 0; i < list.size(); ++i) {
-             QFileInfo fileInfo = list.at(i);
-             QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-             new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
-         }
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
+        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
+    }
 }
 
 void MainWindow::on_pushButton_13_clicked()
@@ -206,13 +226,13 @@ void MainWindow::on_pushButton_13_clicked()
 
     for (int i = 0; i < ui->listWidget_2->count(); ++i){
         if (ui->listWidget_2->item(i)->isSelected() == 1){
-           selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
+            selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
         }
     }
 
     QString arguments = terragearDirectory+"/fgfs-construct.exe ";
     arguments += "--work-dir="+workDirectory+" ";
-    arguments += "--output-dir="+outpDirectory+" ";
+    arguments += "--output-dir="+outpDirectory+"/Terrain ";
     if (ui->lineEdit_35->text() > 0){
         arguments += "--tile-id="+ui->lineEdit_35->text();
     }
@@ -226,17 +246,19 @@ void MainWindow::on_pushButton_13_clicked()
     }
     arguments += selectedMaterials;
     QMessageBox::about(this, tr("Command line"),
-                     arguments);
+                       arguments);
 
     // output commandline to data.txt
-    QString file = projDirectory+"/data.txt";
-    QFile data(file);
-     if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-         QTextStream out(&data);
-         out << endl;
-         out << endl;
-         out << arguments;
-     }
+    if (ui->checkBox_log->isChecked()){
+        QString file = projDirectory+"/data.txt";
+        QFile data(file);
+        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream out(&data);
+            out << endl;
+            out << endl;
+            out << arguments;
+        }
+    }
 
     // start command
     QProcess proc;
@@ -248,8 +270,6 @@ void MainWindow::on_pushButton_13_clicked()
     proc.QProcess::waitForFinished();
     output = proc.readAllStandardOutput();
     ui->textBrowser->setText(output);
-
-
 }
 
 void MainWindow::on_pushButton_11_clicked()
@@ -258,34 +278,62 @@ void MainWindow::on_pushButton_11_clicked()
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-         for (int i = 0; i < list.size(); ++i) {
-             QFileInfo fileInfo = list.at(i);
-             QString elevationFile = QString("%1").arg(fileInfo.fileName());
-             QString elevationRes = ui->comboBox->currentText();
-             QString arguments = terragearDirectory+"/hgtchop.exe "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
-             QMessageBox::about(this, tr("Command line"),
-                              arguments);
-             QProcess proc;
-             proc.start(arguments, QIODevice::ReadWrite);
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString elevationFile = QString("%1").arg(fileInfo.fileName());
+        QString elevationRes = ui->comboBox->currentText();
+        QString arguments = terragearDirectory+"/hgtchop.exe "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
 
-             // run hgtchop command
-             proc.waitForReadyRead();
-             proc.QProcess::waitForFinished();
-             output = proc.readAllStandardOutput();
-             ui->textBrowser->setText(output);
+        QProcess proc;
+        proc.start(arguments, QIODevice::ReadWrite);
 
-             // run terrafit command
+        // run hgtchop command
+        proc.waitForReadyRead();
+        proc.QProcess::waitForFinished();
+        output += proc.readAllStandardOutput();
+        ui->textBrowser->setText(output);
 
-             QString argumentsTerrafit = terragearDirectory+"/terrafit.exe "+workDirectory+"/SRTM-30";
-             QMessageBox::about(this, tr("Command line"),
-                              argumentsTerrafit);
-             QProcess procTerrafit;
-             procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
-             procTerrafit.waitForReadyRead();
-             procTerrafit.QProcess::waitForFinished();
-             output = procTerrafit.readAllStandardOutput();
-             ui->textBrowser->setText(output);
-         }
+        // run terrafit command
+
+        QString argumentsTerrafit = terragearDirectory+"/terrafit.exe "+workDirectory+"/SRTM-30";
+
+        QProcess procTerrafit;
+        procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
+        procTerrafit.waitForReadyRead();
+        procTerrafit.QProcess::waitForFinished();
+        output += procTerrafit.readAllStandardOutput();
+        ui->textBrowser->setText(output);
+
+        if (ui->checkBox_log->isChecked()){
+            QString file        = projDirectory+"/data.txt";
+            QDateTime datetime  = QDateTime::currentDateTime();
+            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+            QFile data(file);
+            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream out(&data);
+                out << endl;
+                out << endl;
+                out << sDateTime;
+                out << "  -  ";
+                out << arguments;
+                out << endl;
+                out << endl;
+                out << sDateTime;
+                out << "  -  ";
+                out << argumentsTerrafit;
+            }
+
+            QString file2 = projDirectory+"/output.txt";
+            QFile data2(file2);
+            if (data2.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream out(&data2);
+                out << endl;
+                out << endl;
+                out << output;
+            }
+        }
+    }
 }
 
 void MainWindow::on_pushButton_14_clicked()
@@ -319,8 +367,7 @@ void MainWindow::on_pushButton_14_clicked()
         p.setColor(QPalette::WindowText, Qt::black);
     }
     else{
-        QMessageBox::about(this,tr("Error"),
-                             tr("Wrong boundaries"));
+        QMessageBox::about(this,tr("Error"),tr("Wrong boundaries"));
         p.setColor(QPalette::WindowText, Qt::red);
     }
 
@@ -334,10 +381,10 @@ void MainWindow::on_pushButton_14_clicked()
 
 void MainWindow::on_pushButton_16_clicked()
 {
-    int shapefilesLength    = ui->listWidget->count();
-    int materialsLength     = ui->listWidget_3->count();
-
     // check whether both lists have equal length
+    int shapefilesLength = ui->listWidget->count();
+    int materialsLength  = ui->listWidget_3->count();
+
     if (shapefilesLength == materialsLength)
     {
         for (int i = 0; i < shapefilesLength; ++i)
@@ -363,8 +410,6 @@ void MainWindow::on_pushButton_16_clicked()
             arguments += "--area-type "+shapefile+" ";
             arguments += workDirectory+"/"+shapefile+" ";
             arguments += dataDirectory+"/"+material;
-            QMessageBox::about(this, tr("Command line"),
-                             arguments);
             QProcess proc;
             proc.start(arguments, QIODevice::ReadWrite);
 
@@ -374,24 +419,26 @@ void MainWindow::on_pushButton_16_clicked()
             output = proc.readAllStandardOutput();
             ui->textBrowser->setText(output);
 
-            QString file        = projDirectory+"/data.txt";
-            QDateTime datetime  = QDateTime::currentDateTime();
-            QString sDateTime   = datetime.toString("yyyy.MM.dd HH:mm:ss");
+            // output log
+            if (ui->checkBox_log->isChecked()){
+                QString file        = projDirectory+"/data.txt";
+                QDateTime datetime  = QDateTime::currentDateTime();
+                QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-            QFile data(file);
-             if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                 QTextStream out(&data);
-                 out << endl;
-                 out << endl;
-                 out << sDateTime;
-                 out << "  -  ";
-                 out << arguments;
-             }
+                QFile data(file);
+                if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                    QTextStream out(&data);
+                    out << endl;
+                    out << endl;
+                    out << sDateTime;
+                    out << "  -  ";
+                    out << arguments;
+                }
+            }
         }
     }
     else{
-        QMessageBox::about(this, tr("Error"),
-                         "You did not specify an equal number of shapefiles and materials.");
+        QMessageBox::about(this, tr("Error"),"You did not specify an equal number of shapefiles and materials.");
     }
 }
 
@@ -421,4 +468,64 @@ void MainWindow::on_listWidget_doubleClicked(QModelIndex index)
         delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
     }
     delete ui->listWidget->takeItem(ui->listWidget->currentRow());
+}
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+}
+
+void MainWindow::on_pushButton_8_clicked()
+{
+
+    int eastInt     = ui->lineEdit_5->text().toInt();
+    int northInt    = ui->lineEdit_7->text().toInt();
+    int southInt    = ui->lineEdit_8->text().toInt();
+    int westInt     = ui->lineEdit_6->text().toInt();
+
+    QString east;
+    QString north;
+    QString south;
+    QString west;
+    east.sprintf("%03d", eastInt);
+    north.sprintf("%02d", northInt);
+    south.sprintf("%02d", southInt);
+    west.sprintf("%03d", westInt);
+
+    QString minElev = "";
+    QString maxElev = "";
+    if (northInt >= 0){
+        maxElev += "N";
+    }
+    if (northInt < 0) {
+        maxElev += "S";
+    }
+    maxElev += north;
+
+    if (southInt >= 0){
+        minElev += "N";
+    }
+    if (southInt < 0) {
+        minElev += "S";
+    }
+    minElev += south;
+
+    if (eastInt > 0){
+        maxElev += "W";
+    }
+    if (eastInt <= 0) {
+        maxElev += "E";
+    }
+    maxElev += east;
+
+    if (westInt > 0){
+        minElev += "W";
+    }
+    if (westInt <= 0) {
+        minElev += "E";
+    }
+    minElev += west;
+
+    ui->lineEdit_9->setText(minElev);
+    ui->lineEdit_10->setText(maxElev);
 }

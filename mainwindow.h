@@ -20,6 +20,8 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
+    void on_pushButton_8_clicked();
+    void on_pushButton_6_clicked();
     void on_listWidget_doubleClicked(QModelIndex index);
     void on_listWidget_3_doubleClicked(QModelIndex index);
 

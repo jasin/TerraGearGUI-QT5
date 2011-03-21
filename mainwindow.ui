@@ -88,7 +88,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -139,14 +139,14 @@ download elevation data (SRTM).</string>
       <widget class="QPushButton" name="pushButton_2">
        <property name="geometry">
         <rect>
-         <x>70</x>
+         <x>60</x>
          <y>180</y>
-         <width>101</width>
+         <width>121</width>
          <height>23</height>
         </rect>
        </property>
        <property name="text">
-        <string>Download data</string>
+        <string>Download shapefiles</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_10">
@@ -159,7 +159,7 @@ download elevation data (SRTM).</string>
         </rect>
        </property>
        <property name="text">
-        <string>North</string>
+        <string>Max. lat</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -168,14 +168,14 @@ download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_9">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>110</y>
-         <width>31</width>
+         <width>41</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>West</string>
+        <string>Min. lon</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -227,7 +227,7 @@ download elevation data (SRTM).</string>
         </rect>
        </property>
        <property name="text">
-        <string>South</string>
+        <string>Min. lat</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -249,14 +249,14 @@ download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
-         <x>180</x>
+         <x>190</x>
          <y>110</y>
-         <width>31</width>
+         <width>41</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>East</string>
+        <string>Max. lon</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -264,52 +264,62 @@ download elevation data (SRTM).</string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_9">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>260</x>
-         <y>110</y>
+         <x>250</x>
+         <y>120</y>
          <width>71</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_10">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>350</x>
-         <y>110</y>
+         <x>340</x>
+         <y>120</y>
          <width>71</width>
          <height>20</height>
         </rect>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLabel" name="label_6">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>260</x>
+         <x>250</x>
          <y>70</y>
-         <width>161</width>
-         <height>31</height>
+         <width>221</width>
+         <height>41</height>
         </rect>
        </property>
        <property name="text">
-        <string>Download all elevation files in 
-the following range:</string>
+        <string>Download all elevation files in the following
+range (based on boundaries as set on the
+left):</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_15">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="geometry">
         <rect>
-         <x>330</x>
-         <y>110</y>
+         <x>320</x>
+         <y>120</y>
          <width>21</width>
          <height>21</height>
         </rect>
@@ -350,6 +360,35 @@ four for each!) to the appropriate subdirectories.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>180</y>
+         <width>131</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Download elevation files</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_8">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>120</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Update</string>
        </property>
       </widget>
      </widget>
@@ -444,6 +483,35 @@ four for each!) to the appropriate subdirectories.</string>
        </property>
        <property name="text">
         <string>TerraGear root</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>380</y>
+        <width>481</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>GUI settings</string>
+      </property>
+      <widget class="QCheckBox" name="checkBox_log">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>91</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Create log files</string>
        </property>
       </widget>
      </widget>
@@ -593,7 +661,7 @@ available in 3. </string>
       </property>
       <widget class="QLabel" name="label_20">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -612,7 +680,7 @@ available in 3. </string>
       </widget>
       <widget class="QLabel" name="label_21">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -631,7 +699,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_12">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -647,7 +715,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_13">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -660,7 +728,7 @@ available in 3. </string>
       </widget>
       <widget class="QLabel" name="label_22">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -679,7 +747,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_14">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -695,7 +763,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_15">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -711,7 +779,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_16">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -740,7 +808,7 @@ available in 3. </string>
       </widget>
       <widget class="QLabel" name="label_23">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -759,7 +827,7 @@ available in 3. </string>
       </widget>
       <widget class="QLabel" name="label_24">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -810,7 +878,7 @@ available in 3. </string>
       </widget>
       <widget class="QLabel" name="label_4">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -839,7 +907,7 @@ available in 3. </string>
       </widget>
       <widget class="QLineEdit" name="lineEdit_19">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -864,22 +932,6 @@ available in 3. </string>
        </property>
        <property name="text">
         <string>Airport ICAO</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>360</x>
-         <y>20</y>
-         <width>111</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Search ICAO code</string>
        </property>
       </widget>
      </widget>
@@ -2038,7 +2090,7 @@ selected to generate visible scenery.</string>
    </widget>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
