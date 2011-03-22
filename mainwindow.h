@@ -43,9 +43,8 @@ private slots:
     void on_pushButton_16_clicked();
     void on_pushButton_17_clicked();
 
-    void on_lineEdit_20_editingFinished();
-
     void on_tabWidget_selected(QString );
+
 
 };
 

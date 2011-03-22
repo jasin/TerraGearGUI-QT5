@@ -388,7 +388,11 @@ four for each!) to the appropriate subdirectories.</string>
         </rect>
        </property>
        <property name="text">
-        <string>Update</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>refresh.png</normaloff>refresh.png</iconset>
        </property>
       </widget>
      </widget>
@@ -430,7 +434,11 @@ four for each!) to the appropriate subdirectories.</string>
         </rect>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>folder.png</normaloff>folder.png</iconset>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_4">
@@ -469,7 +477,12 @@ four for each!) to the appropriate subdirectories.</string>
         </rect>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>folder.png</normalon>
+        </iconset>
        </property>
       </widget>
       <widget class="QLabel" name="label_8">
@@ -533,7 +546,11 @@ four for each!) to the appropriate subdirectories.</string>
        </rect>
       </property>
       <property name="text">
-       <string>...</string>
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>folder.png</normaloff>folder.png</iconset>
       </property>
      </widget>
      <widget class="QLabel" name="label_16">
@@ -653,7 +670,7 @@ available in 3. </string>
         <x>10</x>
         <y>160</y>
         <width>481</width>
-        <height>141</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="title">
@@ -694,7 +711,7 @@ available in 3. </string>
         <string>Min. longitude</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_12">
@@ -742,7 +759,7 @@ available in 3. </string>
         <string>Max. longitude</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_14">
@@ -799,7 +816,7 @@ available in 3. </string>
          <x>130</x>
          <y>20</y>
          <width>21</width>
-         <height>111</height>
+         <height>141</height>
         </rect>
        </property>
        <property name="orientation">
@@ -933,6 +950,44 @@ available in 3. </string>
        <property name="text">
         <string>Airport ICAO</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_26">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Max. rwy slope</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_21">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>140</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
       </widget>
      </widget>
      <widget class="QLineEdit" name="lineEdit_20">
@@ -987,7 +1042,11 @@ available in 3. </string>
        </rect>
       </property>
       <property name="text">
-       <string>...</string>
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>folder.png</normaloff>folder.png</iconset>
       </property>
      </widget>
      <widget class="QLabel" name="label">
@@ -1003,8 +1062,8 @@ available in 3. </string>
        <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with FlightGear 
 ($FG_ROOT/Airports/apt.dat.gz). This later file must be unpacked before use!
 
-Leaving airport ICAO blank, will generate all airports in the .dat file. This will take extremely long, 
-when FlightGear's apt.dat is used!</string>
+Leaving the extra options blank, will generate all airports in the .dat file. This will take extremely
+long, when FlightGear's apt.dat is used!</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1285,7 +1344,7 @@ button on the bottom. Double clicking an item will remove it from the lists.</st
        <rect>
         <x>300</x>
         <y>330</y>
-        <width>141</width>
+        <width>151</width>
         <height>22</height>
        </rect>
       </property>
@@ -1563,16 +1622,23 @@ button on the bottom. Double clicking an item will remove it from the lists.</st
       </item>
      </widget>
      <widget class="QPushButton" name="pushButton_17">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>460</x>
         <y>330</y>
-        <width>41</width>
+        <width>31</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
-       <string>Add</string>
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>add2.png</normaloff>add2.png</iconset>
       </property>
      </widget>
      <widget class="QLabel" name="label_46">
@@ -2053,6 +2119,10 @@ and calculate the center, or use the lower
        <property name="text">
         <string>Update list</string>
        </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>refresh.png</normaloff>refresh.png</iconset>
+       </property>
       </widget>
       <widget class="QLabel" name="label_45">
        <property name="geometry">
@@ -2101,6 +2171,9 @@ selected to generate visible scenery.</string>
      </rect>
     </property>
    </widget>
+   <zorder>tabWidget</zorder>
+   <zorder>textBrowser</zorder>
+   <zorder>progressBar</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

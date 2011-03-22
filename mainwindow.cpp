@@ -22,7 +22,7 @@
 QString airportFile;
 QString elevationDirectory;
 QString selectedMaterials;
-QString output;
+QString output = "";
 
 QString fgfsDirectory;
 QString terragearDirectory;
@@ -34,7 +34,6 @@ QString workDirectory;
 
 // save variables for future sessions
 QSettings settings("TerraGear", "TerraGearGUI");
-
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -75,37 +74,31 @@ void MainWindow::on_pushButton_clicked()
     ui->lineEdit_20->setText(airportFile);
 }
 
+// run genapts
 void MainWindow::on_pushButton_5_clicked()
 {
-    QString airportId = ui->lineEdit_18->text();
-    QString startAptId = ui->lineEdit_19->text();
-    QString argumentAirportId = "";
-
-    QString arguments = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
+    // construct genapts commandline
+    QString airportId   = ui->lineEdit_18->text();
+    QString startAptId  = ui->lineEdit_19->text();
+    QString arguments   = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
     if (airportId > 0){
         arguments += "--airport="+airportId+" ";
     }
     if (startAptId > 0){
         arguments += "--start-id="+startAptId+" ";
     }
-    QMessageBox::about(this, tr("Command line"),
-                       arguments);
+    QMessageBox::about(this, tr("Command line"),arguments);
     QProcess proc;
     proc.start(arguments, QIODevice::ReadWrite);
 
-    // run command
+    // run genapts command
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    QString output = proc.readAllStandardOutput();
+    output += proc.readAllStandardOutput()+"\n\n";
     ui->textBrowser->setText(output);
-
 }
 
-void MainWindow::on_lineEdit_20_editingFinished()
-{
-    airportFile = ui->lineEdit_20->text();
-}
-
+// download shapefiles
 void MainWindow::on_pushButton_2_clicked()
 {
     QString east    = ui->lineEdit_5->text();
@@ -138,12 +131,11 @@ void MainWindow::on_pushButton_2_clicked()
     ui->label_10->setPalette(q);
     ui->label_11->setPalette(q);
 
-    // set boundarie on FGFS construct and genapts pages
+    // set boundaries on FGFS construct and genapts pages
     ui->lineEdit_27->setText(west);
     ui->lineEdit_28->setText(east);
     ui->lineEdit_29->setText(north);
     ui->lineEdit_30->setText(south);
-
     ui->lineEdit_12->setText(west);
     ui->lineEdit_14->setText(east);
     ui->lineEdit_15->setText(north);
@@ -157,9 +149,7 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.2"),
-                       tr("©2010-2011 Gijs de Rooy for FlightGear\n" \
-                          "GNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.2"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 void MainWindow::on_wiki_triggered()
@@ -187,9 +177,9 @@ void MainWindow::on_pushButton_7_clicked()
 
 }
 
+// update shapefiles list for ogr-decode
 void MainWindow::on_pushButton_12_clicked()
 {
-
     ui->listWidget->clear();
     QDir dir(dataDirectory);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -202,6 +192,7 @@ void MainWindow::on_pushButton_12_clicked()
     }
 }
 
+// update terraintypes list for fgfs-construct
 void MainWindow::on_pushButton_15_clicked()
 {
     ui->listWidget_2->clear();
@@ -216,6 +207,7 @@ void MainWindow::on_pushButton_15_clicked()
     }
 }
 
+// run fgfs-construct
 void MainWindow::on_pushButton_13_clicked()
 {
     QString lat = ui->lineEdit_31->text();
@@ -224,12 +216,14 @@ void MainWindow::on_pushButton_13_clicked()
     QString y = ui->lineEdit_34->text();
     QString selectedMaterials;
 
+    // create string with selected terraintypes
     for (int i = 0; i < ui->listWidget_2->count(); ++i){
         if (ui->listWidget_2->item(i)->isSelected() == 1){
             selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
         }
     }
 
+    // construct fgfs-construct commandline
     QString arguments = terragearDirectory+"/fgfs-construct.exe ";
     arguments += "--work-dir="+workDirectory+" ";
     arguments += "--output-dir="+outpDirectory+"/Terrain ";
@@ -245,8 +239,9 @@ void MainWindow::on_pushButton_13_clicked()
         arguments += "--ignore-landmass ";
     }
     arguments += selectedMaterials;
-    QMessageBox::about(this, tr("Command line"),
-                       arguments);
+
+    // display commandline
+    QMessageBox::about(this, tr("Command line"),arguments);
 
     // output commandline to data.txt
     if (ui->checkBox_log->isChecked()){
@@ -268,10 +263,11 @@ void MainWindow::on_pushButton_13_clicked()
     // wait for process to finish, before allowing the next action
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    output = proc.readAllStandardOutput();
+    output += proc.readAllStandardOutput()+"\n\n";
     ui->textBrowser->setText(output);
 }
 
+// run hgt-chop
 void MainWindow::on_pushButton_11_clicked()
 {
     QDir dir(elevationDirectory);
@@ -290,20 +286,20 @@ void MainWindow::on_pushButton_11_clicked()
         // run hgtchop command
         proc.waitForReadyRead();
         proc.QProcess::waitForFinished();
-        output += proc.readAllStandardOutput();
+        output += proc.readAllStandardOutput()+"\n\n";
         ui->textBrowser->setText(output);
 
-        // run terrafit command
-
+        // generate and run terrafit command
         QString argumentsTerrafit = terragearDirectory+"/terrafit.exe "+workDirectory+"/SRTM-30";
 
         QProcess procTerrafit;
         procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
         procTerrafit.waitForReadyRead();
         procTerrafit.QProcess::waitForFinished();
-        output += procTerrafit.readAllStandardOutput();
+        output += procTerrafit.readAllStandardOutput()+"\n\n";
         ui->textBrowser->setText(output);
 
+        // save output to log
         if (ui->checkBox_log->isChecked()){
             QString file        = projDirectory+"/data.txt";
             QDateTime datetime  = QDateTime::currentDateTime();
@@ -336,6 +332,7 @@ void MainWindow::on_pushButton_11_clicked()
     }
 }
 
+// calculate scenery area center and radii
 void MainWindow::on_pushButton_14_clicked()
 {
     QString east    = ui->lineEdit_28->text();
@@ -376,9 +373,9 @@ void MainWindow::on_pushButton_14_clicked()
     ui->label_36->setPalette(p);
     ui->label_37->setPalette(p);
     ui->label_38->setPalette(p);
-
 }
 
+// run ogr-decode
 void MainWindow::on_pushButton_16_clicked()
 {
     // check whether both lists have equal length
@@ -387,6 +384,8 @@ void MainWindow::on_pushButton_16_clicked()
 
     if (shapefilesLength == materialsLength)
     {
+
+        // construct ogr-decode command, for each single shapefile
         for (int i = 0; i < shapefilesLength; ++i)
         {
             QString material    = ui->listWidget->item(i)->text();
@@ -416,10 +415,10 @@ void MainWindow::on_pushButton_16_clicked()
             // run command
             proc.waitForReadyRead();
             proc.QProcess::waitForFinished();
-            output = proc.readAllStandardOutput();
+            output += proc.readAllStandardOutput();
             ui->textBrowser->setText(output);
 
-            // output log
+            // save commandline to log
             if (ui->checkBox_log->isChecked()){
                 QString file        = projDirectory+"/data.txt";
                 QDateTime datetime  = QDateTime::currentDateTime();
@@ -442,6 +441,7 @@ void MainWindow::on_pushButton_16_clicked()
     }
 }
 
+// add material
 void MainWindow::on_pushButton_17_clicked()
 {
     // check to make sure there is an equal number of materials and shapefiles
@@ -454,15 +454,19 @@ void MainWindow::on_pushButton_17_clicked()
     }
 }
 
+// delete material
 void MainWindow::on_listWidget_3_doubleClicked(QModelIndex index)
 {
     delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
 }
 
+// delete shapefile
 void MainWindow::on_listWidget_doubleClicked(QModelIndex index)
 {
     int shapefilesLength    = ui->listWidget->count();
     int materialsLength     = ui->listWidget_3->count();
+
+    // check if a material should be deleted
     if (shapefilesLength <= materialsLength)
     {
         delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
@@ -470,14 +474,15 @@ void MainWindow::on_listWidget_doubleClicked(QModelIndex index)
     delete ui->listWidget->takeItem(ui->listWidget->currentRow());
 }
 
+// download elevation data
 void MainWindow::on_pushButton_6_clicked()
 {
     QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
 }
 
+// update elevation download range
 void MainWindow::on_pushButton_8_clicked()
 {
-
     int eastInt     = ui->lineEdit_5->text().toInt();
     int northInt    = ui->lineEdit_7->text().toInt();
     int southInt    = ui->lineEdit_8->text().toInt();
