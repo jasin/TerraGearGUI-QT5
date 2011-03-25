@@ -26,7 +26,6 @@ QString output = "";
 
 QString fgfsDirectory;
 QString terragearDirectory;
-
 QString projDirectory;
 QString dataDirectory;
 QString outpDirectory;
@@ -57,6 +56,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// select elevation directory
 void MainWindow::on_pushButton_3_clicked()
 {
     elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."));
@@ -147,16 +147,19 @@ void MainWindow::on_actionQuit_triggered()
     MainWindow::close();
 }
 
+// show about dialog
 void MainWindow::on_about_triggered()
 {
     QMessageBox::about(this, tr("TerraGUI v0.2"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
+// show wiki article in a browser
 void MainWindow::on_wiki_triggered()
 {
     QDesktopServices::openUrl(QUrl(tr("http://wiki.flightgear.org/index.php/TerraGear_GUI")));
 }
 
+// select TerraGear directory
 void MainWindow::on_pushButton_9_clicked()
 {
     terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode.exe, genapts.exe etc. live."));
@@ -164,6 +167,7 @@ void MainWindow::on_pushButton_9_clicked()
     settings.setValue("paths/terragear", terragearDirectory);
 }
 
+// select project directory
 void MainWindow::on_pushButton_7_clicked()
 {
     projDirectory = QFileDialog::getExistingDirectory(this,tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
@@ -481,7 +485,7 @@ void MainWindow::on_pushButton_6_clicked()
 }
 
 // update elevation download range
-void MainWindow::on_pushButton_8_clicked()
+void MainWindow::updateElevationRange()
 {
     int eastInt     = ui->lineEdit_5->text().toInt();
     int northInt    = ui->lineEdit_7->text().toInt();
@@ -533,4 +537,49 @@ void MainWindow::on_pushButton_8_clicked()
 
     ui->lineEdit_9->setText(minElev);
     ui->lineEdit_10->setText(maxElev);
+}
+
+// move shapefiles to "private" directories
+void MainWindow::on_pushButton_4_clicked()
+{
+    QDir dir(dataDirectory);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fInfo = list.at(i);
+        QString fPath = fInfo.absolutePath();
+        QString fFilePath = fInfo.absoluteFilePath();
+        QString fFileName1 = fInfo.fileName();
+        QString fFileName2 = fInfo.fileName();
+
+        // move only shapefiles
+        if (fInfo.suffix() == "dbf" or fInfo.suffix() == "prj" or fInfo.suffix() == "shp" or fInfo.suffix() == "shx"){
+            fFileName1.chop(4);     // remove fileformat from name
+            QFile file (fFilePath);
+            QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
+            dir.mkpath(fPath+"/"+fFileName1);
+            dir.rename(fFilePath, fPath_ren);
+        }
+    }
+}
+
+void MainWindow::on_lineEdit_5_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_6_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_7_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_8_editingFinished()
+{
+    updateElevationRange();
 }
