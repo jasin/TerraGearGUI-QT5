@@ -459,13 +459,13 @@ void MainWindow::on_pushButton_17_clicked()
 }
 
 // delete material
-void MainWindow::on_listWidget_3_doubleClicked(QModelIndex index)
+void MainWindow::on_listWidget_3_doubleClicked()
 {
     delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
 }
 
 // delete shapefile
-void MainWindow::on_listWidget_doubleClicked(QModelIndex index)
+void MainWindow::on_listWidget_doubleClicked()
 {
     int shapefilesLength    = ui->listWidget->count();
     int materialsLength     = ui->listWidget_3->count();

@@ -25,6 +25,11 @@
     <height>600</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>Lucida Sans</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -84,11 +89,17 @@
       </disabled>
      </palette>
     </property>
+    <property name="font">
+     <font>
+      <family>Lucida Sans</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
     <property name="autoFillBackground">
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -115,6 +126,12 @@
         <height>301</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Lucida Sans</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Download data</string>
       </property>
@@ -127,10 +144,16 @@
          <height>41</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are in
-degrees. Click the button to auto-download shapefiles for that area. It will also open a link to
-download elevation data (SRTM).</string>
+        <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are
+indegrees. Click the button to auto-download shapefiles for that area. It will also open
+a link to download elevation data (SRTM).</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -145,6 +168,12 @@ download elevation data (SRTM).</string>
          <height>23</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Download shapefiles</string>
        </property>
@@ -157,6 +186,12 @@ download elevation data (SRTM).</string>
          <width>41</width>
          <height>21</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Max. lat</string>
@@ -174,6 +209,12 @@ download elevation data (SRTM).</string>
          <height>21</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Min. lon</string>
        </property>
@@ -190,6 +231,12 @@ download elevation data (SRTM).</string>
          <height>20</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="dragEnabled">
         <bool>false</bool>
        </property>
@@ -202,6 +249,12 @@ download elevation data (SRTM).</string>
          <width>41</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string/>
@@ -216,6 +269,12 @@ download elevation data (SRTM).</string>
          <height>20</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
       </widget>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
@@ -225,6 +284,12 @@ download elevation data (SRTM).</string>
          <width>41</width>
          <height>21</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Min. lat</string>
@@ -242,6 +307,12 @@ download elevation data (SRTM).</string>
          <height>20</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -254,6 +325,12 @@ download elevation data (SRTM).</string>
          <width>41</width>
          <height>21</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Max. lon</string>
@@ -274,6 +351,12 @@ download elevation data (SRTM).</string>
          <height>20</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -290,6 +373,12 @@ download elevation data (SRTM).</string>
          <height>20</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -305,6 +394,12 @@ download elevation data (SRTM).</string>
          <width>221</width>
          <height>41</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Download all elevation files in the following
@@ -324,6 +419,12 @@ left):</string>
          <height>21</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>-</string>
        </property>
@@ -340,6 +441,12 @@ left):</string>
          <height>211</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -350,8 +457,14 @@ left):</string>
          <x>10</x>
          <y>210</y>
          <width>221</width>
-         <height>51</height>
+         <height>61</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Unpack the data to the above-set [project
@@ -366,11 +479,17 @@ directory.</string>
       <widget class="QPushButton" name="pushButton_6">
        <property name="geometry">
         <rect>
-         <x>290</x>
+         <x>280</x>
          <y>187</y>
-         <width>131</width>
+         <width>161</width>
          <height>23</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Download elevation files</string>
@@ -385,6 +504,12 @@ directory.</string>
          <height>23</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Sort shapefiles</string>
        </property>
@@ -397,6 +522,12 @@ directory.</string>
          <width>461</width>
          <height>21</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -415,6 +546,12 @@ directory.</string>
         <height>81</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Lucida Sans</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>Directory settings</string>
       </property>
@@ -426,6 +563,12 @@ directory.</string>
          <width>91</width>
          <height>21</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Project directory</string>
@@ -439,6 +582,12 @@ directory.</string>
          <width>31</width>
          <height>23</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string/>
@@ -454,11 +603,17 @@ directory.</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>110</x>
          <y>50</y>
-         <width>331</width>
+         <width>321</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_2">
@@ -467,11 +622,17 @@ directory.</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>110</x>
          <y>20</y>
-         <width>331</width>
+         <width>321</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_9">
@@ -482,6 +643,12 @@ directory.</string>
          <width>31</width>
          <height>23</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string/>
@@ -501,6 +668,12 @@ directory.</string>
          <height>21</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>TerraGear root</string>
        </property>
@@ -518,6 +691,12 @@ directory.</string>
         <height>41</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Lucida Sans</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="title">
        <string>GUI settings</string>
       </property>
@@ -529,6 +708,12 @@ directory.</string>
          <width>91</width>
          <height>17</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Create log files</string>
@@ -566,9 +751,9 @@ directory.</string>
        </rect>
       </property>
       <property name="text">
-       <string>Let us convert the elevation data to a format that we can use in FlightGear. It is important that you
-pick the right resolution. For the USA this usually means 1, while the rest of the world is widely
-available in 3.</string>
+       <string>Let us convert the elevation data to a format that we can use in FlightGear. It is important
+that you pick the right resolution. For the USA this usually means 1, while the rest of the
+world is widely available in 3.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -580,7 +765,7 @@ available in 3.</string>
         <x>10</x>
         <y>90</y>
         <width>481</width>
-        <height>101</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
@@ -590,7 +775,7 @@ available in 3.</string>
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>40</y>
+         <y>50</y>
          <width>31</width>
          <height>23</height>
         </rect>
@@ -607,7 +792,7 @@ available in 3.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>40</y>
+         <y>50</y>
          <width>91</width>
          <height>21</height>
         </rect>
@@ -619,8 +804,8 @@ available in 3.</string>
       <widget class="QComboBox" name="comboBox">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>70</y>
+         <x>110</x>
+         <y>80</y>
          <width>31</width>
          <height>22</height>
         </rect>
@@ -640,7 +825,7 @@ available in 3.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
+         <y>80</y>
          <width>71</width>
          <height>21</height>
         </rect>
@@ -652,8 +837,8 @@ available in 3.</string>
       <widget class="QLabel" name="label_17">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>70</y>
+         <x>150</x>
+         <y>80</y>
          <width>61</width>
          <height>21</height>
         </rect>
@@ -668,9 +853,9 @@ available in 3.</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>40</y>
-         <width>331</width>
+         <x>110</x>
+         <y>50</y>
+         <width>321</width>
          <height>20</height>
         </rect>
        </property>
@@ -681,11 +866,12 @@ available in 3.</string>
          <x>10</x>
          <y>10</y>
          <width>461</width>
-         <height>21</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
-        <string>Select the directory in which the HGT files are located and click the big button at the bottom.</string>
+        <string>Select the directory in which the HGT files are located and click the big button at the
+bottom.</string>
        </property>
       </widget>
      </widget>
@@ -1042,15 +1228,15 @@ available in 3.</string>
         <x>10</x>
         <y>10</y>
         <width>481</width>
-        <height>71</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="text">
-       <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with FlightGear 
-($FG_ROOT/Airports/apt.dat.gz). This later file must be unpacked before use!
+       <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with
+FlightGear ($FG_ROOT/Airports/apt.dat.gz). This later file must be unpacked before use!
 
-Leaving the extra options blank, will generate all airports in the .dat file. This will take extremely
-long, when FlightGear's apt.dat is used!</string>
+Leaving the extra options blank, will generate all airports in the .dat file. This will take
+extremely long, when FlightGear's apt.dat is used!</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1273,9 +1459,9 @@ long, when FlightGear's apt.dat is used!</string>
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>Align the shapefiles on the left with the corresponding materials on the right, by draging the
-materials around. Then click the decode button on the bottom. Double clicking an item will remove
-it from the lists.</string>
+       <string>Align the shapefiles on the left with the corresponding materials on the right, by draging
+materials around. Then click the decode button on the bottom. Double clicking an item
+will remove it from the lists.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1303,7 +1489,7 @@ it from the lists.</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>50</y>
+        <y>56</y>
         <width>231</width>
         <height>21</height>
        </rect>
@@ -1319,7 +1505,7 @@ it from the lists.</string>
       <property name="geometry">
        <rect>
         <x>260</x>
-        <y>50</y>
+        <y>56</y>
         <width>231</width>
         <height>21</height>
        </rect>
@@ -1348,7 +1534,7 @@ it from the lists.</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>70</y>
+        <y>75</y>
         <width>241</width>
         <height>251</height>
        </rect>
@@ -1364,7 +1550,7 @@ it from the lists.</string>
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>70</y>
+        <y>75</y>
         <width>241</width>
         <height>251</height>
        </rect>
@@ -2033,10 +2219,10 @@ it from the lists.</string>
        </property>
        <property name="text">
         <string>You need to know the center of your
-scenery tile. Either fill the boxes with the
-boundaries of the downloaded shapefiles
-and calculate the center, or use the lower
-(all manual) settings.</string>
+scenery tile. Either fill the boxes with
+the boundaries of the downloaded
+shapefiles and calculate the center, or use
+the lower (all manual) settings.</string>
        </property>
        <property name="scaledContents">
         <bool>false</bool>
@@ -2186,9 +2372,10 @@ and calculate the center, or use the lower
         </rect>
        </property>
        <property name="text">
-        <string>Select the terraintypes that you would like 
-to use in your scenery. To include airports, 
-AirportArea and AirportObj are required.
+        <string>Select the terraintypes that you would
+like to use in your scenery. To include 
+airports, AirportArea and AirportObj are 
+required.
 
 Note that the default material MUST be 
 selected to generate visible scenery.</string>
@@ -2221,6 +2408,12 @@ selected to generate visible scenery.</string>
       <width>481</width>
       <height>91</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lucida Sans</family>
+      <pointsize>8</pointsize>
+     </font>
     </property>
    </widget>
   </widget>

@@ -25,8 +25,8 @@ private slots:
     void on_lineEdit_7_editingFinished();
     void on_lineEdit_8_editingFinished();
 
-    void on_listWidget_doubleClicked(QModelIndex index);
-    void on_listWidget_3_doubleClicked(QModelIndex index);
+    void on_listWidget_doubleClicked();
+    void on_listWidget_3_doubleClicked();
 
     void on_actionQuit_triggered();
     void on_about_triggered();
