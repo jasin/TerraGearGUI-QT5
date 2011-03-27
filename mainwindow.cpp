@@ -56,46 +56,77 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// select elevation directory
-void MainWindow::on_pushButton_3_clicked()
-{
-    elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."));
-    ui->lineEdit_11->setText(elevationDirectory);
-}
-
 void MainWindow::on_tabWidget_selected(QString )
 {
     show();
+}
+
+// menu //
+
+// close window
+void MainWindow::on_actionQuit_triggered()
+{
+    MainWindow::close();
+}
+
+// show about dialog
+void MainWindow::on_about_triggered()
+{
+    QMessageBox::about(this, tr("TerraGUI v0.2"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+}
+
+// show wiki article in a browser
+void MainWindow::on_wiki_triggered()
+{
+    QDesktopServices::openUrl(QUrl(tr("http://wiki.flightgear.org/index.php/TerraGear_GUI")));
+}
+
+// actions //
+
+void MainWindow::on_lineEdit_5_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_6_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_7_editingFinished()
+{
+    updateElevationRange();
+}
+
+void MainWindow::on_lineEdit_8_editingFinished()
+{
+    updateElevationRange();
+}
+
+// delete shapefile
+void MainWindow::on_listWidget_doubleClicked()
+{
+    int shapefilesLength    = ui->listWidget->count();
+    int materialsLength     = ui->listWidget_3->count();
+
+    // check if a material should be deleted
+    if (shapefilesLength <= materialsLength)
+    {
+        delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
+    }
+    delete ui->listWidget->takeItem(ui->listWidget->currentRow());
+}
+
+// delete material
+void MainWindow::on_listWidget_3_doubleClicked()
+{
+    delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
 }
 
 void MainWindow::on_pushButton_clicked()
 {
     airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), "C:/Users/AS9423-ULT/Desktop/TerraGear/Airports", tr("Airport files (*.dat)"));
     ui->lineEdit_20->setText(airportFile);
-}
-
-// run genapts
-void MainWindow::on_pushButton_5_clicked()
-{
-    // construct genapts commandline
-    QString airportId   = ui->lineEdit_18->text();
-    QString startAptId  = ui->lineEdit_19->text();
-    QString arguments   = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
-    if (airportId > 0){
-        arguments += "--airport="+airportId+" ";
-    }
-    if (startAptId > 0){
-        arguments += "--start-id="+startAptId+" ";
-    }
-    QMessageBox::about(this, tr("Command line"),arguments);
-    QProcess proc;
-    proc.start(arguments, QIODevice::ReadWrite);
-
-    // run genapts command
-    proc.waitForReadyRead();
-    proc.QProcess::waitForFinished();
-    output += proc.readAllStandardOutput()+"\n\n";
-    ui->textBrowser->setText(output);
 }
 
 // download shapefiles
@@ -142,29 +173,41 @@ void MainWindow::on_pushButton_2_clicked()
     ui->lineEdit_16->setText(south);
 }
 
-void MainWindow::on_actionQuit_triggered()
+// select elevation directory
+void MainWindow::on_pushButton_3_clicked()
 {
-    MainWindow::close();
+    elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."));
+    ui->lineEdit_11->setText(elevationDirectory);
 }
 
-// show about dialog
-void MainWindow::on_about_triggered()
+// run genapts
+void MainWindow::on_pushButton_5_clicked()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.2"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    // construct genapts commandline
+    QString airportId   = ui->lineEdit_18->text();
+    QString startAptId  = ui->lineEdit_19->text();
+    QString arguments   = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
+    if (airportId > 0){
+        arguments += "--airport="+airportId+" ";
+    }
+    if (startAptId > 0){
+        arguments += "--start-id="+startAptId+" ";
+    }
+    QMessageBox::about(this, tr("Command line"),arguments);
+    QProcess proc;
+    proc.start(arguments, QIODevice::ReadWrite);
+
+    // run genapts command
+    proc.waitForReadyRead();
+    proc.QProcess::waitForFinished();
+    output += proc.readAllStandardOutput()+"\n\n";
+    ui->textBrowser->setText(output);
 }
 
-// show wiki article in a browser
-void MainWindow::on_wiki_triggered()
+// download elevation data
+void MainWindow::on_pushButton_6_clicked()
 {
-    QDesktopServices::openUrl(QUrl(tr("http://wiki.flightgear.org/index.php/TerraGear_GUI")));
-}
-
-// select TerraGear directory
-void MainWindow::on_pushButton_9_clicked()
-{
-    terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode.exe, genapts.exe etc. live."));
-    ui->lineEdit_2->setText(terragearDirectory);
-    settings.setValue("paths/terragear", terragearDirectory);
+    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
 }
 
 // select project directory
@@ -178,97 +221,14 @@ void MainWindow::on_pushButton_7_clicked()
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
-
 }
 
-// update shapefiles list for ogr-decode
-void MainWindow::on_pushButton_12_clicked()
+// select TerraGear directory
+void MainWindow::on_pushButton_9_clicked()
 {
-    ui->listWidget->clear();
-    QDir dir(dataDirectory);
-    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget);
-    }
-}
-
-// update terraintypes list for fgfs-construct
-void MainWindow::on_pushButton_15_clicked()
-{
-    ui->listWidget_2->clear();
-    QDir dir(workDirectory);
-    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
-    }
-}
-
-// run fgfs-construct
-void MainWindow::on_pushButton_13_clicked()
-{
-    QString lat = ui->lineEdit_31->text();
-    QString lon = ui->lineEdit_32->text();
-    QString x = ui->lineEdit_33->text();
-    QString y = ui->lineEdit_34->text();
-    QString selectedMaterials;
-
-    // create string with selected terraintypes
-    for (int i = 0; i < ui->listWidget_2->count(); ++i){
-        if (ui->listWidget_2->item(i)->isSelected() == 1){
-            selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
-        }
-    }
-
-    // construct fgfs-construct commandline
-    QString arguments = terragearDirectory+"/fgfs-construct.exe ";
-    arguments += "--work-dir="+workDirectory+" ";
-    arguments += "--output-dir="+outpDirectory+"/Terrain ";
-    if (ui->lineEdit_35->text() > 0){
-        arguments += "--tile-id="+ui->lineEdit_35->text();
-    }
-    arguments += "--lon="+lon+" --lat="+lat+" ";
-    arguments += "--xdist="+x+" --ydist="+y+" ";
-    if (ui->checkBox_3->isChecked()){
-        arguments += "--useUKgrid ";
-    }
-    if (ui->checkBox_4->isChecked()){
-        arguments += "--ignore-landmass ";
-    }
-    arguments += selectedMaterials;
-
-    // display commandline
-    QMessageBox::about(this, tr("Command line"),arguments);
-
-    // output commandline to data.txt
-    if (ui->checkBox_log->isChecked()){
-        QString file = projDirectory+"/data.txt";
-        QFile data(file);
-        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream out(&data);
-            out << endl;
-            out << endl;
-            out << arguments;
-        }
-    }
-
-    // start command
-    QProcess proc;
-    proc.setWorkingDirectory(terragearDirectory);
-    proc.start(arguments, QIODevice::ReadWrite);
-
-    // wait for process to finish, before allowing the next action
-    proc.waitForReadyRead();
-    proc.QProcess::waitForFinished();
-    output += proc.readAllStandardOutput()+"\n\n";
-    ui->textBrowser->setText(output);
+    terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode.exe, genapts.exe etc. live."));
+    ui->lineEdit_2->setText(terragearDirectory);
+    settings.setValue("paths/terragear", terragearDirectory);
 }
 
 // run hgt-chop
@@ -336,6 +296,103 @@ void MainWindow::on_pushButton_11_clicked()
     }
 }
 
+// update shapefiles list for ogr-decode
+void MainWindow::on_pushButton_12_clicked()
+{
+    // move shapefiles to "private" directories
+    QDir dir(dataDirectory);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fInfo = list.at(i);
+        QString fPath = fInfo.absolutePath();
+        QString fFilePath = fInfo.absoluteFilePath();
+        QString fFileName1 = fInfo.fileName();
+        QString fFileName2 = fInfo.fileName();
+
+        // move only shapefiles
+        if (fInfo.suffix() == "dbf" or fInfo.suffix() == "prj" or fInfo.suffix() == "shp" or fInfo.suffix() == "shx"){
+            fFileName1.chop(4);     // remove fileformat from name
+            QFile file (fFilePath);
+            QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
+            dir.mkpath(fPath+"/"+fFileName1);
+            dir.rename(fFilePath, fPath_ren);
+        }
+    }
+
+    // update list
+    ui->listWidget->clear();
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QFileInfoList dirList = dir.entryInfoList();
+    for (int i = 0; i < dirList.size(); ++i) {
+        QFileInfo dirInfo = dirList.at(i);
+        //QString test = qPrintable(QString("%1").arg(dirInfo.fileName()));
+        new QListWidgetItem(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))), ui->listWidget);
+    }
+}
+
+// run fgfs-construct
+void MainWindow::on_pushButton_13_clicked()
+{
+    QString lat = ui->lineEdit_31->text();
+    QString lon = ui->lineEdit_32->text();
+    QString x = ui->lineEdit_33->text();
+    QString y = ui->lineEdit_34->text();
+    QString selectedMaterials;
+
+    // create string with selected terraintypes
+    for (int i = 0; i < ui->listWidget_2->count(); ++i){
+        if (ui->listWidget_2->item(i)->isSelected() == 1){
+            selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
+        }
+    }
+
+    // construct fgfs-construct commandline
+    QString arguments = terragearDirectory+"/fgfs-construct.exe ";
+    arguments += "--work-dir="+workDirectory+" ";
+    arguments += "--output-dir="+outpDirectory+"/Terrain ";
+    if (ui->lineEdit_35->text() > 0){
+        arguments += "--tile-id="+ui->lineEdit_35->text();
+    }
+    arguments += "--lon="+lon+" --lat="+lat+" ";
+    arguments += "--xdist="+x+" --ydist="+y+" ";
+    if (ui->checkBox_3->isChecked()){
+        arguments += "--useUKgrid ";
+    }
+    if (ui->checkBox_4->isChecked()){
+        arguments += "--ignore-landmass ";
+    }
+    arguments += selectedMaterials;
+
+    // display commandline
+    QMessageBox::about(this, tr("Command line"),arguments);
+
+    // output commandline to data.txt
+    if (ui->checkBox_log->isChecked()){
+        QString file = projDirectory+"/data.txt";
+        QFile data(file);
+        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream out(&data);
+            out << endl;
+            out << endl;
+            out << arguments;
+        }
+    }
+
+    // start command
+    QProcess proc;
+    proc.setWorkingDirectory(terragearDirectory);
+    proc.start(arguments, QIODevice::ReadWrite);
+
+    // wait for process to finish, before allowing the next action
+    proc.waitForReadyRead();
+    proc.QProcess::waitForFinished();
+    output += proc.readAllStandardOutput()+"\n\n";
+    ui->textBrowser->setText(output);
+}
+
 // calculate scenery area center and radii
 void MainWindow::on_pushButton_14_clicked()
 {
@@ -377,6 +434,21 @@ void MainWindow::on_pushButton_14_clicked()
     ui->label_36->setPalette(p);
     ui->label_37->setPalette(p);
     ui->label_38->setPalette(p);
+}
+
+// update terraintypes list for fgfs-construct
+void MainWindow::on_pushButton_15_clicked()
+{
+    ui->listWidget_2->clear();
+    QDir dir(workDirectory);
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
+        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
+    }
 }
 
 // run ogr-decode
@@ -458,31 +530,7 @@ void MainWindow::on_pushButton_17_clicked()
     }
 }
 
-// delete material
-void MainWindow::on_listWidget_3_doubleClicked()
-{
-    delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
-}
-
-// delete shapefile
-void MainWindow::on_listWidget_doubleClicked()
-{
-    int shapefilesLength    = ui->listWidget->count();
-    int materialsLength     = ui->listWidget_3->count();
-
-    // check if a material should be deleted
-    if (shapefilesLength <= materialsLength)
-    {
-        delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
-    }
-    delete ui->listWidget->takeItem(ui->listWidget->currentRow());
-}
-
-// download elevation data
-void MainWindow::on_pushButton_6_clicked()
-{
-    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
-}
+// functions //
 
 // update elevation download range
 void MainWindow::updateElevationRange()
@@ -537,49 +585,4 @@ void MainWindow::updateElevationRange()
 
     ui->lineEdit_9->setText(minElev);
     ui->lineEdit_10->setText(maxElev);
-}
-
-// move shapefiles to "private" directories
-void MainWindow::on_pushButton_4_clicked()
-{
-    QDir dir(dataDirectory);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fInfo = list.at(i);
-        QString fPath = fInfo.absolutePath();
-        QString fFilePath = fInfo.absoluteFilePath();
-        QString fFileName1 = fInfo.fileName();
-        QString fFileName2 = fInfo.fileName();
-
-        // move only shapefiles
-        if (fInfo.suffix() == "dbf" or fInfo.suffix() == "prj" or fInfo.suffix() == "shp" or fInfo.suffix() == "shx"){
-            fFileName1.chop(4);     // remove fileformat from name
-            QFile file (fFilePath);
-            QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
-            dir.mkpath(fPath+"/"+fFileName1);
-            dir.rename(fFilePath, fPath_ren);
-        }
-    }
-}
-
-void MainWindow::on_lineEdit_5_editingFinished()
-{
-    updateElevationRange();
-}
-
-void MainWindow::on_lineEdit_6_editingFinished()
-{
-    updateElevationRange();
-}
-
-void MainWindow::on_lineEdit_7_editingFinished()
-{
-    updateElevationRange();
-}
-
-void MainWindow::on_lineEdit_8_editingFinished()
-{
-    updateElevationRange();
 }

@@ -99,7 +99,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -123,7 +123,7 @@
         <x>10</x>
         <y>100</y>
         <width>481</width>
-        <height>301</height>
+        <height>271</height>
        </rect>
       </property>
       <property name="font">
@@ -152,8 +152,8 @@
        </property>
        <property name="text">
         <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are
-indegrees. Click the button to auto-download shapefiles for that area. It will also open
-a link to download elevation data (SRTM).</string>
+in degrees. Click the button to auto-download shapefiles for that area. It will also
+open a link to download elevation data (SRTM).</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -163,7 +163,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>60</x>
-         <y>180</y>
+         <y>200</y>
          <width>121</width>
          <height>23</height>
         </rect>
@@ -182,7 +182,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>77</y>
+         <y>97</y>
          <width>41</width>
          <height>21</height>
         </rect>
@@ -204,7 +204,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>117</y>
+         <y>137</y>
          <width>41</width>
          <height>21</height>
         </rect>
@@ -226,7 +226,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>140</x>
-         <y>117</y>
+         <y>137</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -245,7 +245,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>60</x>
-         <y>117</y>
+         <y>137</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -264,7 +264,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>97</y>
+         <y>117</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -280,7 +280,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>157</y>
+         <y>177</y>
          <width>41</width>
          <height>21</height>
         </rect>
@@ -302,7 +302,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>137</y>
+         <y>157</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -320,9 +320,9 @@ a link to download elevation data (SRTM).</string>
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
-         <x>190</x>
-         <y>117</y>
-         <width>41</width>
+         <x>180</x>
+         <y>137</y>
+         <width>51</width>
          <height>21</height>
         </rect>
        </property>
@@ -346,7 +346,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>137</y>
+         <y>157</y>
          <width>71</width>
          <height>20</height>
         </rect>
@@ -368,7 +368,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>370</x>
-         <y>137</y>
+         <y>157</y>
          <width>71</width>
          <height>20</height>
         </rect>
@@ -390,7 +390,7 @@ a link to download elevation data (SRTM).</string>
        <property name="geometry">
         <rect>
          <x>250</x>
-         <y>80</y>
+         <y>100</y>
          <width>221</width>
          <height>41</height>
         </rect>
@@ -402,9 +402,9 @@ a link to download elevation data (SRTM).</string>
         </font>
        </property>
        <property name="text">
-        <string>Download all elevation files in the following
-range (based on boundaries as set on the
-left):</string>
+        <string>Download all elevation files in the
+following range (based on boundaries as
+set on the left):</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_15">
@@ -436,9 +436,9 @@ left):</string>
        <property name="geometry">
         <rect>
          <x>230</x>
-         <y>80</y>
+         <y>100</y>
          <width>21</width>
-         <height>211</height>
+         <height>161</height>
         </rect>
        </property>
        <property name="font">
@@ -455,9 +455,9 @@ left):</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>210</y>
+         <y>230</y>
          <width>221</width>
-         <height>61</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
@@ -467,10 +467,8 @@ left):</string>
         </font>
        </property>
        <property name="text">
-        <string>Unpack the data to the above-set [project
-directory]/data and click the &quot;Sort shapefiles&quot;
-button, to move every shapefile in a &quot;private&quot;
-directory.</string>
+        <string>Unpack the download to the above-set
+[project directory]/data.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -480,7 +478,7 @@ directory.</string>
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>187</y>
+         <y>200</y>
          <width>161</width>
          <height>23</height>
         </rect>
@@ -495,32 +493,13 @@ directory.</string>
         <string>Download elevation files</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>270</y>
-         <width>121</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Lucida Sans</family>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Sort shapefiles</string>
-       </property>
-      </widget>
       <widget class="Line" name="line">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>62</y>
+         <y>70</y>
          <width>461</width>
-         <height>21</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
