@@ -44,8 +44,18 @@ MainWindow::MainWindow(QWidget *parent) :
     // restore variables from previous session
     terragearDirectory = settings.value("paths/terragear").toString();
     projDirectory = settings.value("paths/project").toString();
+
     ui->lineEdit_2->setText(terragearDirectory);
     ui->lineEdit_4->setText(projDirectory);
+    ui->lineEdit_8->setText(settings.value("boundaries/south").toString());
+    ui->lineEdit_7->setText(settings.value("boundaries/north").toString());
+    ui->lineEdit_6->setText(settings.value("boundaries/west").toString());
+    ui->lineEdit_5->setText(settings.value("boundaries/east").toString());
+    ui->lineEdit_30->setText(settings.value("boundaries/south").toString());
+    ui->lineEdit_29->setText(settings.value("boundaries/north").toString());
+    ui->lineEdit_27->setText(settings.value("boundaries/west").toString());
+    ui->lineEdit_28->setText(settings.value("boundaries/east").toString());
+
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
@@ -86,21 +96,25 @@ void MainWindow::on_wiki_triggered()
 void MainWindow::on_lineEdit_5_editingFinished()
 {
     updateElevationRange();
+    settings.setValue("boundaries/east", ui->lineEdit_5->text());
 }
 
 void MainWindow::on_lineEdit_6_editingFinished()
 {
     updateElevationRange();
+    settings.setValue("boundaries/west", ui->lineEdit_6->text());
 }
 
 void MainWindow::on_lineEdit_7_editingFinished()
 {
     updateElevationRange();
+    settings.setValue("boundaries/north", ui->lineEdit_7->text());
 }
 
 void MainWindow::on_lineEdit_8_editingFinished()
 {
     updateElevationRange();
+    settings.setValue("boundaries/south", ui->lineEdit_8->text());
 }
 
 // delete shapefile
@@ -121,6 +135,14 @@ void MainWindow::on_listWidget_doubleClicked()
 void MainWindow::on_listWidget_3_doubleClicked()
 {
     delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
+}
+
+// edit material name
+void MainWindow::on_listWidget_3_itemClicked(QListWidgetItem* item)
+{
+    QListWidgetItem * lwI = ui->listWidget_3->currentItem();
+    lwI->setFlags(lwI->flags() | Qt::ItemIsEditable);
+    ui->listWidget_3->editItem(lwI);
 }
 
 void MainWindow::on_pushButton_clicked()

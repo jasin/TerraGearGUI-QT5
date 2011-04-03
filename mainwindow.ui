@@ -684,7 +684,7 @@ set on the left):</string>
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>91</width>
+         <width>111</width>
          <height>17</height>
         </rect>
        </property>
@@ -772,7 +772,7 @@ world is widely available in 3.</string>
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>91</width>
+         <width>111</width>
          <height>21</height>
         </rect>
        </property>
@@ -783,7 +783,7 @@ world is widely available in 3.</string>
       <widget class="QComboBox" name="comboBox">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>120</x>
          <y>80</y>
          <width>31</width>
          <height>22</height>
@@ -816,7 +816,7 @@ world is widely available in 3.</string>
       <widget class="QLabel" name="label_17">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>160</x>
          <y>80</y>
          <width>61</width>
          <height>21</height>
@@ -832,9 +832,9 @@ world is widely available in 3.</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>120</x>
          <y>50</y>
-         <width>321</width>
+         <width>311</width>
          <height>20</height>
         </rect>
        </property>
@@ -1378,15 +1378,15 @@ extremely long, when FlightGear's apt.dat is used!</string>
         <rect>
          <x>210</x>
          <y>20</y>
-         <width>111</width>
-         <height>17</height>
+         <width>91</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Continue on errors</string>
+        <string>Ignore errors</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -1398,9 +1398,9 @@ extremely long, when FlightGear's apt.dat is used!</string>
        </property>
        <property name="geometry">
         <rect>
-         <x>330</x>
+         <x>320</x>
          <y>20</y>
-         <width>111</width>
+         <width>121</width>
          <height>21</height>
         </rect>
        </property>
@@ -1440,7 +1440,7 @@ extremely long, when FlightGear's apt.dat is used!</string>
       <property name="text">
        <string>Align the shapefiles on the left with the corresponding materials on the right, by draging
 materials around. Then click the decode button on the bottom. Double clicking an item
-will remove it from the lists.</string>
+will remove it from the lists, while a single click allows you to edit an item.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1537,6 +1537,9 @@ will remove it from the lists.</string>
       <property name="frameShape">
        <enum>QFrame::VLine</enum>
       </property>
+      <property name="dragEnabled">
+       <bool>false</bool>
+      </property>
       <property name="dragDropOverwriteMode">
        <bool>false</bool>
       </property>
@@ -1551,6 +1554,9 @@ will remove it from the lists.</string>
         <width>0</width>
         <height>0</height>
        </size>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::ListMode</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -1569,7 +1575,7 @@ will remove it from the lists.</string>
        <bool>false</bool>
       </property>
       <property name="currentIndex">
-       <number>10</number>
+       <number>0</number>
       </property>
       <property name="maxVisibleItems">
        <number>20</number>
@@ -1580,6 +1586,11 @@ will remove it from the lists.</string>
       <item>
        <property name="text">
         <string>Airport</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Asphalt</string>
        </property>
       </item>
       <item>
@@ -1634,6 +1645,11 @@ will remove it from the lists.</string>
       </item>
       <item>
        <property name="text">
+        <string>Dirt</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>DryCropPastureCover</string>
        </property>
       </item>
@@ -1645,6 +1661,11 @@ will remove it from the lists.</string>
       <item>
        <property name="text">
         <string>EvergreenBroadCover</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>EvergreenForest</string>
        </property>
       </item>
       <item>
@@ -1669,7 +1690,17 @@ will remove it from the lists.</string>
       </item>
       <item>
        <property name="text">
+        <string>GolfCourse</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>GrassCover</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GrassLand</string>
        </property>
       </item>
       <item>
@@ -1689,6 +1720,11 @@ will remove it from the lists.</string>
       </item>
       <item>
        <property name="text">
+        <string>Industrial</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>IntLake</string>
        </property>
       </item>
@@ -1700,6 +1736,11 @@ will remove it from the lists.</string>
       <item>
        <property name="text">
         <string>IntStream</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>IrrCrop</string>
        </property>
       </item>
       <item>
@@ -1779,12 +1820,22 @@ will remove it from the lists.</string>
       </item>
       <item>
        <property name="text">
+        <string>Rock</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Sand</string>
        </property>
       </item>
       <item>
        <property name="text">
         <string>SavannaCover</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ScrubCover</string>
        </property>
       </item>
       <item>
@@ -2111,7 +2162,7 @@ will remove it from the lists.</string>
         <rect>
          <x>170</x>
          <y>190</y>
-         <width>51</width>
+         <width>61</width>
          <height>21</height>
         </rect>
        </property>

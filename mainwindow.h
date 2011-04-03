@@ -20,6 +20,7 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
+    void on_listWidget_3_itemClicked(QListWidgetItem* item);
     void on_lineEdit_5_editingFinished();
     void on_lineEdit_6_editingFinished();
     void on_lineEdit_7_editingFinished();
