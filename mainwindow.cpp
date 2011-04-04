@@ -18,13 +18,14 @@
 #include <QSettings>
 #include <QTextStream>
 #include <QUrl>
+#include <QXmlStreamReader>
 
 QString airportFile;
 QString elevationDirectory;
 QString selectedMaterials;
 QString output = "";
 
-QString fgfsDirectory;
+QString fgRoot;
 QString terragearDirectory;
 QString projDirectory;
 QString dataDirectory;
@@ -42,11 +43,17 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle( tr("TerraGear GUI") );
 
     // restore variables from previous session
-    terragearDirectory = settings.value("paths/terragear").toString();
-    projDirectory = settings.value("paths/project").toString();
+    terragearDirectory  = settings.value("paths/terragear").toString();
+    projDirectory       = settings.value("paths/project").toString();
+    fgRoot              = settings.value("paths/fg-root").toString();
+
+    if (fgRoot != 0){
+        updateMaterials();
+    }
 
     ui->lineEdit_2->setText(terragearDirectory);
     ui->lineEdit_4->setText(projDirectory);
+    ui->lineEdit_22->setText(fgRoot);
     ui->lineEdit_8->setText(settings.value("boundaries/south").toString());
     ui->lineEdit_7->setText(settings.value("boundaries/north").toString());
     ui->lineEdit_6->setText(settings.value("boundaries/west").toString());
@@ -82,7 +89,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.2"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.3"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -243,6 +250,16 @@ void MainWindow::on_pushButton_7_clicked()
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
+}
+
+// select FlightGear root
+void MainWindow::on_pushButton_8_clicked()
+{
+    fgRoot = QFileDialog::getExistingDirectory(this,tr("Select the FlightGear root (data directory)."));
+    ui->lineEdit_22->setText(fgRoot);
+    settings.setValue("paths/fg-root", fgRoot);
+
+    updateMaterials();
 }
 
 // select TerraGear directory
@@ -607,4 +624,40 @@ void MainWindow::updateElevationRange()
 
     ui->lineEdit_9->setText(minElev);
     ui->lineEdit_10->setText(maxElev);
+}
+
+// populate material list with materials from FG's materials.xml
+void MainWindow::updateMaterials()
+{
+    QFile materialfile(fgRoot+"/materials.xml");
+    if (materialfile.exists() == true) {
+
+        if (materialfile.open(QIODevice::ReadOnly)) {
+
+            QXmlStreamReader materialreader(&materialfile);
+            QXmlStreamReader::TokenType tokenType;
+
+            QStringList materialList;
+            QString material;
+            while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
+                if (materialreader.name() == "material") {
+                    while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
+                        if (materialreader.name() == "name") {
+                            material = materialreader.readElementText();
+                            materialList.append(material);
+                        }
+                        // ignore sign materials
+                        if (materialreader.name() == "glyph") {
+                            materialreader.skipCurrentElement();
+                        }
+                    }
+                }
+            }
+            materialfile.close();
+
+            materialList.sort();
+            ui->comboBox_2->clear();
+            ui->comboBox_2->addItems(materialList);
+        }
+    }
 }

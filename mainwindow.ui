@@ -99,7 +99,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -121,7 +121,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>100</y>
+        <y>130</y>
         <width>481</width>
         <height>271</height>
        </rect>
@@ -522,7 +522,7 @@ set on the left):</string>
         <x>10</x>
         <y>10</y>
         <width>481</width>
-        <height>81</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="font">
@@ -655,6 +655,67 @@ set on the left):</string>
        </property>
        <property name="text">
         <string>TerraGear root</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_27">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>91</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>FlightGear root</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_8">
+       <property name="geometry">
+        <rect>
+         <x>440</x>
+         <y>80</y>
+         <width>31</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>folder.png</normaloff>folder.png</iconset>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_22">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>80</y>
+         <width>321</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Lucida Sans</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
       </widget>
      </widget>
@@ -1537,9 +1598,6 @@ will remove it from the lists, while a single click allows you to edit an item.<
       <property name="frameShape">
        <enum>QFrame::VLine</enum>
       </property>
-      <property name="dragEnabled">
-       <bool>false</bool>
-      </property>
       <property name="dragDropOverwriteMode">
        <bool>false</bool>
       </property>
@@ -1570,6 +1628,9 @@ will remove it from the lists, while a single click allows you to edit an item.<
         <width>151</width>
         <height>22</height>
        </rect>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="editable">
        <bool>false</bool>
