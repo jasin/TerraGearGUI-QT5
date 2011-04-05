@@ -178,6 +178,20 @@ void MainWindow::on_pushButton_2_clicked()
 
         QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
         QDesktopServices::openUrl(mapserverUrl);
+        // save output to log
+        if (ui->checkBox_log->isChecked()){
+            QDateTime datetime  = QDateTime::currentDateTime();
+            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+            QFile data(projDirectory+"/data.txt");
+            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream out(&data);
+                out << endl;
+                out << sDateTime;
+                out << "  -  ";
+                out << mapserverUrl;
+            }
+        }
     }
     else{
         QMessageBox::about(this,tr("Error"),
@@ -215,14 +229,29 @@ void MainWindow::on_pushButton_5_clicked()
     // construct genapts commandline
     QString airportId   = ui->lineEdit_18->text();
     QString startAptId  = ui->lineEdit_19->text();
-    QString arguments   = terragearDirectory+"/genapts.exe --input="+airportFile+" --work="+workDirectory+" ";
+    QString arguments   = terragearDirectory+"/genapts --input="+airportFile+" --work="+workDirectory+" ";
     if (airportId > 0){
         arguments += "--airport="+airportId+" ";
     }
     if (startAptId > 0){
         arguments += "--start-id="+startAptId+" ";
     }
-    QMessageBox::about(this, tr("Command line"),arguments);
+
+    // save output to log
+    if (ui->checkBox_log->isChecked()){
+        QDateTime datetime  = QDateTime::currentDateTime();
+        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+        QFile data(projDirectory+"/data.txt");
+        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream out(&data);
+            out << endl;
+            out << sDateTime;
+            out << "  -  ";
+            out << arguments;
+        }
+    }
+
     QProcess proc;
     proc.start(arguments, QIODevice::ReadWrite);
 
@@ -265,7 +294,7 @@ void MainWindow::on_pushButton_8_clicked()
 // select TerraGear directory
 void MainWindow::on_pushButton_9_clicked()
 {
-    terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode.exe, genapts.exe etc. live."));
+    terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."));
     ui->lineEdit_2->setText(terragearDirectory);
     settings.setValue("paths/terragear", terragearDirectory);
 }
@@ -281,7 +310,7 @@ void MainWindow::on_pushButton_11_clicked()
         QFileInfo fileInfo = list.at(i);
         QString elevationFile = QString("%1").arg(fileInfo.fileName());
         QString elevationRes = ui->comboBox->currentText();
-        QString arguments = terragearDirectory+"/hgtchop.exe "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
+        QString arguments = terragearDirectory+"/hgtchop "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
 
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
@@ -293,7 +322,7 @@ void MainWindow::on_pushButton_11_clicked()
         ui->textBrowser->setText(output);
 
         // generate and run terrafit command
-        QString argumentsTerrafit = terragearDirectory+"/terrafit.exe "+workDirectory+"/SRTM-30";
+        QString argumentsTerrafit = terragearDirectory+"/terrafit "+workDirectory+"/SRTM-30";
 
         QProcess procTerrafit;
         procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
@@ -304,19 +333,16 @@ void MainWindow::on_pushButton_11_clicked()
 
         // save output to log
         if (ui->checkBox_log->isChecked()){
-            QString file        = projDirectory+"/data.txt";
             QDateTime datetime  = QDateTime::currentDateTime();
             QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-            QFile data(file);
+            QFile data(projDirectory+"/data.txt");
             if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                 QTextStream out(&data);
-                out << endl;
                 out << endl;
                 out << sDateTime;
                 out << "  -  ";
                 out << arguments;
-                out << endl;
                 out << endl;
                 out << sDateTime;
                 out << "  -  ";
@@ -389,7 +415,7 @@ void MainWindow::on_pushButton_13_clicked()
     }
 
     // construct fgfs-construct commandline
-    QString arguments = terragearDirectory+"/fgfs-construct.exe ";
+    QString arguments = terragearDirectory+"/fgfs-construct ";
     arguments += "--work-dir="+workDirectory+" ";
     arguments += "--output-dir="+outpDirectory+"/Terrain ";
     if (ui->lineEdit_35->text() > 0){
@@ -405,17 +431,17 @@ void MainWindow::on_pushButton_13_clicked()
     }
     arguments += selectedMaterials;
 
-    // display commandline
-    QMessageBox::about(this, tr("Command line"),arguments);
-
     // output commandline to data.txt
     if (ui->checkBox_log->isChecked()){
-        QString file = projDirectory+"/data.txt";
-        QFile data(file);
+        QDateTime datetime  = QDateTime::currentDateTime();
+        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+        QFile data(projDirectory+"/data.txt");
         if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream out(&data);
             out << endl;
-            out << endl;
+            out << sDateTime;
+            out << "  -  ";
             out << arguments;
         }
     }
@@ -505,7 +531,7 @@ void MainWindow::on_pushButton_16_clicked()
         {
             QString material    = ui->listWidget->item(i)->text();
             QString shapefile   = ui->listWidget_3->item(i)->text();
-            QString arguments   = terragearDirectory+"/ogr-decode.exe ";
+            QString arguments   = terragearDirectory+"/ogr-decode ";
             if (ui->lineEdit_25->text() == 0){
                 arguments += "--line-width 10 ";
             }
@@ -535,14 +561,12 @@ void MainWindow::on_pushButton_16_clicked()
 
             // save commandline to log
             if (ui->checkBox_log->isChecked()){
-                QString file        = projDirectory+"/data.txt";
                 QDateTime datetime  = QDateTime::currentDateTime();
                 QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-                QFile data(file);
+                QFile data(projDirectory+"/data.txt");
                 if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                     QTextStream out(&data);
-                    out << endl;
                     out << endl;
                     out << sDateTime;
                     out << "  -  ";
@@ -583,10 +607,10 @@ void MainWindow::updateElevationRange()
     QString north;
     QString south;
     QString west;
-    east.sprintf("%03d", eastInt);
-    north.sprintf("%02d", northInt);
-    south.sprintf("%02d", southInt);
-    west.sprintf("%03d", westInt);
+    east.sprintf("%03d", abs(eastInt));
+    north.sprintf("%02d", abs(northInt));
+    south.sprintf("%02d", abs(southInt));
+    west.sprintf("%03d", abs(westInt));
 
     QString minElev = "";
     QString maxElev = "";
