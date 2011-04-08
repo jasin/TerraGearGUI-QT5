@@ -47,10 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
     projDirectory       = settings.value("paths/project").toString();
     fgRoot              = settings.value("paths/fg-root").toString();
 
-    if (fgRoot != 0){
-        updateMaterials();
-    }
-
     ui->lineEdit_2->setText(terragearDirectory);
     ui->lineEdit_4->setText(projDirectory);
     ui->lineEdit_22->setText(fgRoot);
@@ -66,6 +62,12 @@ MainWindow::MainWindow(QWidget *parent) :
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
+
+    // run functions on startup
+    if (fgRoot != 0){
+        updateMaterials();
+    }
+    updateElevationRange();
 }
 
 MainWindow::~MainWindow()
@@ -171,11 +173,7 @@ void MainWindow::on_pushButton_2_clicked()
     double southInt    = south.toDouble();
     double westInt     = west.toDouble();
 
-    QPalette q;
-
     if (westInt < eastInt and northInt > southInt){
-        q.setColor(QPalette::WindowText, Qt::black);
-
         QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
         QDesktopServices::openUrl(mapserverUrl);
         // save output to log
@@ -194,16 +192,8 @@ void MainWindow::on_pushButton_2_clicked()
         }
     }
     else{
-        QMessageBox::about(this,tr("Error"),
-                           tr("Wrong boundaries"));
-        q.setColor(QPalette::WindowText, Qt::red);
+        QMessageBox::about(this,tr("Error"),tr("Wrong boundaries"));
     }
-
-    // change label colors on error
-    ui->label_7->setPalette(q);
-    ui->label_9->setPalette(q);
-    ui->label_10->setPalette(q);
-    ui->label_11->setPalette(q);
 
     // set boundaries on FGFS construct and genapts pages
     ui->lineEdit_27->setText(west);
@@ -609,47 +599,89 @@ void MainWindow::updateElevationRange()
     QString north;
     QString south;
     QString west;
-    east.sprintf("%03d", abs(eastInt));
-    north.sprintf("%02d", abs(northInt));
-    south.sprintf("%02d", abs(southInt));
-    west.sprintf("%03d", abs(westInt));
 
-    QString minElev = "";
-    QString maxElev = "";
-    if (northInt >= 0){
-        maxElev += "N";
-    }
-    if (northInt < 0) {
-        maxElev += "S";
-    }
-    maxElev += north;
+    double eastDbl     = ui->lineEdit_5->text().toDouble();
+    double northDbl    = ui->lineEdit_7->text().toDouble();
+    double southDbl    = ui->lineEdit_8->text().toDouble();
+    double westDbl     = ui->lineEdit_6->text().toDouble();
 
-    if (southInt >= 0){
-        minElev += "N";
-    }
-    if (southInt < 0) {
-        minElev += "S";
-    }
-    minElev += south;
+    // initialize text colors
+    QPalette q1;
+    QPalette q2;
+    q1.setColor(QPalette::Text, Qt::black);
+    q2.setColor(QPalette::Text, Qt::black);
 
-    if (eastInt > 0){
-        maxElev += "W";
-    }
-    if (eastInt <= 0) {
-        maxElev += "E";
-    }
-    maxElev += east;
+    // check if boundaries are valid
+    if (westDbl < eastDbl and northDbl > southDbl){
 
-    if (westInt > 0){
-        minElev += "W";
-    }
-    if (westInt <= 0) {
-        minElev += "E";
-    }
-    minElev += west;
+        // use absolute degrees for elevation ranges
+        east.sprintf("%03d", abs(eastDbl));
+        north.sprintf("%02d", abs(northDbl));
+        south.sprintf("%02d", abs(southDbl));
+        west.sprintf("%03d", abs(westDbl));
 
-    ui->lineEdit_9->setText(minElev);
-    ui->lineEdit_10->setText(maxElev);
+        QString minElev = "";
+        QString maxElev = "";
+
+        // max north
+        if (northDbl >= 0){
+            maxElev += "N";
+        }
+        if (northDbl < 0) {
+            maxElev += "S";
+        }
+        maxElev += north;
+
+        // max south
+        if (southDbl >= 0){
+            minElev += "N";
+        }
+        if (southDbl < 0) {
+            minElev += "S";
+        }
+        minElev += south;
+
+        // max east
+        if (eastDbl >= 0){
+            maxElev += "E";
+        }
+        if (eastDbl < 0) {
+            maxElev += "W";
+        }
+        maxElev += east;
+
+        //max west
+        if (westDbl >= 0){
+            minElev += "E";
+        }
+        if (westDbl < 0) {
+            minElev += "W";
+        }
+        minElev += west;
+
+        // output elevation range
+        ui->lineEdit_9->setText(minElev);
+        ui->lineEdit_10->setText(maxElev);
+    }
+
+    // if boundaries are not valid: do not display elevation range and set text color to red
+    else{
+        ui->lineEdit_9->setText("");
+        ui->lineEdit_10->setText("");
+
+        if (westDbl == eastDbl or westDbl > eastDbl){
+            q1.setColor(QPalette::Text, Qt::red);
+        }
+        if (northDbl == southDbl or southDbl > northDbl){
+            q2.setColor(QPalette::Text, Qt::red);
+        }
+    }
+
+    // change text color in the boundary fields
+    ui->lineEdit_5->setPalette(q1);
+    ui->lineEdit_6->setPalette(q1);
+    ui->lineEdit_7->setPalette(q2);
+    ui->lineEdit_8->setPalette(q2);
 }
 
 // populate material list with materials from FG's materials.xml
@@ -680,7 +712,6 @@ void MainWindow::updateMaterials()
                 }
             }
             materialfile.close();
-
             materialList.sort();
             ui->comboBox_2->clear();
             ui->comboBox_2->addItems(materialList);
