@@ -569,7 +569,7 @@ set on the left):</string>
         </font>
        </property>
        <property name="text">
-        <string/>
+        <string>...</string>
        </property>
        <property name="icon">
         <iconset>
@@ -630,7 +630,7 @@ set on the left):</string>
         </font>
        </property>
        <property name="text">
-        <string/>
+        <string>...</string>
        </property>
        <property name="icon">
         <iconset>
@@ -692,7 +692,7 @@ set on the left):</string>
         </font>
        </property>
        <property name="text">
-        <string/>
+        <string>...</string>
        </property>
        <property name="icon">
         <iconset>
@@ -824,7 +824,7 @@ world is widely available in 3.</string>
         </rect>
        </property>
        <property name="text">
-        <string/>
+        <string>...</string>
        </property>
        <property name="icon">
         <iconset>
@@ -1307,7 +1307,7 @@ extremely long, when FlightGear's apt.dat is used!</string>
         </rect>
        </property>
        <property name="text">
-        <string/>
+        <string>...</string>
        </property>
        <property name="icon">
         <iconset>
@@ -1360,6 +1360,12 @@ extremely long, when FlightGear's apt.dat is used!</string>
         <width>481</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
       </property>
       <property name="title">
        <string>Extra options (optional)</string>
@@ -1528,7 +1534,7 @@ will remove it from the lists, while a single click allows you to edit an item.<
        <rect>
         <x>10</x>
         <y>330</y>
-        <width>151</width>
+        <width>121</width>
         <height>23</height>
        </rect>
       </property>
@@ -1545,6 +1551,12 @@ will remove it from the lists, while a single click allows you to edit an item.<
         <height>21</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
        <string>Shapefiles</string>
       </property>
@@ -1560,6 +1572,12 @@ will remove it from the lists, while a single click allows you to edit an item.<
         <width>231</width>
         <height>21</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="text">
        <string>Materials</string>
@@ -1975,7 +1993,7 @@ will remove it from the lists, while a single click allows you to edit an item.<
       </property>
       <property name="font">
        <font>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1987,9 +2005,9 @@ will remove it from the lists, while a single click allows you to edit an item.<
      <widget class="QLabel" name="label_46">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>240</x>
         <y>330</y>
-        <width>61</width>
+        <width>51</width>
         <height>21</height>
        </rect>
       </property>
@@ -2469,7 +2487,7 @@ the lower (all manual) settings.</string>
          <x>10</x>
          <y>20</y>
          <width>211</width>
-         <height>81</height>
+         <height>101</height>
         </rect>
        </property>
        <property name="text">
@@ -2486,9 +2504,9 @@ selected to generate visible scenery.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>120</y>
          <width>211</width>
-         <height>251</height>
+         <height>241</height>
         </rect>
        </property>
        <property name="selectionMode">

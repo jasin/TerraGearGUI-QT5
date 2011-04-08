@@ -183,7 +183,7 @@ void MainWindow::on_pushButton_2_clicked()
             QDateTime datetime  = QDateTime::currentDateTime();
             QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-            QFile data(projDirectory+"/data.txt");
+            QFile data(projDirectory+"/log.txt");
             if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                 QTextStream out(&data);
                 out << endl;
@@ -242,7 +242,7 @@ void MainWindow::on_pushButton_5_clicked()
         QDateTime datetime  = QDateTime::currentDateTime();
         QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-        QFile data(projDirectory+"/data.txt");
+        QFile data(projDirectory+"/log.txt");
         if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream out(&data);
             out << endl;
@@ -284,7 +284,7 @@ void MainWindow::on_pushButton_7_clicked()
 // select FlightGear root
 void MainWindow::on_pushButton_8_clicked()
 {
-    fgRoot = QFileDialog::getExistingDirectory(this,tr("Select the FlightGear root (data directory)."));
+    fgRoot = QFileDialog::getExistingDirectory(this,tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."));
     ui->lineEdit_22->setText(fgRoot);
     settings.setValue("paths/fg-root", fgRoot);
 
@@ -336,7 +336,7 @@ void MainWindow::on_pushButton_11_clicked()
             QDateTime datetime  = QDateTime::currentDateTime();
             QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-            QFile data(projDirectory+"/data.txt");
+            QFile data(projDirectory+"/log.txt");
             if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                 QTextStream out(&data);
                 out << endl;
@@ -393,8 +393,10 @@ void MainWindow::on_pushButton_12_clicked()
     QFileInfoList dirList = dir.entryInfoList();
     for (int i = 0; i < dirList.size(); ++i) {
         QFileInfo dirInfo = dirList.at(i);
-        //QString test = qPrintable(QString("%1").arg(dirInfo.fileName()));
-        new QListWidgetItem(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))), ui->listWidget);
+        if(dirInfo.fileName()!= "SRTM-30" and dirInfo.fileName()!= "SRTM-3" and dirInfo.fileName()!= "SRTM-1" and dirInfo.fileName()!= "SRTM"){
+            //QString test = qPrintable(QString("%1").arg(dirInfo.fileName()));
+            new QListWidgetItem(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))), ui->listWidget);
+        }
     }
 }
 
@@ -431,12 +433,12 @@ void MainWindow::on_pushButton_13_clicked()
     }
     arguments += selectedMaterials;
 
-    // output commandline to data.txt
+    // output commandline to log.txt
     if (ui->checkBox_log->isChecked()){
         QDateTime datetime  = QDateTime::currentDateTime();
         QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-        QFile data(projDirectory+"/data.txt");
+        QFile data(projDirectory+"/log.txt");
         if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream out(&data);
             out << endl;
@@ -564,7 +566,7 @@ void MainWindow::on_pushButton_16_clicked()
                 QDateTime datetime  = QDateTime::currentDateTime();
                 QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-                QFile data(projDirectory+"/data.txt");
+                QFile data(projDirectory+"/log.txt");
                 if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
                     QTextStream out(&data);
                     out << endl;
