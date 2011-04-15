@@ -59,6 +59,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_27->setText(settings.value("boundaries/west").toString());
     ui->lineEdit_28->setText(settings.value("boundaries/east").toString());
 
+    ui->tblShapesAlign->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblShapesAlign->setHorizontalHeaderLabels(QStringList() << tr("Shapefile") << tr("Material"));
+    ui->tblShapesAlign->horizontalHeader()->setResizeMode( QHeaderView::Stretch);
+    ui->tblShapesAlign->horizontalHeader()->setStyleSheet("font: bold;");
+    ui->tblShapesAlign->verticalHeader()->hide();
+
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
@@ -126,32 +132,24 @@ void MainWindow::on_lineEdit_8_editingFinished()
     settings.setValue("boundaries/south", ui->lineEdit_8->text());
 }
 
-// delete shapefile
-void MainWindow::on_listWidget_doubleClicked()
+void MainWindow::on_lineEdit_27_editingFinished()
 {
-    int shapefilesLength    = ui->listWidget->count();
-    int materialsLength     = ui->listWidget_3->count();
-
-    // check if a material should be deleted
-    if (shapefilesLength <= materialsLength)
-    {
-        delete ui->listWidget_3->takeItem(ui->listWidget->currentRow());
-    }
-    delete ui->listWidget->takeItem(ui->listWidget->currentRow());
+    updateCenter();
 }
 
-// delete material
-void MainWindow::on_listWidget_3_doubleClicked()
+void MainWindow::on_lineEdit_28_editingFinished()
 {
-    delete ui->listWidget_3->takeItem(ui->listWidget_3->currentRow());
+    updateCenter();
 }
 
-// edit material name
-void MainWindow::on_listWidget_3_itemClicked(QListWidgetItem* item)
+void MainWindow::on_lineEdit_29_editingFinished()
 {
-    QListWidgetItem * lwI = ui->listWidget_3->currentItem();
-    lwI->setFlags(lwI->flags() | Qt::ItemIsEditable);
-    ui->listWidget_3->editItem(lwI);
+    updateCenter();
+}
+
+void MainWindow::on_lineEdit_30_editingFinished()
+{
+    updateCenter();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -219,12 +217,32 @@ void MainWindow::on_pushButton_5_clicked()
     // construct genapts commandline
     QString airportId   = ui->lineEdit_18->text();
     QString startAptId  = ui->lineEdit_19->text();
+    QString tileId  = ui->lineEdit_13->text();
+
+    QString minLat  = ui->lineEdit_16->text();
+    QString maxLat  = ui->lineEdit_15->text();
+    QString minLon  = ui->lineEdit_12->text();
+    QString maxLon  = ui->lineEdit_14->text();
+    QString maxSlope  = ui->lineEdit_21->text();
+
     QString arguments   = terragearDirectory+"/genapts --input="+airportFile+" --work="+workDirectory+" ";
     if (airportId > 0){
         arguments += "--airport="+airportId+" ";
     }
     if (startAptId > 0){
         arguments += "--start-id="+startAptId+" ";
+    }
+    if (maxLat != 0 or maxLon != 0 or minLat != 0 or minLon != 0){
+        arguments += "--min-lon="+minLon+" ";
+        arguments += "--max-lon="+maxLon+" ";
+        arguments += "--min-lat="+minLat+" ";
+        arguments += "--max-lat="+maxLat+" ";
+    }
+    if (maxSlope != 0){
+        arguments += "--max-slope="+maxSlope+" ";
+    }
+    if (tileId != 0){
+        arguments += "--tile="+tileId+" ";
     }
 
     // save output to log
@@ -377,17 +395,25 @@ void MainWindow::on_pushButton_12_clicked()
     }
 
     // update list
-    ui->listWidget->clear();
+    while (ui->tblShapesAlign->rowCount() != 0)
+    {
+        ui->tblShapesAlign->removeRow(0);
+    }
+
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList dirList = dir.entryInfoList();
     for (int i = 0; i < dirList.size(); ++i) {
         QFileInfo dirInfo = dirList.at(i);
         if(dirInfo.fileName()!= "SRTM-30" and dirInfo.fileName()!= "SRTM-3" and dirInfo.fileName()!= "SRTM-1" and dirInfo.fileName()!= "SRTM"){
-            //QString test = qPrintable(QString("%1").arg(dirInfo.fileName()));
-            new QListWidgetItem(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))), ui->listWidget);
+            ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
+            QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
+            twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
+            twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+            ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
         }
     }
+    ui->tblShapesAlign->resizeRowsToContents();
 }
 
 // run fgfs-construct
@@ -450,49 +476,6 @@ void MainWindow::on_pushButton_13_clicked()
     ui->textBrowser->setText(output);
 }
 
-// calculate scenery area center and radii
-void MainWindow::on_pushButton_14_clicked()
-{
-    QString east    = ui->lineEdit_28->text();
-    QString north   = ui->lineEdit_29->text();
-    QString south   = ui->lineEdit_30->text();
-    QString west    = ui->lineEdit_27->text();
-
-    double eastInt     = east.toDouble();
-    double northInt    = north.toDouble();
-    double southInt    = south.toDouble();
-    double westInt     = west.toDouble();
-
-    QPalette p;
-
-    if (westInt < eastInt and northInt > southInt){
-        double latInt      = (northInt + southInt)/2;
-        double lonInt      = (eastInt + westInt)/2;
-
-        QString lat     = QString::number(latInt);
-        QString lon     = QString::number(lonInt);
-        QString xRad     = QString::number(eastInt-lonInt);
-        QString yRad     = QString::number(northInt-latInt);
-
-        ui->lineEdit_31->setText(lat);
-        ui->lineEdit_32->setText(lon);
-        ui->lineEdit_33->setText(xRad);
-        ui->lineEdit_34->setText(yRad);
-
-        p.setColor(QPalette::WindowText, Qt::black);
-    }
-    else{
-        QMessageBox::about(this,tr("Error"),tr("Wrong boundaries"));
-        p.setColor(QPalette::WindowText, Qt::red);
-    }
-
-    // change label colors on error
-    ui->label_35->setPalette(p);
-    ui->label_36->setPalette(p);
-    ui->label_37->setPalette(p);
-    ui->label_38->setPalette(p);
-}
-
 // update terraintypes list for fgfs-construct
 void MainWindow::on_pushButton_15_clicked()
 {
@@ -511,77 +494,69 @@ void MainWindow::on_pushButton_15_clicked()
 // run ogr-decode
 void MainWindow::on_pushButton_16_clicked()
 {
-    // check whether both lists have equal length
-    int shapefilesLength = ui->listWidget->count();
-    int materialsLength  = ui->listWidget_3->count();
-
-    if (shapefilesLength == materialsLength)
+    for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
+        QString material    = ui->tblShapesAlign->item(i, 0)->text();
+        // skip if material are not assigned
+        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)) continue;
 
-        // construct ogr-decode command, for each single shapefile
-        for (int i = 0; i < shapefilesLength; ++i)
-        {
-            QString material    = ui->listWidget->item(i)->text();
-            QString shapefile   = ui->listWidget_3->item(i)->text();
-            QString arguments   = terragearDirectory+"/ogr-decode ";
-            if (ui->lineEdit_25->text() == 0){
-                arguments += "--line-width 10 ";
-            }
-            else{
-                arguments += "--line-width "+ui->lineEdit_25->text()+" ";
-            }
-            if (ui->lineEdit_24->text() > 0){
-                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
-            }
-            if (ui->checkBox_2->isChecked() == 1){
-                arguments += "--continue-on-errors ";
-            }
-            if (ui->lineEdit_26->text() > 0){
-                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
-            }
-            arguments += "--area-type "+shapefile+" ";
-            arguments += workDirectory+"/"+shapefile+" ";
-            arguments += dataDirectory+"/"+material;
-            QProcess proc;
-            proc.start(arguments, QIODevice::ReadWrite);
+        QString shapefile   = ui->tblShapesAlign->item(i, 1)->text();
+        QString arguments   = terragearDirectory+"/ogr-decode ";
+        if (ui->lineEdit_25->text() == 0){
+            arguments += "--line-width 10 ";
+        }
+        else{
+            arguments += "--line-width "+ui->lineEdit_25->text()+" ";
+        }
+        if (ui->lineEdit_24->text() > 0){
+            arguments += "--point-width "+ui->lineEdit_24->text()+" ";
+        }
+        if (ui->checkBox_2->isChecked() == 1){
+            arguments += "--continue-on-errors ";
+        }
+        if (ui->lineEdit_26->text() > 0){
+            arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+        }
+        arguments += "--area-type "+shapefile+" ";
+        arguments += workDirectory+"/"+shapefile+" ";
+        arguments += dataDirectory+"/"+material;
+        QProcess proc;
+        proc.start(arguments, QIODevice::ReadWrite);
 
-            // run command
-            proc.waitForReadyRead();
-            proc.QProcess::waitForFinished();
-            output += proc.readAllStandardOutput();
-            ui->textBrowser->setText(output);
+        // run command
+        proc.waitForReadyRead();
+        proc.QProcess::waitForFinished();
+        output += proc.readAllStandardOutput();
+        ui->textBrowser->setText(output);
 
-            // save commandline to log
-            if (ui->checkBox_log->isChecked()){
-                QDateTime datetime  = QDateTime::currentDateTime();
-                QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+        // save commandline to log
+        if (ui->checkBox_log->isChecked()){
+            QDateTime datetime  = QDateTime::currentDateTime();
+            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-                QFile data(projDirectory+"/log.txt");
-                if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                    QTextStream out(&data);
-                    out << endl;
-                    out << sDateTime;
-                    out << "  -  ";
-                    out << arguments;
-                }
+            QFile data(projDirectory+"/log.txt");
+            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream out(&data);
+                out << endl;
+                out << sDateTime;
+                out << "  -  ";
+                out << arguments;
             }
         }
-    }
-    else{
-        QMessageBox::about(this, tr("Error"),"You did not specify an equal number of shapefiles and materials.");
     }
 }
 
 // add material
 void MainWindow::on_pushButton_17_clicked()
 {
-    // check to make sure there is an equal number of materials and shapefiles
-    int shapefilesLength    = ui->listWidget->count();
-    int materialsLength     = ui->listWidget_3->count();
-    if (shapefilesLength > materialsLength)
+    if (ui->tblShapesAlign->item(ui->tblShapesAlign->currentRow(), 1) == 0) {
+        QTableWidgetItem *twiMaterialCell = new QTableWidgetItem(0);
+        twiMaterialCell->setText(ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()));
+        ui->tblShapesAlign->setItem(ui->tblShapesAlign->currentRow(), 1, twiMaterialCell);
+    }
+    else
     {
-        QString addMaterial = ui->comboBox_2->currentText();
-        new QListWidgetItem(tr(qPrintable(addMaterial)), ui->listWidget_3);
+        ui->tblShapesAlign->item(ui->tblShapesAlign->currentRow(), 1)->setText(ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()));
     }
 }
 
@@ -590,11 +565,6 @@ void MainWindow::on_pushButton_17_clicked()
 // update elevation download range
 void MainWindow::updateElevationRange()
 {
-    int eastInt     = ui->lineEdit_5->text().toInt();
-    int northInt    = ui->lineEdit_7->text().toInt();
-    int southInt    = ui->lineEdit_8->text().toInt();
-    int westInt     = ui->lineEdit_6->text().toInt();
-
     QString east;
     QString north;
     QString south;
@@ -684,6 +654,12 @@ void MainWindow::updateElevationRange()
     ui->lineEdit_8->setPalette(q2);
 }
 
+void MainWindow::on_tblShapesAlign_cellDoubleClicked(int row, int column)
+{
+    if (column == 0)
+        ui->tblShapesAlign->removeRow(row);
+}
+
 // populate material list with materials from FG's materials.xml
 void MainWindow::updateMaterials()
 {
@@ -702,7 +678,9 @@ void MainWindow::updateMaterials()
                     while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
                         if (materialreader.name() == "name") {
                             material = materialreader.readElementText();
-                            materialList.append(material);
+                            // ignore materials already present
+                            if (materialList.indexOf(material, 0) == -1)
+                                materialList.append(material);
                         }
                         // ignore sign materials
                         if (materialreader.name() == "glyph") {
@@ -717,4 +695,46 @@ void MainWindow::updateMaterials()
             ui->comboBox_2->addItems(materialList);
         }
     }
+}
+
+// calculate center of scenery area and radii
+void MainWindow::updateCenter()
+{
+    QString east    = ui->lineEdit_28->text();
+    QString north   = ui->lineEdit_29->text();
+    QString south   = ui->lineEdit_30->text();
+    QString west    = ui->lineEdit_27->text();
+
+    double eastInt     = east.toDouble();
+    double northInt    = north.toDouble();
+    double southInt    = south.toDouble();
+    double westInt     = west.toDouble();
+
+    QPalette p;
+
+    if (westInt < eastInt and northInt > southInt){
+        double latInt      = (northInt + southInt)/2;
+        double lonInt      = (eastInt + westInt)/2;
+
+        QString lat     = QString::number(latInt);
+        QString lon     = QString::number(lonInt);
+        QString xRad     = QString::number(eastInt-lonInt);
+        QString yRad     = QString::number(northInt-latInt);
+
+        ui->lineEdit_31->setText(lat);
+        ui->lineEdit_32->setText(lon);
+        ui->lineEdit_33->setText(xRad);
+        ui->lineEdit_34->setText(yRad);
+
+        p.setColor(QPalette::WindowText, Qt::black);
+    }
+    else{
+        p.setColor(QPalette::WindowText, Qt::red);
+    }
+
+    // change label colors on error
+    ui->label_28->setPalette(p);
+    ui->label_33->setPalette(p);
+    ui->label_34->setPalette(p);
+    ui->label_47->setPalette(p);
 }

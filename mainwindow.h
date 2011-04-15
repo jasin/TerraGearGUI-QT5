@@ -20,14 +20,14 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
+    void on_lineEdit_30_editingFinished();
+    void on_lineEdit_27_editingFinished();
+    void on_lineEdit_28_editingFinished();
+    void on_lineEdit_29_editingFinished();
     void on_lineEdit_5_editingFinished();
     void on_lineEdit_6_editingFinished();
     void on_lineEdit_7_editingFinished();
     void on_lineEdit_8_editingFinished();
-
-    void on_listWidget_doubleClicked();
-    void on_listWidget_3_doubleClicked();
-    void on_listWidget_3_itemClicked(QListWidgetItem* item);
 
     void on_actionQuit_triggered();
     void on_about_triggered();
@@ -44,13 +44,15 @@ private slots:
     void on_pushButton_11_clicked();
     void on_pushButton_12_clicked();
     void on_pushButton_13_clicked();
-    void on_pushButton_14_clicked();
     void on_pushButton_15_clicked();
     void on_pushButton_16_clicked();
     void on_pushButton_17_clicked();
 
     void on_tabWidget_selected(QString );
 
+    void on_tblShapesAlign_cellDoubleClicked(int row, int column);
+
+    void updateCenter();
     void updateElevationRange();
     void updateMaterials();
 };
