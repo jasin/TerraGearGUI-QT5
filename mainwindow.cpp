@@ -497,16 +497,18 @@ void MainWindow::on_pushButton_16_clicked()
     for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
         QString material    = ui->tblShapesAlign->item(i, 0)->text();
+        QString lineWidth    = ui->tblShapesAlign->item(i, 2)->text();
         // skip if material are not assigned
         if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)) continue;
 
         QString shapefile   = ui->tblShapesAlign->item(i, 1)->text();
+        //QString lineWidth   = ui->tblShapesAlign->item(i, 2)->text();
         QString arguments   = terragearDirectory+"/ogr-decode ";
-        if (ui->lineEdit_25->text() == 0){
+        if (lineWidth == 0){
             arguments += "--line-width 10 ";
         }
         else{
-            arguments += "--line-width "+ui->lineEdit_25->text()+" ";
+            arguments += "--line-width "+lineWidth+" ";
         }
         if (ui->lineEdit_24->text() > 0){
             arguments += "--point-width "+ui->lineEdit_24->text()+" ";
