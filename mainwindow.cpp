@@ -225,7 +225,7 @@ void MainWindow::on_pushButton_5_clicked()
     QString maxLon  = ui->lineEdit_14->text();
     QString maxSlope  = ui->lineEdit_21->text();
 
-    QString arguments   = terragearDirectory+"/genapts --input="+airportFile+" --work="+workDirectory+" ";
+    QString arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
     if (airportId > 0){
         arguments += "--airport="+airportId+" ";
     }
@@ -316,9 +316,9 @@ void MainWindow::on_pushButton_11_clicked()
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        QString elevationFile = QString("%1").arg(fileInfo.fileName());
-        QString elevationRes = ui->comboBox->currentText();
-        QString arguments = terragearDirectory+"/hgtchop "+elevationRes+" "+elevationDirectory+"/"+elevationFile+" "+workDirectory+"/SRTM-30";
+        QString elevationFile   = QString("%1").arg(fileInfo.fileName());
+        QString elevationRes    = ui->comboBox->currentText();
+        QString arguments       = "\""+terragearDirectory+"/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
 
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
@@ -330,7 +330,7 @@ void MainWindow::on_pushButton_11_clicked()
         ui->textBrowser->setText(output);
 
         // generate and run terrafit command
-        QString argumentsTerrafit = terragearDirectory+"/terrafit "+workDirectory+"/SRTM-30";
+        QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" \""+workDirectory+"/SRTM-30\"";
 
         QProcess procTerrafit;
         procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
@@ -433,9 +433,9 @@ void MainWindow::on_pushButton_13_clicked()
     }
 
     // construct fgfs-construct commandline
-    QString arguments = terragearDirectory+"/fgfs-construct ";
-    arguments += "--work-dir="+workDirectory+" ";
-    arguments += "--output-dir="+outpDirectory+"/Terrain ";
+    QString arguments = "\""+terragearDirectory+"/fgfs-construct\" ";
+    arguments += "--work-dir=\""+workDirectory+"\" ";
+    arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
     if (ui->lineEdit_35->text() > 0){
         arguments += "--tile-id="+ui->lineEdit_35->text();
     }
@@ -497,19 +497,26 @@ void MainWindow::on_pushButton_16_clicked()
     for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
         QString material    = ui->tblShapesAlign->item(i, 0)->text();
-        QString lineWidth    = ui->tblShapesAlign->item(i, 2)->text();
+		QString lineWidth;
+        if (ui->tblShapesAlign->item(i, 2) != 0)
+        {
+            // cell item already created
+            lineWidth    = ui->tblShapesAlign->item(i, 2)->text();
+        }
+        else
+        {
+            // cell item are not created - default width
+            lineWidth = "10";
+        }
+		
         // skip if material are not assigned
         if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)) continue;
 
         QString shapefile   = ui->tblShapesAlign->item(i, 1)->text();
-        //QString lineWidth   = ui->tblShapesAlign->item(i, 2)->text();
-        QString arguments   = terragearDirectory+"/ogr-decode ";
-        if (lineWidth == 0){
-            arguments += "--line-width 10 ";
-        }
-        else{
-            arguments += "--line-width "+lineWidth+" ";
-        }
+        QString arguments   = "\""+terragearDirectory+"/ogr-decode\" ";
+
+        arguments += "--line-width "+lineWidth+" ";
+
         if (ui->lineEdit_24->text() > 0){
             arguments += "--point-width "+ui->lineEdit_24->text()+" ";
         }
@@ -520,8 +527,8 @@ void MainWindow::on_pushButton_16_clicked()
             arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
         }
         arguments += "--area-type "+shapefile+" ";
-        arguments += workDirectory+"/"+shapefile+" ";
-        arguments += dataDirectory+"/"+material;
+        arguments += "\""+workDirectory+"/"+shapefile+"\" ";
+        arguments += "\""+dataDirectory+"/"+material+"\"";
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
 
