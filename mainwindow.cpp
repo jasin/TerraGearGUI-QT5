@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QtGlobal>
 #include <QIcon>
 #include <QIODevice>
 #include <QListView>
@@ -16,6 +17,7 @@
 #include <QPalette>
 #include <QProcess>
 #include <QSettings>
+#include <QStringList>
 #include <QTextStream>
 #include <QUrl>
 #include <QXmlStreamReader>
@@ -226,22 +228,22 @@ void MainWindow::on_pushButton_5_clicked()
     QString maxSlope  = ui->lineEdit_21->text();
 
     QString arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
-    if (airportId > 0){
+    if (airportId.size() > 0){
         arguments += "--airport="+airportId+" ";
     }
-    if (startAptId > 0){
+    if (startAptId.size() > 0){
         arguments += "--start-id="+startAptId+" ";
     }
-    if (maxLat != 0 or maxLon != 0 or minLat != 0 or minLon != 0){
+    if (maxLat.size() > 0 or maxLon.size() > 0 or minLat.size() > 0 or minLon.size() > 0){
         arguments += "--min-lon="+minLon+" ";
         arguments += "--max-lon="+maxLon+" ";
         arguments += "--min-lat="+minLat+" ";
         arguments += "--max-lat="+maxLat+" ";
     }
-    if (maxSlope != 0){
+    if (maxSlope.size() > 0){
         arguments += "--max-slope="+maxSlope+" ";
     }
-    if (tileId != 0){
+    if (tileId.size() > 0){
         arguments += "--tile="+tileId+" ";
     }
 
@@ -310,6 +312,10 @@ void MainWindow::on_pushButton_9_clicked()
 // run hgt-chop
 void MainWindow::on_pushButton_11_clicked()
 {
+    QString minnode     = ui->lineEdit->text();
+    QString maxnode     = ui->lineEdit_3->text();
+    QString maxerror    = ui->lineEdit_23->text();
+
     QDir dir(elevationDirectory);
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
@@ -330,7 +336,18 @@ void MainWindow::on_pushButton_11_clicked()
         ui->textBrowser->setText(output);
 
         // generate and run terrafit command
-        QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" \""+workDirectory+"/SRTM-30\"";
+        QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" ";
+        if (minnode.size() > 0){
+            argumentsTerrafit += "--minnodes "+minnode+" ";
+        }
+        if (maxnode.size() > 0){
+            argumentsTerrafit += "--maxnodes "+maxnode+" ";
+        }
+        if (maxerror.size() > 0){
+            argumentsTerrafit += "--maxerror "+maxerror+" ";
+        }
+
+        argumentsTerrafit +="\""+workDirectory+"/SRTM-30\"";
 
         QProcess procTerrafit;
         procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
@@ -400,6 +417,13 @@ void MainWindow::on_pushButton_12_clicked()
         ui->tblShapesAlign->removeRow(0);
     }
 
+    // list of custom scenery shapefiles
+    QStringList csShape;
+    csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" << "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" << "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" << "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" << "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" << "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" << "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" << "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" << "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" << "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" << "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" << "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse";
+    // list of correpsonding materials
+    QStringList csMater;
+    csMater << "AgroForest" << "Airport" << "Asphalt" << "BarrenCover" << "Bog" << "Burnt" << "Canal" << "Cemetery" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << "Default" << "Dirt" << "DryCrop" << "Dump" << "Estuary" << "EvergreenForest" << "FloodLand" << "Freeway" << "Glacier" << "GolfCourse" << "GrassLand" << "GreenSpace" << "Heath" << "HerbTundra" << "Industrial" << "IntermittentLake" << "IntermittentStream" << "IrrCrop" << "Lagoon" << "Lake" << "Lava" << "Littoral" << "Marsh" << "MixedCrop" << "MixedForest" << "NaturalCrop" << "Olives" << "OpenMining" << "Orchard" << "PackIce" << "PolarIce" << "Port" << "Railroad" << "Railroad" << "RainForest" << "Rice" << "Rock" << "Saline" << "SaltMarsh" << "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" << "Transport" << "Urban" << "Vineyard" << "Watercourse";
+
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList dirList = dir.entryInfoList();
@@ -412,6 +436,17 @@ void MainWindow::on_pushButton_12_clicked()
             twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
             ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
         }
+        QTableWidgetItem *twiCellMater = new QTableWidgetItem(0);
+
+        // suggest a material
+        QString suggestedMaterial;
+        for (int j = 0; j < csShape.length(); ++j) {
+            if (dirInfo.fileName() == csShape[j]){
+                suggestedMaterial = csMater[j];
+            }
+        }
+        twiCellMater->setText(suggestedMaterial);
+        ui->tblShapesAlign->setItem(i, 1, twiCellMater);
     }
     ui->tblShapesAlign->resizeRowsToContents();
 }
@@ -497,7 +532,7 @@ void MainWindow::on_pushButton_16_clicked()
     for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
         QString material    = ui->tblShapesAlign->item(i, 0)->text();
-		QString lineWidth;
+        QString lineWidth;
         if (ui->tblShapesAlign->item(i, 2) != 0)
         {
             // cell item already created
@@ -508,12 +543,27 @@ void MainWindow::on_pushButton_16_clicked()
             // cell item are not created - default width
             lineWidth = "10";
         }
-		
+
         // skip if material are not assigned
-        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)) continue;
+        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
+            QMessageBox::critical(this,"ERROR: NO MATERIAL", "You did not assign materials for each shapefile.");
+            return;
+        }
 
         QString shapefile   = ui->tblShapesAlign->item(i, 1)->text();
         QString arguments   = "\""+terragearDirectory+"/ogr-decode\" ";
+
+        // check if terragear tool exists
+        QString TGfile      = terragearDirectory+"/ogr-decode";
+#ifdef Q_OS_WIN
+        TGfile += ".exe";
+#endif
+        QFile f(TGfile);
+        if ( ! f.exists() ) {
+            QString msg = "Unable to locate executable "+TGfile;
+            QMessageBox::critical(this,"ERROR: NO FILE", msg);
+            return;
+        }
 
         arguments += "--line-width "+lineWidth+" ";
 
