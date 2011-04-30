@@ -67,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tblShapesAlign->horizontalHeader()->setStyleSheet("font: bold;");
     ui->tblShapesAlign->verticalHeader()->hide();
 
+    // create sub-directory variables
     dataDirectory = projDirectory+"/data";
     outpDirectory = projDirectory+"/output";
     workDirectory = projDirectory+"/work";
@@ -76,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
         updateMaterials();
     }
     updateElevationRange();
+    updateCenter();
 }
 
 MainWindow::~MainWindow()
@@ -523,6 +525,8 @@ void MainWindow::on_pushButton_15_clicked()
         QFileInfo fileInfo = list.at(i);
         QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
         new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
+        // select all materials per default
+        ui->listWidget_2->item(i)->setSelected(1);
     }
 }
 
@@ -531,12 +535,12 @@ void MainWindow::on_pushButton_16_clicked()
 {
     for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
-        QString material    = ui->tblShapesAlign->item(i, 0)->text();
+        QString material = ui->tblShapesAlign->item(i, 0)->text();
         QString lineWidth;
         if (ui->tblShapesAlign->item(i, 2) != 0)
         {
             // cell item already created
-            lineWidth    = ui->tblShapesAlign->item(i, 2)->text();
+            lineWidth = ui->tblShapesAlign->item(i, 2)->text();
         }
         else
         {
