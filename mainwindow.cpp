@@ -729,7 +729,7 @@ void MainWindow::on_pushButton_13_clicked()
         path.sprintf("%s", b.gen_base_path().c_str());
         path += "/"+index;
         arguments = runtime; // common runtime and params
-        arguments += "--tile-id="+index;
+        arguments += "--tile-id="+index+" ";
         arguments += selectedMaterials;
         if (no_overwrite) {
             msg = outpDirectory+"/Terrain/"+path+".btg.gz";
