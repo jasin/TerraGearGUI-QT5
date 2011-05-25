@@ -1,3 +1,26 @@
+/* mainwindow.cpp -- top level construction routines
+//
+// Written by Gijs de Rooy, started March 2010.
+//
+// Copyright (C) 2010-2011  Gijs de Rooy - ???
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as
+// published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+//
+// $Id: $
+   ==================================================================== */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <iostream>
@@ -21,6 +44,11 @@
 #include <QTextStream>
 #include <QUrl>
 #include <QXmlStreamReader>
+#include <QTime> // found it - a ms timer
+// #include <QWebView> // maybe try this in place of QDesktopServices::openUrl(qu)!?!?
+
+#include "newbucket.h"
+#include "tggui_utils.h"
 
 QString airportFile;
 QString elevationDirectory;
@@ -30,9 +58,21 @@ QString output = "";
 QString fgRoot;
 QString terragearDirectory;
 QString projDirectory;
+
 QString dataDirectory;
 QString outpDirectory;
 QString workDirectory;
+
+QString minElev;
+QString maxElev;
+QString elevList;
+
+QString m_north;
+QString m_south;
+QString m_west;
+QString m_east;
+
+bool m_break;
 
 // save variables for future sessions
 QSettings settings("TerraGear", "TerraGearGUI");
@@ -44,22 +84,38 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle( tr("TerraGear GUI") );
 
+    elevList = "";
     // restore variables from previous session
     terragearDirectory  = settings.value("paths/terragear").toString();
     projDirectory       = settings.value("paths/project").toString();
     fgRoot              = settings.value("paths/fg-root").toString();
+    elevationDirectory  = settings.value("path/elevationDir").toString();
+    airportFile         = settings.value("path/airportFile").toString();
 
     ui->lineEdit_2->setText(terragearDirectory);
     ui->lineEdit_4->setText(projDirectory);
     ui->lineEdit_22->setText(fgRoot);
-    ui->lineEdit_8->setText(settings.value("boundaries/south").toString());
-    ui->lineEdit_7->setText(settings.value("boundaries/north").toString());
-    ui->lineEdit_6->setText(settings.value("boundaries/west").toString());
-    ui->lineEdit_5->setText(settings.value("boundaries/east").toString());
-    ui->lineEdit_30->setText(settings.value("boundaries/south").toString());
-    ui->lineEdit_29->setText(settings.value("boundaries/north").toString());
-    ui->lineEdit_27->setText(settings.value("boundaries/west").toString());
-    ui->lineEdit_28->setText(settings.value("boundaries/east").toString());
+    ui->lineEdit_11->setText(elevationDirectory);
+
+    m_north = settings.value("boundaries/north").toString();
+    m_south = settings.value("boundaries/south").toString();
+    m_west  = settings.value("boundaries/west").toString();
+    m_east  = settings.value("boundaries/east").toString();
+
+    // TAB: Start
+    ui->lineEdit_8->setText(m_south);
+    ui->lineEdit_7->setText(m_north);
+    ui->lineEdit_6->setText(m_west);
+    ui->lineEdit_5->setText(m_east);
+
+    // TAB: FGFS Construct
+    updateCenter(); // set the center/distance
+
+    // TAB: GenApts
+    ui->label_65->setText(m_south);
+    ui->label_63->setText(m_north);
+    ui->label_59->setText(m_west);
+    ui->label_61->setText(m_east);
 
     ui->tblShapesAlign->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblShapesAlign->setHorizontalHeaderLabels(QStringList() << tr("Shapefile") << tr("Material"));
@@ -73,11 +129,35 @@ MainWindow::MainWindow(QWidget *parent) :
     workDirectory = projDirectory+"/work";
 
     // run functions on startup
-    if (fgRoot != 0){
+    if (fgRoot != 0) {
         updateMaterials();
+        if (airportFile.size() == 0) {
+            // try to find apt.dat.gz file
+            QString apfile = fgRoot+"/Airports/apt.dat.gz";
+            QFile apf(apfile);
+            if (apf.exists()) {
+               airportFile = apfile;
+                settings.setValue("path/airportFile", airportFile); // keep the airport file found
+            }
+        }
+        if (airportFile.size())
+            ui->lineEdit_20->setText(airportFile);
     }
     updateElevationRange();
     updateCenter();
+	
+	// re-apply the check boxes (for construct)
+    bool no_over = settings.value("check/no_overwrite").toBool();
+    ui->checkBox_noovr->setCheckState(no_over ? Qt::Checked : Qt::Unchecked);
+    bool ign_lm = settings.value("check/ignore_landmass").toBool();
+    ui->checkBox_4->setCheckState(ign_lm ? Qt::Checked : Qt::Unchecked);
+    bool no_data = settings.value("check/no_data").toBool();
+    ui->checkBox_nodata->setCheckState(no_data ? Qt::Checked : Qt::Unchecked);
+    bool ign_err = settings.value("check/ign_errors").toBool();
+    ui->checkBox_igerr->setCheckState(ign_err ? Qt::Checked : Qt::Unchecked);
+
+	
+    m_break = false;
 }
 
 MainWindow::~MainWindow()
@@ -101,147 +181,172 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.3"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.6"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
 void MainWindow::on_wiki_triggered()
 {
-    QDesktopServices::openUrl(QUrl(tr("http://wiki.flightgear.org/index.php/TerraGear_GUI")));
+    QString url = "http://wiki.flightgear.org/index.php/TerraGear_GUI";
+    QUrl qu(url);
+    if ( ! QDesktopServices::openUrl(qu) ) {
+        // QWebView::webview = new QWebView;
+        // webview.load(url);
+        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser");
+    } else {
+        QMessageBox::information(this,"WIKI HELP","The URL ["+url+"] should be displayed in your default browser.\nIf this fails, copy the URL to your browser");
+    }
 }
 
 // actions //
 
 void MainWindow::on_lineEdit_5_editingFinished()
 {
+    m_east = ui->lineEdit_5->text();
     updateElevationRange();
-    settings.setValue("boundaries/east", ui->lineEdit_5->text());
+    updateCenter();
+    settings.setValue("boundaries/east", m_east);
 }
 
 void MainWindow::on_lineEdit_6_editingFinished()
 {
+    m_west = ui->lineEdit_6->text();
     updateElevationRange();
-    settings.setValue("boundaries/west", ui->lineEdit_6->text());
+    updateCenter();
+    settings.setValue("boundaries/west", m_west);
 }
 
 void MainWindow::on_lineEdit_7_editingFinished()
 {
+    m_north = ui->lineEdit_7->text();
     updateElevationRange();
-    settings.setValue("boundaries/north", ui->lineEdit_7->text());
+    updateCenter();
+    settings.setValue("boundaries/north", m_north);
 }
 
 void MainWindow::on_lineEdit_8_editingFinished()
 {
+    m_south = ui->lineEdit_8->text();
     updateElevationRange();
-    settings.setValue("boundaries/south", ui->lineEdit_8->text());
-}
-
-void MainWindow::on_lineEdit_27_editingFinished()
-{
     updateCenter();
-}
-
-void MainWindow::on_lineEdit_28_editingFinished()
-{
-    updateCenter();
-}
-
-void MainWindow::on_lineEdit_29_editingFinished()
-{
-    updateCenter();
-}
-
-void MainWindow::on_lineEdit_30_editingFinished()
-{
-    updateCenter();
+    settings.setValue("boundaries/south", m_south);
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), "C:/Users/AS9423-ULT/Desktop/TerraGear/Airports", tr("Airport files (*.dat)"));
+    airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), airportFile, tr("Airport files (*.dat *.dat.gz)"));
     ui->lineEdit_20->setText(airportFile);
+    settings.setValue("path/airportFile", airportFile); // keep the last airport file used
 }
 
-// download shapefiles
+// download shapefiles from mapserver
+// added 'landmass' download
 void MainWindow::on_pushButton_2_clicked()
 {
-    QString east    = ui->lineEdit_5->text();
-    QString north   = ui->lineEdit_7->text();
-    QString south   = ui->lineEdit_8->text();
-    QString west    = ui->lineEdit_6->text();
+    bool add_landmass = false;
+    double eastInt     = m_east.toDouble();
+    double northInt    = m_north.toDouble();
+    double southInt    = m_south.toDouble();
+    double westInt     = m_west.toDouble();
 
-    double eastInt     = east.toDouble();
-    double northInt    = north.toDouble();
-    double southInt    = south.toDouble();
-    double westInt     = west.toDouble();
-
-    if (westInt < eastInt and northInt > southInt){
-        QString mapserverUrl = "http://mapserver.flightgear.org/dlcs?xmin="+west+"&xmax="+east+"&ymin="+south+"&ymax="+north;
-        QDesktopServices::openUrl(mapserverUrl);
+    if ((westInt < eastInt) && (northInt > southInt)) {
+        QString info = "\nWhen the zip is downloaded it should be expanded into your\n[Project Directory]/data.";
+        QString url = "http://mapserver.flightgear.org/dlcs?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north;
         // save output to log
-        if (ui->checkBox_log->isChecked()){
-            QDateTime datetime  = QDateTime::currentDateTime();
-            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
-
-            QFile data(projDirectory+"/log.txt");
-            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                QTextStream out(&data);
-                out << endl;
-                out << sDateTime;
-                out << "  -  ";
-                out << mapserverUrl;
-            }
+        outputToLog(url);
+        QUrl qu(url);
+        if ( ! QDesktopServices::openUrl(qu) ) {
+            // QWebView::webview = new QWebView;
+            // webview.load(url);
+            QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
+        } else {
+            QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser, and a zip file downloaded.\nIf this fails, copy the URL to your browser manually."+info);
         }
+        if (add_landmass) {
+            info = "\nWhen the zip is downloaded it should be expanded into your\n[Project Directory]/data/v0_landmass/v0_landmass.[dbf|prj|shp|shx] files.";
+            url = "http://mapserver.flightgear.org/dlaction.psp?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north+"&pgislayer=v0_landmass";
+            outputToLog(url);
+            QUrl q2(url);
+            if ( ! QDesktopServices::openUrl(q2) ) {
+                QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
+            } else {
+                QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser, and a zip file downloaded\nof the form v0_landmass-<large-index>.zip...\nIf this fails, copy the URL to your browser manually."+info);
+            }
+
+        }
+
     }
     else{
-        QMessageBox::about(this,tr("Error"),tr("Wrong boundaries"));
+        QString msg = tr("Wrong boundaries. min. lon is not less than max., or min. lat is not less than max.\nCorrect the strings, and try again.");
+        outputToLog(msg);
+        QMessageBox::about(this,tr("Error"),msg);
     }
 
-    // set boundaries on FGFS construct and genapts pages
-    ui->lineEdit_27->setText(west);
-    ui->lineEdit_28->setText(east);
-    ui->lineEdit_29->setText(north);
-    ui->lineEdit_30->setText(south);
-    ui->lineEdit_12->setText(west);
-    ui->lineEdit_14->setText(east);
-    ui->lineEdit_15->setText(north);
-    ui->lineEdit_16->setText(south);
 }
 
 // select elevation directory
 void MainWindow::on_pushButton_3_clicked()
 {
-    elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."));
+    elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."),elevationDirectory);
     ui->lineEdit_11->setText(elevationDirectory);
+    settings.setValue("path/elevationDir", elevationDirectory); // keep the last directory used
 }
 
 // run genapts
+// missing adding an elevation source directory - ie --terrain=<path> - This would be in addition to the
+// 10 builtin elevation sources searched - SRTM-1, SRTM-3, SRTM-30, DEM-USGS-3, etc
+// And although a 'Chunk' edit box has been added, it is presently disabled/not used, as just
+// another way to set mina/max ranges
 void MainWindow::on_pushButton_5_clicked()
 {
+    QString arguments;
     // construct genapts commandline
     QString airportId   = ui->lineEdit_18->text();
     QString startAptId  = ui->lineEdit_19->text();
     QString tileId  = ui->lineEdit_13->text();
 
-    QString minLat  = ui->lineEdit_16->text();
-    QString maxLat  = ui->lineEdit_15->text();
-    QString minLon  = ui->lineEdit_12->text();
-    QString maxLon  = ui->lineEdit_14->text();
+    QString minLat  = m_south;
+    QString maxLat  = m_north;
+    QString minLon  = m_west;
+    QString maxLon  = m_east;
     QString maxSlope  = ui->lineEdit_21->text();
+    QTime rt;
+    QString tm;
+    QString msg;
 
-    QString arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
+    // if an additional directory to be search, ie --terrain=<dir>, could be added to function
+    // if ( !verifySRTMfiles() ) {
+    if ( !util_verifySRTMfiles(minLat, maxLat, minLon, maxLon, workDirectory) ) {
+        // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
+        arguments = "ERROR: Have searched ["+workDirectory+"] for elevation information\nand NONE found!\nThis means airports will be generated with NO elevation information!\nDo you want to continue?\nClick Cancel to abort.";
+        if ( ! getYesNo("NO ELEVATIONS",arguments) ) // This needs to be a Yes/No dialog
+            return;
+    }
+    rt.start();
+    // proceed to do airport generation
+    arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
     if (airportId.size() > 0){
         arguments += "--airport="+airportId+" ";
     }
-    if (startAptId.size() > 0){
+    if (startAptId.size() > 0) {
         arguments += "--start-id="+startAptId+" ";
     }
-    if (maxLat.size() > 0 or maxLon.size() > 0 or minLat.size() > 0 or minLon.size() > 0){
-        arguments += "--min-lon="+minLon+" ";
-        arguments += "--max-lon="+maxLon+" ";
-        arguments += "--min-lat="+minLat+" ";
-        arguments += "--max-lat="+maxLat+" ";
+    if ( !ui->checkBox_minmax->isChecked() ) {
+        // not excluded, so add where there is a min/max range
+        if (maxLat.size() > 0) {
+            arguments += "--max-lat="+maxLat+" ";
+        }
+        if (maxLon.size() > 0) {
+            arguments += "--max-lon="+maxLon+" ";
+        }
+        if (minLat.size() > 0) {
+            arguments += "--min-lat="+minLat+" ";
+        }
+        if (minLon.size() > 0) {
+            arguments += "--min-lon="+minLon+" ";
+        }
     }
+
     if (maxSlope.size() > 0){
         arguments += "--max-slope="+maxSlope+" ";
     }
@@ -250,19 +355,7 @@ void MainWindow::on_pushButton_5_clicked()
     }
 
     // save output to log
-    if (ui->checkBox_log->isChecked()){
-        QDateTime datetime  = QDateTime::currentDateTime();
-        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
-
-        QFile data(projDirectory+"/log.txt");
-        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream out(&data);
-            out << endl;
-            out << sDateTime;
-            out << "  -  ";
-            out << arguments;
-        }
-    }
+    outputToLog(arguments);
 
     QProcess proc;
     proc.start(arguments, QIODevice::ReadWrite);
@@ -270,14 +363,36 @@ void MainWindow::on_pushButton_5_clicked()
     // run genapts command
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    output += proc.readAllStandardOutput()+"\n\n";
+    int errCode = proc.exitCode();
+    tm = " in "+getElapTimeStg(rt.elapsed());
+    msg = proc.readAllStandardOutput()+"\n";
+    if (errCode) {
+        msg += proc.readAllStandardError()+"\n";
+    }
+    msg += "*PROC_ENDED*"+tm+"\n";
+    output += msg;
     ui->textBrowser->setText(output);
+    outputToLog("PROC_ENDED"+tm);
+
 }
 
-// download elevation data
+// download elevation data SRTM
 void MainWindow::on_pushButton_6_clicked()
 {
-    QDesktopServices::openUrl(QUrl(tr("http://dds.cr.usgs.gov/srtm/version2_1/")));
+    // QString minElev and maxElev set
+    outputToLog(elevList); /* provide a 'helpful' list of SRTM files */
+    QString info = "\nDownload the SRTM in the range ["+minElev+"] to ["+maxElev+"]";
+    info += "\nA list of the ranges should be in the log.txt file, if enabled";
+    info += "\nWhen the zips are downloaded they should be expanded into a\ndirectory of your choice before running HGT CHop.";
+    QString url = "http://dds.cr.usgs.gov/srtm/version2_1/";
+    QUrl qu(url);
+    if ( ! QDesktopServices::openUrl(qu) ) {
+        // QWebView::webview = new QWebView;
+        // webview.load(url);
+        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
+    } else {
+        QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser. Download the required zips.\nIf this fails, copy the URL to your browser manually."+info);
+    }
 }
 
 // select project directory
@@ -322,11 +437,51 @@ void MainWindow::on_pushButton_11_clicked()
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
+    QString tot;
+    QString cnt;
+    QString tm;
+    QTime rt;
+    QTime pt;
+    QStringList argList;
+    QStringList filList;
+    QString elevationFile;
+    QString arguments;
+    int i;
+
+    if (list.size() == 0) {
+        QMessageBox::information(this,"ERROR","There are no elevation files in "+elevationDirectory+"\nNothing to do!");
+        return;
+    }
+    rt.start(); // start total running time
+    tot.sprintf("%d", list.size());
+
+    // build set of arguments
+    for (i = 0; i < list.size(); ++i)
+    {
         QFileInfo fileInfo = list.at(i);
-        QString elevationFile   = QString("%1").arg(fileInfo.fileName());
-        QString elevationRes    = ui->comboBox->currentText();
-        QString arguments       = "\""+terragearDirectory+"/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
+        QString elevationRes = ui->comboBox->currentText();
+        elevationFile        = QString("%1").arg(fileInfo.fileName());
+        arguments            = "\""+terragearDirectory+"/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
+        // store runtime argument, and file name
+        // could add a check that it is a HGT file...
+        argList += arguments;
+        filList += elevationFile;
+    }
+
+    // process set of arguments
+    for (i = 0; i < argList.size(); i++)
+    {
+        pt.start();
+        arguments = argList[i];
+        elevationFile = filList[i];
+
+        outputToLog(arguments);
+
+        cnt.sprintf("%d", (i + 1));
+        tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
+        ui->label_52->setText("File:"+cnt+" of "+tot+": "+elevationFile+tm); // but the PROBLEM is how to get this PAINTED???
+        // ui->label_52->render(); // no...
+        ui->label_52->repaint(); // wow, ok this seems to work
 
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
@@ -334,65 +489,66 @@ void MainWindow::on_pushButton_11_clicked()
         // run hgtchop command
         proc.waitForReadyRead();
         proc.QProcess::waitForFinished();
-        output += proc.readAllStandardOutput()+"\n\n";
+
+        output += proc.readAllStandardOutput()+"\n*PROC_ENDED*\n";
         ui->textBrowser->setText(output);
+        outputToLog("PROC_ENDED");
 
-        // generate and run terrafit command
-        QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" ";
-        if (minnode.size() > 0){
-            argumentsTerrafit += "--minnodes "+minnode+" ";
-        }
-        if (maxnode.size() > 0){
-            argumentsTerrafit += "--maxnodes "+maxnode+" ";
-        }
-        if (maxerror.size() > 0){
-            argumentsTerrafit += "--maxerror "+maxerror+" ";
-        }
-
-        argumentsTerrafit +="\""+workDirectory+"/SRTM-30\"";
-
-        QProcess procTerrafit;
-        procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
-        procTerrafit.waitForReadyRead();
-        procTerrafit.QProcess::waitForFinished();
-        output += procTerrafit.readAllStandardOutput()+"\n\n";
+        tm = " in "+getElapTimeStg(pt.elapsed());
+        output += proc.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
         ui->textBrowser->setText(output);
+        ui->textBrowser->repaint(); // get the info shown
+        outputToLog("PROC_ENDED"+tm);
+        // save output to log - all is now saved at application end
+    }
 
-        // save output to log
-        if (ui->checkBox_log->isChecked()){
-            QDateTime datetime  = QDateTime::currentDateTime();
-            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+    pt.start();
+    ui->label_52->setText("Now running terrafit..."); // but the PROBLEM is how to get this PAINTED???
+    ui->label_52->repaint(); // wow, ok this seems to work
 
-            QFile data(projDirectory+"/log.txt");
-            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                QTextStream out(&data);
-                out << endl;
-                out << sDateTime;
-                out << "  -  ";
-                out << arguments;
-                out << endl;
-                out << sDateTime;
-                out << "  -  ";
-                out << argumentsTerrafit;
-            }
+    // generate and run terrafit command
+    QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" ";
+    if (minnode.size() > 0){
+        argumentsTerrafit += "--minnodes "+minnode+" ";
+    }
+    if (maxnode.size() > 0){
+        argumentsTerrafit += "--maxnodes "+maxnode+" ";
+    }
+    if (maxerror.size() > 0){
+        argumentsTerrafit += "--maxerror "+maxerror+" ";
+    }
 
-            QString file2 = projDirectory+"/output.txt";
-            QFile data2(file2);
-            if (data2.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                QTextStream out(&data2);
-                out << endl;
-                out << endl;
-                out << output;
-            }
-        }
+    argumentsTerrafit +="\""+workDirectory+"/SRTM-30\"";
+
+    outputToLog(argumentsTerrafit);
+    QProcess procTerrafit;
+    procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
+    procTerrafit.waitForReadyRead();
+    procTerrafit.QProcess::waitForFinished();
+
+    tm = " in "+getElapTimeStg(pt.elapsed());
+    output += procTerrafit.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
+
+    ui->textBrowser->setText(output);
+    ui->textBrowser->repaint(); // get the info shown
+    outputToLog("PROC_ENDED"+tm);
+
+    if (list.size() > 0) {
+        tm = " "+getElapTimeStg(rt.elapsed()); // get elapsed time string
+        cnt.sprintf("%d", list.size());
+        ui->label_52->setText("Done "+cnt+" files in "+tm);
+        outputToLog("Done "+cnt+" files in "+tm);
+    } else {
+        ui->label_52->setText("No files processed...");
     }
 }
+
 
 // update shapefiles list for ogr-decode
 void MainWindow::on_pushButton_12_clicked()
 {
     // move shapefiles to "private" directories
-    QDir dir(dataDirectory);
+    QDir dir(dataDirectory); // search 'data' folder, for 'directories'
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
@@ -421,10 +577,33 @@ void MainWindow::on_pushButton_12_clicked()
 
     // list of custom scenery shapefiles
     QStringList csShape;
-    csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" << "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" << "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" << "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" << "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" << "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" << "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" << "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" << "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" << "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" << "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" << "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse";
+    csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" <<
+            "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" <<
+            "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" <<
+            "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" <<
+            "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" <<
+            "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" <<
+            "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" <<
+            "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" <<
+            "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" <<
+            "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" <<
+            "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" <<
+            "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass";
     // list of correpsonding materials
     QStringList csMater;
-    csMater << "AgroForest" << "Airport" << "Asphalt" << "BarrenCover" << "Bog" << "Burnt" << "Canal" << "Cemetery" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << "Default" << "Dirt" << "DryCrop" << "Dump" << "Estuary" << "EvergreenForest" << "FloodLand" << "Freeway" << "Glacier" << "GolfCourse" << "GrassLand" << "GreenSpace" << "Heath" << "HerbTundra" << "Industrial" << "IntermittentLake" << "IntermittentStream" << "IrrCrop" << "Lagoon" << "Lake" << "Lava" << "Littoral" << "Marsh" << "MixedCrop" << "MixedForest" << "NaturalCrop" << "Olives" << "OpenMining" << "Orchard" << "PackIce" << "PolarIce" << "Port" << "Railroad" << "Railroad" << "RainForest" << "Rice" << "Road" << "Rock" << "Saline" << "SaltMarsh" << "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" << "Transport" << "Urban" << "Vineyard" << "Watercourse";
+    // *TBD* - should compare this to default_priorities.txt
+    csMater << "AgroForest" << "Airport" << "Asphalt" << "BarrenCover" << "Bog" <<
+            "Burnt" << "Canal" << "Cemetery" << "ComplexCrop" << "Construction" <<
+            "CropGrass" << "DeciduousForest" << "Default" << "Dirt" << "DryCrop" <<
+            "Dump" << "Estuary" << "EvergreenForest" << "FloodLand" << "Freeway" <<
+            "Glacier" << "GolfCourse" << "GrassLand" << "GreenSpace" << "Heath" <<
+            "HerbTundra" << "Industrial" << "IntermittentLake" << "IntermittentStream" <<
+            "IrrCrop" << "Lagoon" << "Lake" << "Lava" << "Littoral" << "Marsh" <<
+            "MixedCrop" << "MixedForest" << "NaturalCrop" << "Olives" << "OpenMining" <<
+            "Orchard" << "PackIce" << "PolarIce" << "Port" << "Railroad" << "Railroad" <<
+            "RainForest" << "Rice" << "Road" << "Rock" << "Saline" << "SaltMarsh" <<
+            "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" <<
+            "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -451,33 +630,323 @@ void MainWindow::on_pushButton_12_clicked()
         ui->tblShapesAlign->setItem(i, 1, twiCellMater);
     }
     ui->tblShapesAlign->resizeRowsToContents();
-}
 
-// run fgfs-construct
-void MainWindow::on_pushButton_13_clicked()
-{
-    QString lat = ui->lineEdit_31->text();
-    QString lon = ui->lineEdit_32->text();
-    QString x = ui->lineEdit_33->text();
-    QString y = ui->lineEdit_34->text();
-    QString selectedMaterials;
-
-    // create string with selected terraintypes
-    for (int i = 0; i < ui->listWidget_2->count(); ++i){
-        if (ui->listWidget_2->item(i)->isSelected() == 1){
-            selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
+    // check for tool existance
+    QString tgTool = terragearDirectory+"/ogr-decode";
+#ifdef Q_OS_WIN
+    tgTool += ".exe";
+#endif
+    QFile f(tgTool);
+    if ( ! f.exists() ) {
+        tgTool = terragearDirectory+"/shape-decode";
+#ifdef Q_OS_WIN
+        tgTool += ".exe";
+#endif
+        QFile f2(tgTool);
+        if (f2.exists()) {
+            ui->checkBox_ogr->setCheckState(Qt::Checked);
         }
     }
+}
+
+// run fgfs-construct (fgfs_construct)
+void MainWindow::on_pushButton_13_clicked()
+{
+    QString lat = ui->label_67->text();
+    QString lon = ui->label_68->text();
+    QString x = ui->label_70->text();
+    QString y = ui->label_69->text();
+    QString selectedMaterials;
+    QString msg;
+    bool brk = false;
+    int folderCnt = ui->listWidget_2->count();
+    if (folderCnt == 0) {
+        QMessageBox::information(this,"ERROR","There are no material folders! Use [Update List] to populate it\nthen select those desired.");
+        return;
+    }
+    folderCnt = 0; // RESTART COUNTER
+    // create string with selected terraintypes
+    for (int i = 0; i < ui->listWidget_2->count(); ++i){
+        if (ui->listWidget_2->item(i)->isSelected() == 1) {
+            selectedMaterials += ui->listWidget_2->item(i)->text()+" ";
+            folderCnt++;
+        }
+    }
+    if (folderCnt == 0) {
+        msg.sprintf("It appears you have NOT selected any the %d folders!", ui->listWidget_2->count());
+        QMessageBox::information(this,"ERROR",msg);
+        return;
+    }
+
+#ifdef _NEWBUCKET_HXX   // we have SGBucket capability
+    // construct fgfs-construct commandline,
+    // FOR EACH BUCKET SEPARATELY, like master/client do
+    // We could concurrently run multiple constructions, but then like server.cxx
+    // we should skip every other column, to avoid two clients working on adjacent tiles
+    // but here fgfs-construct is just run with for each 'bucket'
+    QStringList argList; // build a string list to run
+    QStringList pathList; // and the PATH to each bucket
+    QString arguments;
+    QString index;
+    QString path;
+    QTime rt;
+    QTime pt;
+    QString tm;
+    QString em;
+    QString info;
+    bool no_overwrite = ui->checkBox_noovr->isChecked();
+    bool skip_error = ui->checkBox_igerr->isChecked();
+    bool skip_nodata = ui->checkBox_nodata->isChecked();
+    long ind;
+    int dx, dy, i, j;
+    int gotcnt = 0;
+    bool add_it = true; // ADD all buckets, unless there is a reason not to
+    SGBucket b_cur;
+    rt.start();
+    // build the general runtime string
+    QString runtime = "\""+terragearDirectory+"/fgfs-construct\" ";
+    runtime += "--work-dir=\""+workDirectory+"\" ";
+    runtime += "--output-dir=\""+outpDirectory+"/Terrain\" ";
+    if (ui->checkBox_3->isChecked()) {
+        runtime += "--useUKgrid ";
+    }
+    if (ui->checkBox_4->isChecked()) {
+        runtime += "--ignore-landmass ";
+    }
+    gotcnt = 0;
+    if (ui->lineEdit_35->text() > 0) {
+        // just ONE to do - DO IT
+        index = ui->lineEdit_35->text();
+        ind = index.toLong();
+        SGBucket b(ind);
+        path.sprintf("%s", b.gen_base_path().c_str());
+        path += "/"+index;
+        arguments = runtime; // common runtime and params
+        arguments += "--tile-id="+index;
+        arguments += selectedMaterials;
+        if (no_overwrite) {
+            msg = outpDirectory+"/Terrain/"+path+".btg.gz";
+            QFile f(msg);
+            if ( f.exists() ) {
+                add_it = false;
+            }
+        }
+        if (add_it) {
+            argList << arguments; // set the ONE argument
+            pathList << path;
+        }
+        gotcnt++;
+    } else {
+        // break the set into buckets
+        double dlon = lon.toDouble();
+        double dlat = lat.toDouble();
+        double xdist = x.toDouble();
+        double ydist = y.toDouble();
+
+        double min_x = dlon - xdist;
+        double min_y = dlat - ydist;
+        SGBucket b_min( min_x, min_y );
+        SGBucket b_max( dlon + xdist, dlat + ydist );
+        if (b_min == b_max) {
+            // just ONE bucket
+            index.sprintf("%ld", b_min.gen_index());
+            path.sprintf("%s", b_min.gen_base_path().c_str());
+            path += "/"+index;
+            arguments = runtime; // common runtime and params
+            arguments += "--tile-id="+index+" ";
+            arguments += selectedMaterials;
+            if (no_overwrite) {
+                msg = outpDirectory+"/Terrain/"+path+".btg.gz";
+                QFile f(msg);
+                if ( f.exists() ) {
+                    add_it = false;
+                }
+            }
+            if (add_it && skip_nodata) {
+                if ( !countDataFound(path,selectedMaterials,workDirectory))
+                    add_it = false;
+            }
+            if (add_it) {
+                argList << arguments; // set the ONE argument
+                pathList << path;
+            }
+            gotcnt++;
+        } else {
+            // a range of buckets
+            sgBucketDiff(b_min, b_max, &dx, &dy);
+            for ( j = 0; j <= dy; j++ ) {
+                for ( i = 0; i <= dx; i++ ) {
+                    add_it = true; // initially ADD ALL buckets, for this INDEX
+                    b_cur = sgBucketOffset(min_x, min_y, i, j);
+                    index.sprintf("%ld", b_cur.gen_index());
+                    path.sprintf("%s", b_cur.gen_base_path().c_str());
+                    path += "/"+index;
+                    arguments = runtime;
+                    arguments += "--tile-id="+index+" ";
+                    arguments += selectedMaterials;
+                    if (no_overwrite) {
+                        msg = outpDirectory+"/Terrain/"+path+".btg.gz";
+                        QFile f(msg);
+                        if ( f.exists() ) {
+                            add_it = false; // KILLLED BY NO OVERWRITE RULE
+                        }
+                    }
+                    if (add_it && skip_nodata) {
+                        if ( !countDataFound(path,selectedMaterials,workDirectory))
+                            add_it = false; // KILLED BY NO ARRAY FILES FOUND - build with what??
+                    }
+                    if (add_it) {
+                        argList << arguments; // set the EACH argument
+                        pathList << path;
+                    }
+                    gotcnt++; // count the max. possible total for range
+                }
+            }
+        }
+    }
+    ind = argList.size();
+    if (ind != pathList.size()) {
+        // catastophic FAILURE
+        QMessageBox::critical(this,"INTERNAL ERROR","Lists are NOT equal in length!");
+        return;
+    }
+    if (ind == 0) {
+        msg.sprintf("With the current min/max, and options, have %d buckets to process, but perhpas no overwrite, and/or skip no data are checked, so nothing to do!", gotcnt);
+        QMessageBox::information(this,"NO BUCKETS TO PROCESS",msg);
+        return;
+    }
+    msg.sprintf("To process %d buckets, of total %d, folders %d\n", argList.size(), gotcnt, folderCnt);
+    msg += "Options: Overwrite=";
+    msg += no_overwrite ? "ON" : "OFF";
+    msg += " Skip_no_data=";
+    msg += skip_nodata ? "ON" : "OFF";
+    msg += " Ignore_Err=";
+    msg += skip_error ? "ON" : "OFF";
+    msg += "\n";
+    outTemp(msg);
+    msg += "Click Ok/Yes to CONTINUE";
+    if ( !getYesNo("CONSTRUCTION PROCESS",msg) ) {
+        return;
+    }
+    // we are on our way. to construct <index>.btg.gz file(s),
+    // plus the associated <index>.stg to load these items in FG
+    int setup_ms = rt.restart(); // restart timer
+
+    // add a complete set of arguments to a templog.txt
+    dy = 0;
+    tm = "Setup: "+getElapTimeStg(setup_ms);
+    outTemp(tm+"\n");
+    for (i = 0; i < argList.size(); i++) {
+        dy++;
+        arguments = argList[i]; // get command line arguments
+        path = pathList[i]; // get the destination path
+        // output commandline to log.txt
+        outTemp(arguments+"\n");
+        msg.sprintf("%d: ", dy);
+        msg += outpDirectory+"/Terrain/"+path+".btg.gz\n";
+        outTemp(msg);
+    }
+
+    dx = argList.size();
+    dy = 0;
+    uint diff_time;
+    uint tot_time;
+
+    tot_time = 0; // start accumulating the total time (in ms)
+    // this is the section that should be run on a thread
+    // ==================================================
+    for (i = 0; i < argList.size(); i++) {
+        if (brk || m_break)
+            break; // all over - user requested a break
+        dy++;
+        pt.start();
+        // about to RUN fgfs-construct, for each bucket argument
+        arguments = argList[i]; // get command line arguments
+        path = pathList[i]; // get the destination path
+        // output commandline to log.txt
+        outputToLog(arguments);
+
+        // and show starting proc
+        tm = " rt "+getElapTimeStg(rt.elapsed());
+        // msg.sprintf("%d of %d: fgfs-construct with %d folders - moment...", dy, dx, folderCnt);
+        msg.sprintf("%d of %d: fgfs-construct ", dy, dx);
+        msg += path;
+        msg += tm;
+        ui->label_54->setText(msg);
+        ui->label_54->repaint(); // does not seem to always appear, but sometimes???
+
+        // start command
+        QProcess proc;
+        proc.setWorkingDirectory(terragearDirectory);
+        proc.start(arguments, QIODevice::ReadWrite);
+
+        // wait for process to finish, before allowing the next action
+        proc.waitForReadyRead();
+        proc.QProcess::waitForFinished();
+
+        int errCode = proc.exitCode();
+        info = proc.readAllStandardOutput();
+        diff_time = pt.elapsed();
+        tot_time += diff_time;
+        tm = " in "+getElapTimeStg(diff_time);
+        arguments = "\n*PROC_ENDED* "+tm+"\n";
+        em = "";
+        if (errCode) {
+            em.sprintf("ERROR CODE %d",errCode);
+            info += proc.readAllStandardError();
+            arguments = "\n*PROC_ENDED* with "+em+"\n";
+        }
+
+        outTemp(info+"\n");
+        outTemp(arguments+"\n");
+        output += info+"\n"; // add to full output
+        output += arguments+"\n";
+
+        ui->textBrowser->setText(info); // only the last
+        ui->textBrowser->repaint();
+
+        msg = "PROC_ENDED "+tm+", total "+getElapTimeStg(rt.elapsed())+" "+path;
+        outputToLog(msg);
+        outTemp(msg+"\n");
+
+        // if the string end is [Finished successfully], then all is well
+        if ( ! info.contains("[Finished successfully]") ) {
+            msg.sprintf("WARNING: %d of %d: fgfs-construct ", dy, dx);
+            msg += "exited with error "+em+"\n";
+            msg += "or failed to output [Finished successfully]\n";
+            msg += "while processing "+path+"\n";
+            msg += "This usually indicates some error in processing!\n";
+            outTemp(msg);
+            if (!skip_error) {
+                msg += "Click OK to continue contruction?";
+                if ( !getYesNo("PROCESS WARNING",msg) ) {
+                    break;
+                }
+            }
+        }
+        ui->label_54->repaint(); // does not seem to always appear, but sometimes???
+    }
+    // ==================================================================
+    msg.sprintf("fgfs-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
+    msg += " in "+getElapTimeStg(rt.elapsed());
+    ui->label_54->setText(msg);
+    ui->textBrowser->setText(output); // add it ALL
+
+#else // !#ifdef _NEWBUCKET_HXX
 
     // construct fgfs-construct commandline
     QString arguments = "\""+terragearDirectory+"/fgfs-construct\" ";
     arguments += "--work-dir=\""+workDirectory+"\" ";
     arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
-    if (ui->lineEdit_35->text() > 0){
+
+    if (ui->lineEdit_35->text() > 0) {
         arguments += "--tile-id="+ui->lineEdit_35->text();
+    } else {
+        // if a tile ID, no need for these...
+        arguments += "--lon="+lon+" --lat="+lat+" ";
+        arguments += "--xdist="+x+" --ydist="+y+" ";
     }
-    arguments += "--lon="+lon+" --lat="+lat+" ";
-    arguments += "--xdist="+x+" --ydist="+y+" ";
+
     if (ui->checkBox_3->isChecked()){
         arguments += "--useUKgrid ";
     }
@@ -487,19 +956,14 @@ void MainWindow::on_pushButton_13_clicked()
     arguments += selectedMaterials;
 
     // output commandline to log.txt
-    if (ui->checkBox_log->isChecked()){
-        QDateTime datetime  = QDateTime::currentDateTime();
-        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+    outputToLog(arguments);
 
-        QFile data(projDirectory+"/log.txt");
-        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream out(&data);
-            out << endl;
-            out << sDateTime;
-            out << "  -  ";
-            out << arguments;
-        }
-    }
+    // and show starting proc
+    msg.sprintf("Start fgfs-construct with %d folders - moment...", cnt);
+    ui->label_54->setText(msg);
+    ui->label_54->repaint(); // does not seem to appear???
+
+    rt.start();
 
     // start command
     QProcess proc;
@@ -509,21 +973,38 @@ void MainWindow::on_pushButton_13_clicked()
     // wait for process to finish, before allowing the next action
     proc.waitForReadyRead();
     proc.QProcess::waitForFinished();
-    output += proc.readAllStandardOutput()+"\n\n";
+    int errCode = proc.exitCode();
+    output += proc.readAllStandardOutput();
+
+    tm = " in "+getElapTimeStg(rt.elapsed())
+    arguments = "\n*PROC_ENDED*"+tm+"\n";
+    if (errCode) {
+        output += proc.readAllStandardError();
+        arguments.sprintf("\nPROC_ENDED with ERROR CODE %d!\n",errCode);
+    }
+    output += arguments;
     ui->textBrowser->setText(output);
+    outputToLog("PROC_ENDED"+tm);
+    msg = "fgfs-construct ran for "+tm;
+    ui->label_54->setText(msg);
+
+#endif // #ifdef _NEWBUCKET_HXX y/n
+
 }
 
 // update terraintypes list for fgfs-construct
+// *TBD* Should maybe EXCLUDE directory 'Shared'!
 void MainWindow::on_pushButton_15_clicked()
 {
+    int j = 0;
     ui->listWidget_2->clear();
     QDir dir(workDirectory);
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
-    int j = 0;
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
+
         // do not add the Shared folder
         if (fileInfo.fileName() != "Shared"){
             QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
@@ -535,10 +1016,46 @@ void MainWindow::on_pushButton_15_clicked()
     }
 }
 
-// run ogr-decode
+// run ogr-decode (or shape-decode)
 void MainWindow::on_pushButton_16_clicked()
 {
-    for (int i = 0; i < ui->tblShapesAlign->rowCount(); i++)
+    QTime rt;
+    QTime pt;
+    QString tm;
+    int i;
+    QString msg;
+    QStringList argList;
+    QStringList shpList;
+    QString arguments;
+    QString info;
+    QString shapefile;
+
+    rt.start();
+    // check if terragear tool exists
+    QString TGfile      = terragearDirectory+"/ogr-decode";
+    if (ui->checkBox_ogr->isChecked()) {
+        TGfile = terragearDirectory+"/shape-decode";
+    }
+#ifdef Q_OS_WIN
+    TGfile += ".exe"; // add EXE for windows
+#endif
+    QFile f(TGfile);
+    if ( ! f.exists() ) {
+        QString msg = "Unable to locate executable "+TGfile;
+        QMessageBox::critical(this,"ERROR: NO FILE", msg);
+        return;
+    }
+    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++)
+    {
+        // skip if material are not assigned
+        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
+            QMessageBox::critical(this,"ERROR: NO MATERIAL", "You did not assign materials for each shapefile.");
+            return;
+        }
+    }
+
+    // got executable, and have assigned materials, so do the work
+    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
         QString material = ui->tblShapesAlign->item(i, 0)->text();
         QString lineWidth;
@@ -553,65 +1070,96 @@ void MainWindow::on_pushButton_16_clicked()
             lineWidth = "10";
         }
 
-        // skip if material are not assigned
-        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
-            QMessageBox::critical(this,"ERROR: NO MATERIAL", "You did not assign materials for each shapefile.");
-            return;
-        }
+        shapefile = ui->tblShapesAlign->item(i, 1)->text();
 
-        QString shapefile   = ui->tblShapesAlign->item(i, 1)->text();
-        QString arguments   = "\""+terragearDirectory+"/ogr-decode\" ";
+        if (ui->checkBox_ogr->isChecked()) {
+            /* until I can get ogr-decode built ;=() */
+            arguments   = "\""+terragearDirectory+"/shape-decode\" ";
+            arguments += "--line-width "+lineWidth+" ";
 
-        // check if terragear tool exists
-        QString TGfile      = terragearDirectory+"/ogr-decode";
-#ifdef Q_OS_WIN
-        TGfile += ".exe";
-#endif
-        QFile f(TGfile);
-        if ( ! f.exists() ) {
-            QString msg = "Unable to locate executable "+TGfile;
-            QMessageBox::critical(this,"ERROR: NO FILE", msg);
-            return;
-        }
+            if (ui->lineEdit_24->text() > 0){
+                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
+            }
+            if (ui->checkBox_2->isChecked() == 1){
+                arguments += "--continue-on-errors ";
+            }
+            if (ui->lineEdit_26->text() > 0){
+                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+            }
+            // last 3 arguments
+            // shape file, with no extension
+            arguments += "\""+dataDirectory+"/"+material+"/"+material+"\" ";
+            // work directory - where to put the output
+            arguments += "\""+workDirectory+"/"+shapefile+"\" ";
+            // area string
+            arguments += " "+shapefile+" ";
 
-        arguments += "--line-width "+lineWidth+" ";
+        } else {
+            arguments   = "\""+terragearDirectory+"/ogr-decode\" ";
 
-        if (ui->lineEdit_24->text() > 0){
-            arguments += "--point-width "+ui->lineEdit_24->text()+" ";
+            arguments += "--line-width "+lineWidth+" ";
+
+            if (ui->lineEdit_24->text() > 0){
+                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
+            }
+            if (ui->checkBox_2->isChecked() == 1){
+                arguments += "--continue-on-errors ";
+            }
+            if (ui->lineEdit_26->text() > 0){
+                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+            }
+            arguments += "--area-type "+shapefile+" ";
+            arguments += "\""+workDirectory+"/"+shapefile+"\" ";
+            arguments += "\""+dataDirectory+"/"+material+"\"";
         }
-        if (ui->checkBox_2->isChecked() == 1){
-            arguments += "--continue-on-errors ";
-        }
-        if (ui->lineEdit_26->text() > 0){
-            arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
-        }
-        arguments += "--area-type "+shapefile+" ";
-        arguments += "\""+workDirectory+"/"+shapefile+"\" ";
-        arguments += "\""+dataDirectory+"/"+material+"\"";
+        argList += arguments;
+        shpList += shapefile;
+    }
+
+    // got all the arguments prepared,
+    // now process then one by one...
+    for (i = 0; i < argList.size(); i++) {
+
+        pt.start();
+        arguments = argList[i];
+        shapefile = shpList[i];
+
+        // save commandline to log
+        outputToLog(arguments);
+
+        // advise file in process
+        ui->label_53->setText("Doing file "+shapefile);
+        ui->label_53->repaint();
+
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
 
         // run command
         proc.waitForReadyRead();
         proc.QProcess::waitForFinished();
-        output += proc.readAllStandardOutput();
-        ui->textBrowser->setText(output);
-
-        // save commandline to log
-        if (ui->checkBox_log->isChecked()){
-            QDateTime datetime  = QDateTime::currentDateTime();
-            QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
-
-            QFile data(projDirectory+"/log.txt");
-            if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                QTextStream out(&data);
-                out << endl;
-                out << sDateTime;
-                out << "  -  ";
-                out << arguments;
-            }
+        int errCode = proc.exitCode();
+        info = proc.readAllStandardOutput();
+        tm = " in "+getElapTimeStg(pt.elapsed());
+        arguments = "\n*PROC_ENDED*"+tm+"\n";
+        if (errCode) {
+            info += proc.readAllStandardError();
+            arguments.sprintf("\n*PROC_ENDED* with ERROR CODE %d!\n",errCode);
         }
+        output += arguments+"\n"+info+"\n";
+        outTemp(arguments+"\n"+info+"\n");
+
+        ui->textBrowser->setText(info);
+        ui->textBrowser->repaint();
+
+        msg = "PROC_ENDED"+tm;
+        outputToLog(msg);
+        outTemp(msg+"\n");
     }
+
+    msg.sprintf("Done %d files", argList.size());
+    msg += " in "+getElapTimeStg(rt.elapsed());
+    ui->label_53->setText(msg);
+    ui->textBrowser->setText(output);
 }
 
 // add material
@@ -649,17 +1197,20 @@ void MainWindow::updateElevationRange()
     q1.setColor(QPalette::Text, Qt::black);
     q2.setColor(QPalette::Text, Qt::black);
 
+    QString prevmin = minElev;
+    QString prevmax = maxElev;
     // check if boundaries are valid
     if (westDbl < eastDbl and northDbl > southDbl){
 
+        // clear the strings
+        minElev = "";
+        maxElev = "";
+        elevList = ""; // restart SRTM elevation
         // use absolute degrees for elevation ranges
         east.sprintf("%03d", abs(eastDbl));
         north.sprintf("%02d", abs(northDbl));
         south.sprintf("%02d", abs(southDbl));
         west.sprintf("%03d", abs(westDbl));
-
-        QString minElev = "";
-        QString maxElev = "";
 
         // max north
         if (northDbl >= 0){
@@ -697,15 +1248,39 @@ void MainWindow::updateElevationRange()
         }
         minElev += west;
 
-        // output elevation range
-        ui->lineEdit_9->setText(minElev);
-        ui->lineEdit_10->setText(maxElev);
+        // output elevation range chosen in left
+        ui->label_50->setText(minElev);
+        ui->label_51->setText(maxElev);
+
+        if ((prevmin != minElev) || (prevmax != maxElev)) {
+            // build a HELPFUL SRTM list to add to the LOG, if enabled (or not)
+            for (double ew = westDbl; ew <= eastDbl; ew += 1.0) {
+                for (double ns = southDbl; ns <= northDbl; ns += 1.0) {
+                    east.sprintf("%03d", abs(ew));
+                    north.sprintf("%02d", abs(ns));
+                    if (elevList.size()) elevList += ";"; // add separator
+                    if (ns < 0) {
+                        elevList += "S";
+                    } else {
+                        elevList += "N";
+                    }
+                    elevList += north;
+                    if (ew < 0) {
+                        elevList += "W";
+                    } else {
+                        elevList += "E";
+                    }
+                    elevList += east;
+                }
+            }
+            // outputToLog(elevList); /* provide a 'helpful' list of SRTM files */
+        }
     }
 
     // if boundaries are not valid: do not display elevation range and set text color to red
     else{
-        ui->lineEdit_9->setText("");
-        ui->lineEdit_10->setText("");
+        ui->label_50->setText("");
+        ui->label_51->setText("");
 
         if (westDbl == eastDbl or westDbl > eastDbl){
             q1.setColor(QPalette::Text, Qt::red);
@@ -768,19 +1343,15 @@ void MainWindow::updateMaterials()
 // calculate center of scenery area and radii
 void MainWindow::updateCenter()
 {
-    QString east    = ui->lineEdit_28->text();
-    QString north   = ui->lineEdit_29->text();
-    QString south   = ui->lineEdit_30->text();
-    QString west    = ui->lineEdit_27->text();
 
-    double eastInt     = east.toDouble();
-    double northInt    = north.toDouble();
-    double southInt    = south.toDouble();
-    double westInt     = west.toDouble();
+    double eastInt     = m_east.toDouble();
+    double northInt    = m_north.toDouble();
+    double southInt    = m_south.toDouble();
+    double westInt     = m_west.toDouble();
 
     QPalette p;
 
-    if (westInt < eastInt and northInt > southInt){
+    if ((westInt < eastInt) && (northInt > southInt)) {
         double latInt      = (northInt + southInt)/2;
         double lonInt      = (eastInt + westInt)/2;
 
@@ -789,10 +1360,10 @@ void MainWindow::updateCenter()
         QString xRad     = QString::number(eastInt-lonInt);
         QString yRad     = QString::number(northInt-latInt);
 
-        ui->lineEdit_31->setText(lat);
-        ui->lineEdit_32->setText(lon);
-        ui->lineEdit_33->setText(xRad);
-        ui->lineEdit_34->setText(yRad);
+        ui->label_67->setText(lat);
+        ui->label_68->setText(lon);
+        ui->label_70->setText(xRad);
+        ui->label_69->setText(yRad);
 
         p.setColor(QPalette::WindowText, Qt::black);
     }
@@ -800,9 +1371,67 @@ void MainWindow::updateCenter()
         p.setColor(QPalette::WindowText, Qt::red);
     }
 
-    // change label colors on error
-    ui->label_28->setPalette(p);
-    ui->label_33->setPalette(p);
-    ui->label_34->setPalette(p);
-    ui->label_47->setPalette(p);
+    // change label colors on error - on Start tab/page
+    ui->label_7->setPalette(p);
+    ui->label_10->setPalette(p);
+    ui->label_11->setPalette(p);
+    ui->label_9->setPalette(p);
 }
+
+void MainWindow::outputToLog(QString s)
+{
+    if ( ui->checkBox_log->isChecked() ) {
+        QDateTime datetime  = QDateTime::currentDateTime();
+        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+        QFile data(projDirectory+"/log.txt");
+        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream out(&data);
+            out << endl;
+            out << sDateTime;
+            out << "  -  ";
+            out << s;
+        }
+    }
+}
+
+void MainWindow::outTemp(QString s)
+{
+    QFile data(projDirectory+"/templog.txt");
+    if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+    }
+}
+
+void MainWindow::on_checkBox_noovr_toggled(bool checked)
+{
+    settings.setValue("check/no_overwrite", checked);
+}
+
+void MainWindow::on_checkBox_4_toggled(bool checked)
+{
+    settings.setValue("check/ignore_landmass", checked);
+}
+
+void MainWindow::on_checkBox_minmax_clicked()
+{
+    // grey-out boundaries when ignored by genapts
+    int checked = ui->checkBox_minmax->isChecked();
+    ui->label_59->setDisabled(checked);
+    ui->label_61->setDisabled(checked);
+    ui->label_63->setDisabled(checked);
+    ui->label_65->setDisabled(checked);
+}
+
+void MainWindow::on_checkBox_nodata_toggled(bool checked)
+{
+    settings.setValue("check/no_data", checked);
+}
+
+void MainWindow::on_checkBox_igerr_toggled(bool checked)
+{
+    settings.setValue("check/ign_errors", checked);
+}
+
+// eof - mainwindow.cpp
