@@ -521,12 +521,17 @@ void MainWindow::on_pushButton_15_clicked()
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QFileInfoList list = dir.entryInfoList();
+    int j = 0;
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
-        new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
-        // select all materials per default
-        ui->listWidget_2->item(i)->setSelected(1);
+        // do not add the Shared folder
+        if (fileInfo.fileName() != "Shared"){
+            QString test = qPrintable(QString("%1").arg(fileInfo.fileName()));
+            new QListWidgetItem(tr(qPrintable(QString("%1").arg(fileInfo.fileName()))), ui->listWidget_2);
+            // select all materials per default
+            ui->listWidget_2->item(j)->setSelected(1);
+            j++;
+        }
     }
 }
 
