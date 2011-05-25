@@ -251,7 +251,14 @@ void MainWindow::on_pushButton_2_clicked()
 
     if ((westInt < eastInt) && (northInt > southInt)) {
         QString info = "\nWhen the zip is downloaded it should be expanded into your\n[Project Directory]/data.";
-        QString url = "http://mapserver.flightgear.org/dlcs?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north;
+        QString url  = "http://mapserver.flightgear.org/";
+        if (ui->comboBox_3->currentText() == "Custom scenery"){
+            url += "dlcs";
+        }
+        else {
+            url += "dlclc";
+        }
+        url += "?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north;
         // save output to log
         outputToLog(url);
         QUrl qu(url);
