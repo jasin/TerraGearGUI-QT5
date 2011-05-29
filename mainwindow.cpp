@@ -203,6 +203,7 @@ void MainWindow::on_wiki_triggered()
 void MainWindow::on_lineEdit_5_editingFinished()
 {
     m_east = ui->lineEdit_5->text();
+    ui->label_61->setText(m_east);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/east", m_east);
@@ -211,6 +212,7 @@ void MainWindow::on_lineEdit_5_editingFinished()
 void MainWindow::on_lineEdit_6_editingFinished()
 {
     m_west = ui->lineEdit_6->text();
+    ui->label_59->setText(m_west);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/west", m_west);
@@ -219,6 +221,7 @@ void MainWindow::on_lineEdit_6_editingFinished()
 void MainWindow::on_lineEdit_7_editingFinished()
 {
     m_north = ui->lineEdit_7->text();
+    ui->label_65->setText(m_north);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/north", m_north);
@@ -227,6 +230,7 @@ void MainWindow::on_lineEdit_7_editingFinished()
 void MainWindow::on_lineEdit_8_editingFinished()
 {
     m_south = ui->lineEdit_8->text();
+    ui->label_63->setText(m_south);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/south", m_south);
@@ -1426,9 +1430,13 @@ void MainWindow::on_checkBox_minmax_clicked()
     // grey-out boundaries when ignored by genapts
     int checked = ui->checkBox_minmax->isChecked();
     ui->label_59->setDisabled(checked);
+    ui->label_60->setDisabled(checked);
     ui->label_61->setDisabled(checked);
+    ui->label_62->setDisabled(checked);
     ui->label_63->setDisabled(checked);
+    ui->label_64->setDisabled(checked);
     ui->label_65->setDisabled(checked);
+    ui->label_66->setDisabled(checked);
 }
 
 void MainWindow::on_checkBox_nodata_toggled(bool checked)
