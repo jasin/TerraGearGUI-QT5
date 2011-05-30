@@ -688,6 +688,8 @@ void MainWindow::on_pushButton_13_clicked()
         QMessageBox::information(this,"ERROR",msg);
         return;
     }
+    // reset progress bar
+    ui->progressBar->setValue(0);
 
 #ifdef _NEWBUCKET_HXX   // we have SGBucket capability
     // construct fgfs-construct commandline,
@@ -881,6 +883,7 @@ void MainWindow::on_pushButton_13_clicked()
         tm = " rt "+getElapTimeStg(rt.elapsed());
         // msg.sprintf("%d of %d: fgfs-construct with %d folders - moment...", dy, dx, folderCnt);
         msg.sprintf("%d of %d: fgfs-construct ", dy, dx);
+
         msg += path;
         msg += tm;
         ui->label_54->setText(msg);
@@ -912,6 +915,10 @@ void MainWindow::on_pushButton_13_clicked()
         outTemp(arguments+"\n");
         output += info+"\n"; // add to full output
         output += arguments+"\n";
+
+        // adjust progress bar
+        ui->progressBar->setMaximum(dx);
+        ui->progressBar->setValue(dy);
 
         ui->textBrowser->setText(info); // only the last
         ui->textBrowser->repaint();
