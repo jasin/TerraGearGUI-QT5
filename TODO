@@ -1,4 +1,2 @@
 - Copy AirportObj airport files to output directory (might be more of a genapts bug).
-- Fix tab(key)-order.
 - Automatically download elevation files.
-- Option to select the type of to-be-downloaded shapefiles (eg. cs, v0, v1, corine etc.).
