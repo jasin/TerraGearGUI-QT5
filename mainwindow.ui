@@ -138,9 +138,9 @@
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>471</width>
+         <x>0</x>
+         <y>10</y>
+         <width>481</width>
          <height>61</height>
         </rect>
        </property>
@@ -151,12 +151,19 @@
         </font>
        </property>
        <property name="text">
-        <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are
-in degrees. Click the button to auto-download shapefiles for that area. It will also
-open a link to download elevation data (SRTM) manually to a directory of your choice.</string>
+        <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are in degrees. Click the button to auto-download shapefiles for that area. It will also open a link to download elevation data (SRTM) manually to a directory of your choice.</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        <set>Qt::AlignJustify|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>5</number>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_2">
@@ -203,9 +210,9 @@ open a link to download elevation data (SRTM) manually to a directory of your ch
       <widget class="QLabel" name="label_9">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>110</y>
-         <width>51</width>
+         <width>61</width>
          <height>21</height>
         </rect>
        </property>
@@ -320,7 +327,7 @@ open a link to download elevation data (SRTM) manually to a directory of your ch
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>130</y>
          <width>61</width>
          <height>21</height>
@@ -363,6 +370,9 @@ following range:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
       <widget class="QLabel" name="label_15">
@@ -455,9 +465,9 @@ following range:</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>60</y>
+         <y>70</y>
          <width>461</width>
-         <height>31</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
@@ -480,14 +490,16 @@ following range:</string>
         </rect>
        </property>
        <property name="text">
-        <string>Unpack the downloads to a directory of
-your choice, and use HGT Chop to
-generate the elevation arrays. A VERY
-important step, else you will get FLAT
-scenery.</string>
+        <string>Unpack the downloads to a directory of your choice, and use HGT Chop to generate the elevation arrays. A VERY important step, else you will get FLAT scenery.</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        <set>Qt::AlignJustify|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
       <widget class="QLabel" name="label_50">
@@ -569,9 +581,9 @@ scenery.</string>
       <widget class="QLabel" name="label_21">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>160</y>
-         <width>71</width>
+         <width>61</width>
          <height>21</height>
         </rect>
        </property>
@@ -582,7 +594,7 @@ scenery.</string>
         </font>
        </property>
        <property name="text">
-        <string>Data source</string>
+        <string>Source</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -877,12 +889,13 @@ scenery.</string>
        </rect>
       </property>
       <property name="text">
-       <string>Let us convert the elevation data to a format that we can use in FlightGear. It is important
-that you pick the right resolution. For the USA this usually means 1, while the rest of the
-world is widely available in 3.</string>
+       <string>Let us convert the elevation data to a format that we can use in FlightGear. It is important that you pick the right resolution. For the USA this usually means 1, while the rest of the world is widely available in 3.</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignJustify|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox_9">
@@ -922,6 +935,9 @@ world is widely available in 3.</string>
        <property name="text">
         <string>HGT files directory</string>
        </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
       </widget>
       <widget class="QComboBox" name="comboBox">
        <property name="geometry">
@@ -954,6 +970,9 @@ world is widely available in 3.</string>
        </property>
        <property name="text">
         <string>Resolution</string>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
       <widget class="QLabel" name="label_17">
@@ -992,8 +1011,17 @@ world is widely available in 3.</string>
         </rect>
        </property>
        <property name="text">
-        <string>Select the directory in which the HGT files are located and click the big button at the
+        <string>Select the directory where the HGT files are located and click the big button at the
 bottom.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
      </widget>
@@ -1103,9 +1131,9 @@ bottom.</string>
       <widget class="QLabel" name="label_38">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>190</x>
          <y>20</y>
-         <width>281</width>
+         <width>291</width>
          <height>91</height>
         </rect>
        </property>
@@ -1119,6 +1147,9 @@ file size, and ultimately create larger scenery files.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
      </widget>
@@ -1352,14 +1383,15 @@ file size, and ultimately create larger scenery files.</string>
        </rect>
       </property>
       <property name="text">
-       <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with
-FlightGear ($FG_ROOT/Airports/apt.dat.gz). 
+       <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with FlightGear ($FG_ROOT/Airports/apt.dat.gz). 
 
-Enabling &quot;Ignore min/max ranges&quot;, and leaving the extra options blank, will
-generate all airports in the .dat file. This will take extremely long!</string>
+Enabling &quot;Ignore min/max ranges&quot;, and leaving the extra options blank, will generate all airports in the .dat file. This will take extremely long!</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignJustify|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox_10">
@@ -1815,7 +1847,7 @@ generate all airports in the .dat file. This will take extremely long!</string>
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>491</width>
+        <width>481</width>
         <height>51</height>
        </rect>
       </property>
@@ -1823,12 +1855,13 @@ generate all airports in the .dat file. This will take extremely long!</string>
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>Align the shapefiles on the left (first clic &quot;Retrieve shapefiles&quot;) with the corresponding
-materials, by selecting materials from the menu below and pressing '+'. Doube clicking
-a shapefile deletes it; double clicking a material allows you to edit the material.</string>
+       <string>Align the shapefiles on the left (first clic &quot;Retrieve shapefiles&quot;) with the corresponding materials, by selecting materials from the menu below and pressing '+'. Doube clicking a shapefile deletes it; double clicking a material allows you to edit the material.</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignJustify|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_12">
@@ -2230,9 +2263,9 @@ a shapefile deletes it; double clicking a material allows you to edit the materi
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>60</y>
+        <y>70</y>
         <width>481</width>
-        <height>251</height>
+        <height>241</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -2309,21 +2342,18 @@ a shapefile deletes it; double clicking a material allows you to edit the materi
         </rect>
        </property>
        <property name="text">
-        <string>Construction needs to know the center
-of the scenery to build. This can
-be changed on the Start page tab.
+        <string>Construction needs to know the center of the scenery to build. This can be changed on the Start page tab.
 
-Only a single tile will be processed
-if a tile ID is given in options.</string>
+Only a single tile will be processed if a tile ID is given in options.</string>
        </property>
        <property name="scaledContents">
         <bool>false</bool>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        <set>Qt::AlignJustify|Qt::AlignTop</set>
        </property>
        <property name="wordWrap">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -2389,8 +2419,8 @@ if a tile ID is given in options.</string>
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>162</width>
-         <height>96</height>
+         <width>168</width>
+         <height>103</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -2483,26 +2513,34 @@ if a tile ID is given in options.</string>
          <x>10</x>
          <y>20</y>
          <width>211</width>
-         <height>101</height>
+         <height>121</height>
         </rect>
        </property>
        <property name="text">
-        <string>Select the terraintypes that you would
-like to use in your scenery. To include 
-airports, AirportArea and AirportObj are 
-required.
+        <string>Select the terrain types that you would like to use in your scenery. To include airports, AirportArea and AirportObj are  required.
 
-Note that the default material MUST be 
-selected to generate visible scenery.</string>
+Note that the default material MUST be selected to generate visible scenery.</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>0</number>
        </property>
       </widget>
       <widget class="QListWidget" name="listWidget_2">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>120</y>
+         <y>130</y>
          <width>211</width>
-         <height>241</height>
+         <height>231</height>
         </rect>
        </property>
        <property name="selectionMode">
@@ -2748,8 +2786,8 @@ selected to generate visible scenery.</string>
       </property>
       <property name="font">
        <font>
-        <weight>50</weight>
-        <bold>false</bold>
+        <weight>75</weight>
+        <bold>true</bold>
         <underline>false</underline>
         <strikeout>false</strikeout>
         <kerning>true</kerning>
@@ -2793,7 +2831,7 @@ selected to generate visible scenery.</string>
      <x>0</x>
      <y>0</y>
      <width>505</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
