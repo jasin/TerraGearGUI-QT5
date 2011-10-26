@@ -599,7 +599,12 @@ void MainWindow::on_pushButton_12_clicked()
             "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" <<
             "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" <<
             "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" <<
-            "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass";
+            "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass" << 
+            "clc_airport" << "clc_complexcrop" << "clc_construction" << "clc_cropgrass" << "clc_deciduousforest" << 
+            "clc_drycrop" << "clc_evergreenforest" << "clc_golfcourse" << "clc_grassland" << "clc_greenspace" << 
+            "clc_industrial" << "clc_lake" << "clc_marsh" << "clc_naturalcrop" << "clc_port" << "clc_sand" << 
+            "clc_town" << "clc_transport" << "clc_watercourse";
+			
     // list of correpsonding materials
     QStringList csMater;
     // *TBD* - should compare this to default_priorities.txt
@@ -614,7 +619,11 @@ void MainWindow::on_pushButton_12_clicked()
             "Orchard" << "PackIce" << "PolarIce" << "Port" << "Railroad" << "Railroad" <<
             "RainForest" << "Rice" << "Road" << "Rock" << "Saline" << "SaltMarsh" <<
             "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" <<
-            "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass";
+            "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass" << 
+            "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
+            "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "GreenSpace" << 
+            "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
+            "Town" << "Transport" << "WaterCourse";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
