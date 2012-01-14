@@ -253,6 +253,23 @@ void MainWindow::on_lineEdit_13_textEdited(const QString &arg1)
     ui->label_66->setDisabled(empty);
 }
 
+// disable lat/lon boundaries when tile-id is entered
+void MainWindow::on_lineEdit_35_textEdited(const QString &arg1)
+{
+    int empty = 0;
+    if (ui->lineEdit_35->text() != "") {
+        empty = 1;
+    }
+    ui->label_39->setDisabled(empty);
+    ui->label_40->setDisabled(empty);
+    ui->label_41->setDisabled(empty);
+    ui->label_42->setDisabled(empty);
+    ui->label_67->setDisabled(empty);
+    ui->label_68->setDisabled(empty);
+    ui->label_69->setDisabled(empty);
+    ui->label_70->setDisabled(empty);
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), airportFile, tr("Airport files (*.dat *.dat.gz)"));
@@ -1378,11 +1395,17 @@ void MainWindow::updateMaterials()
             while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
                 if (materialreader.name() == "material") {
                     while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
+
+
                         if (materialreader.name() == "name") {
                             material = materialreader.readElementText();
-                            // ignore materials already present
-                            if (materialList.indexOf(material, 0) == -1)
-                                materialList.append(material);
+                            // ignore rwy lights, textures and signs
+                            if (!material.startsWith("BlackSign") and !material.startsWith("dirt_rwy") and !material.startsWith("grass_rwy") and !material.startsWith("FramedSign") and !material.startsWith("lakebed_taxiway") and !material.startsWith("lf_") and !material.startsWith("pa_") and !material.startsWith("pc_") and !material.startsWith("RedSign") and !material.startsWith("RunwaySign") and !material.startsWith("RUNWAY_") and !material.startsWith("RWY_") and !material.startsWith("Unidirectional") and !material.startsWith("YellowSign")) {
+
+                                // ignore materials already present
+                                if (materialList.indexOf(material, 0) == -1)
+                                    materialList.append(material);
+                            }
                         }
                         // ignore sign materials
                         if (materialreader.name() == "glyph") {

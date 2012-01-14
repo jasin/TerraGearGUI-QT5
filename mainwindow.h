@@ -30,6 +30,7 @@ private slots:
     void on_lineEdit_7_editingFinished();
     void on_lineEdit_8_editingFinished();
     void on_lineEdit_13_textEdited(const QString &arg1);
+    void on_lineEdit_35_textEdited(const QString &arg1);
 
     void on_actionQuit_triggered();
     void on_about_triggered();
