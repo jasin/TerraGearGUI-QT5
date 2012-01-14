@@ -2,7 +2,7 @@
 //
 // Written by Gijs de Rooy, started March 2010.
 //
-// Copyright (C) 2010-2011  Gijs de Rooy - ???
+// Copyright (C) 2010-2012  Gijs de Rooy
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -181,7 +181,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.6"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.7"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -234,6 +234,23 @@ void MainWindow::on_lineEdit_8_editingFinished()
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/south", m_south);
+}
+
+// disable lat/lon boundaries when tile-id is entered
+void MainWindow::on_lineEdit_13_textEdited(const QString &arg1)
+{
+    int empty = 0;
+    if (ui->lineEdit_13->text() != "") {
+        empty = 1;
+    }
+    ui->label_59->setDisabled(empty);
+    ui->label_60->setDisabled(empty);
+    ui->label_61->setDisabled(empty);
+    ui->label_62->setDisabled(empty);
+    ui->label_63->setDisabled(empty);
+    ui->label_64->setDisabled(empty);
+    ui->label_65->setDisabled(empty);
+    ui->label_66->setDisabled(empty);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -589,7 +606,7 @@ void MainWindow::on_pushButton_12_clicked()
         ui->tblShapesAlign->removeRow(0);
     }
 
-    // list of custom scenery shapefiles
+    // list of scenery shapefiles
     QStringList csShape;
     csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" <<
             "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" <<
@@ -606,11 +623,12 @@ void MainWindow::on_pushButton_12_clicked()
             "clc_airport" << "clc_complexcrop" << "clc_construction" << "clc_cropgrass" << "clc_deciduousforest" << 
             "clc_drycrop" << "clc_evergreenforest" << "clc_golfcourse" << "clc_grassland" << "clc_greenspace" << 
             "clc_industrial" << "clc_lake" << "clc_marsh" << "clc_naturalcrop" << "clc_port" << "clc_sand" << 
-            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_rail";
+            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_light_rail" << "osm_primary" <<
+            "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" << "osm_tertiary" <<
+            "osm_trunk";
 			
     // list of correpsonding materials
     QStringList csMater;
-    // *TBD* - should compare this to default_priorities.txt
     csMater << "AgroForest" << "Airport" << "Asphalt" << "BarrenCover" << "Bog" <<
             "Burnt" << "Canal" << "Cemetery" << "ComplexCrop" << "Construction" <<
             "CropGrass" << "DeciduousForest" << "Default" << "Dirt" << "DryCrop" <<
@@ -626,7 +644,9 @@ void MainWindow::on_pushButton_12_clicked()
             "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
             "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
             "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
-            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad";
+            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad" << "Road" <<
+            "Railroad" << "Road" << "Canal" << "Road" << "Road" << "Road" <<
+            "Road";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -1457,6 +1477,7 @@ void MainWindow::on_checkBox_minmax_clicked()
 {
     // grey-out boundaries when ignored by genapts
     int checked = ui->checkBox_minmax->isChecked();
+    ui->label_3->setDisabled(checked);
     ui->label_59->setDisabled(checked);
     ui->label_60->setDisabled(checked);
     ui->label_61->setDisabled(checked);
@@ -1465,6 +1486,7 @@ void MainWindow::on_checkBox_minmax_clicked()
     ui->label_64->setDisabled(checked);
     ui->label_65->setDisabled(checked);
     ui->label_66->setDisabled(checked);
+    ui->lineEdit_18->setDisabled(checked);
 }
 
 void MainWindow::on_checkBox_nodata_toggled(bool checked)

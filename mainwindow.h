@@ -29,6 +29,7 @@ private slots:
     void on_lineEdit_6_editingFinished();
     void on_lineEdit_7_editingFinished();
     void on_lineEdit_8_editingFinished();
+    void on_lineEdit_13_textEdited(const QString &arg1);
 
     void on_actionQuit_triggered();
     void on_about_triggered();
@@ -58,8 +59,6 @@ private slots:
     void updateMaterials();
     void outputToLog(QString s);
     void outTemp(QString s); /* write to projDirectory+"/templog.txt" *TBD* should restart on app start */
-
-
 };
 
 #endif // MAINWINDOW_H
