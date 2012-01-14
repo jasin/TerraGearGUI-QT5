@@ -609,6 +609,14 @@ following range:</string>
          <height>22</height>
         </rect>
        </property>
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>CORINE (Europe only)</string>
+        </property>
+       </item>
        <item>
         <property name="text">
          <string>Custom scenery</string>
@@ -616,7 +624,7 @@ following range:</string>
        </item>
        <item>
         <property name="text">
-         <string>CORINE (Europe only)</string>
+         <string>OpenStreetMap</string>
         </property>
        </item>
       </widget>
@@ -2831,7 +2839,7 @@ Note that the default material MUST be selected to generate visible scenery.</st
      <x>0</x>
      <y>0</y>
      <width>505</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">

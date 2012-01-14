@@ -181,7 +181,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.6"),tr("©2010-2011 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.6"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -192,7 +192,7 @@ void MainWindow::on_wiki_triggered()
     if ( ! QDesktopServices::openUrl(qu) ) {
         // QWebView::webview = new QWebView;
         // webview.load(url);
-        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser");
+        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to open the URL ["+url+"] but FAILED.\nCopy the URL to your browser");
     } else {
         QMessageBox::information(this,"WIKI HELP","The URL ["+url+"] should be displayed in your default browser.\nIf this fails, copy the URL to your browser");
     }
@@ -258,6 +258,9 @@ void MainWindow::on_pushButton_2_clicked()
         QString url  = "http://mapserver.flightgear.org/";
         if (ui->comboBox_3->currentText() == "Custom scenery"){
             url += "dlcs";
+        }
+        else if (ui->comboBox_3->currentText() == "OpenStreetMap"){
+            url += "dlosm";
         }
         else {
             url += "dlclc";
@@ -603,7 +606,7 @@ void MainWindow::on_pushButton_12_clicked()
             "clc_airport" << "clc_complexcrop" << "clc_construction" << "clc_cropgrass" << "clc_deciduousforest" << 
             "clc_drycrop" << "clc_evergreenforest" << "clc_golfcourse" << "clc_grassland" << "clc_greenspace" << 
             "clc_industrial" << "clc_lake" << "clc_marsh" << "clc_naturalcrop" << "clc_port" << "clc_sand" << 
-            "clc_town" << "clc_transport" << "clc_watercourse";
+            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_rail";
 			
     // list of correpsonding materials
     QStringList csMater;
@@ -621,9 +624,9 @@ void MainWindow::on_pushButton_12_clicked()
             "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" <<
             "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass" << 
             "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
-            "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "GreenSpace" << 
+            "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
             "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
-            "Town" << "Transport" << "WaterCourse";
+            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -727,6 +730,8 @@ void MainWindow::on_pushButton_13_clicked()
     rt.start();
     // build the general runtime string
     QString runtime = "\""+terragearDirectory+"/fgfs-construct\" ";
+    runtime += "--priorities=\""+terragearDirectory+"/default_priorities.txt\" ";
+    runtime += "--usgs-map=\""+terragearDirectory+"/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
     runtime += "--output-dir=\""+outpDirectory+"/Terrain\" ";
     if (ui->checkBox_3->isChecked()) {
