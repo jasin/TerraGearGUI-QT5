@@ -1062,6 +1062,9 @@ void MainWindow::on_pushButton_16_clicked()
     QString info;
     QString shapefile;
 
+    // reset progress bar
+    ui->progressBar_2->setValue(0);
+
     rt.start();
     // check if terragear tool exists
     QString TGfile      = terragearDirectory+"/ogr-decode";
@@ -1186,6 +1189,10 @@ void MainWindow::on_pushButton_16_clicked()
         msg = "PROC_ENDED"+tm;
         outputToLog(msg);
         outTemp(msg+"\n");
+
+        // adjust progress bar
+        ui->progressBar_2->setMaximum(argList.size()-1);
+        ui->progressBar_2->setValue(i);
     }
 
     msg.sprintf("Done %d files", argList.size());
