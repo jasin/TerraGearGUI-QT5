@@ -187,14 +187,10 @@ void MainWindow::on_about_triggered()
 // show wiki article in a browser
 void MainWindow::on_wiki_triggered()
 {
-    QString url = "http://wiki.flightgear.org/index.php/TerraGear_GUI";
+    QString url = "http://wiki.flightgear.org/TerraGear_GUI";
     QUrl qu(url);
     if ( ! QDesktopServices::openUrl(qu) ) {
-        // QWebView::webview = new QWebView;
-        // webview.load(url);
-        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to open the URL ["+url+"] but FAILED.\nCopy the URL to your browser");
-    } else {
-        QMessageBox::information(this,"WIKI HELP","The URL ["+url+"] should be displayed in your default browser.\nIf this fails, copy the URL to your browser");
+        QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened "+url+".\nCopy the URL to your browser");
     }
 }
 
@@ -278,22 +274,20 @@ void MainWindow::on_pushButton_clicked()
 }
 
 // download shapefiles from mapserver
-// added 'landmass' download
 void MainWindow::on_pushButton_2_clicked()
 {
-    bool add_landmass = false;
     double eastInt     = m_east.toDouble();
     double northInt    = m_north.toDouble();
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
     if ((westInt < eastInt) && (northInt > southInt)) {
-        QString info = "\nWhen the zip is downloaded it should be expanded into your\n[Project Directory]/data.";
         QString url  = "http://mapserver.flightgear.org/";
-        if (ui->comboBox_3->currentText() == "Custom scenery"){
+        QString source = ui->comboBox_3->currentText();
+        if (source == "Custom scenery"){
             url += "dlcs";
         }
-        else if (ui->comboBox_3->currentText() == "OpenStreetMap"){
+        else if (source == "OpenStreetMap"){
             url += "dlosm";
         }
         else {
@@ -306,28 +300,13 @@ void MainWindow::on_pushButton_2_clicked()
         if ( ! QDesktopServices::openUrl(qu) ) {
             // QWebView::webview = new QWebView;
             // webview.load(url);
-            QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
-        } else {
-            QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser, and a zip file downloaded.\nIf this fails, copy the URL to your browser manually."+info);
+            QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened "+url+".\nCopy the URL to your browser");
         }
-        if (add_landmass) {
-            info = "\nWhen the zip is downloaded it should be expanded into your\n[Project Directory]/data/v0_landmass/v0_landmass.[dbf|prj|shp|shx] files.";
-            url = "http://mapserver.flightgear.org/dlaction.psp?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north+"&pgislayer=v0_landmass";
-            outputToLog(url);
-            QUrl q2(url);
-            if ( ! QDesktopServices::openUrl(q2) ) {
-                QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
-            } else {
-                QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser, and a zip file downloaded\nof the form v0_landmass-<large-index>.zip...\nIf this fails, copy the URL to your browser manually."+info);
-            }
-
-        }
-
     }
     else{
-        QString msg = tr("Wrong boundaries. min. lon is not less than max., or min. lat is not less than max.\nCorrect the strings, and try again.");
+        QString msg = tr("Minimum longitude and/or latitude is not less than maximum.\nCorrect the coordinates, and try again.");
         outputToLog(msg);
-        QMessageBox::about(this,tr("Error"),msg);
+        QMessageBox::critical(this,tr("Boundary error"),msg);
     }
 
 }
@@ -366,8 +345,8 @@ void MainWindow::on_pushButton_5_clicked()
     // if ( !verifySRTMfiles() ) {
     if ( !util_verifySRTMfiles(minLat, maxLat, minLon, maxLon, workDirectory) ) {
         // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
-        arguments = "ERROR: Have searched ["+workDirectory+"] for elevation information\nand NONE found!\nThis means airports will be generated with NO elevation information!\nDo you want to continue?\nClick Cancel to abort.";
-        if ( ! getYesNo("NO ELEVATIONS",arguments) ) // This needs to be a Yes/No dialog
+        arguments = "No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!";
+        if ( ! getYesNo("No elevation data found",arguments) )
             return;
     }
     rt.start();
@@ -472,6 +451,16 @@ void MainWindow::on_pushButton_9_clicked()
     terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."));
     ui->lineEdit_2->setText(terragearDirectory);
     settings.setValue("paths/terragear", terragearDirectory);
+
+    // disable tabs if terragear path is not set
+    int enabled = 0;
+    if (terragearDirectory != ""){
+        enabled = 1;
+    }
+    ui->tabWidget->setTabEnabled(1,enabled);
+    ui->tabWidget->setTabEnabled(2,enabled);
+    ui->tabWidget->setTabEnabled(3,enabled);
+    ui->tabWidget->setTabEnabled(4,enabled);
 }
 
 // run hgt-chop
@@ -640,9 +629,9 @@ void MainWindow::on_pushButton_12_clicked()
             "clc_airport" << "clc_complexcrop" << "clc_construction" << "clc_cropgrass" << "clc_deciduousforest" << 
             "clc_drycrop" << "clc_evergreenforest" << "clc_golfcourse" << "clc_grassland" << "clc_greenspace" << 
             "clc_industrial" << "clc_lake" << "clc_marsh" << "clc_naturalcrop" << "clc_port" << "clc_sand" << 
-            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_light_rail" << "osm_primary" <<
-            "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" << "osm_tertiary" <<
-            "osm_trunk";
+            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_light_rail" << "osm_motorway" <<
+            "osm_primary" << "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" <<
+            "osm_stream" << "osm_tertiary" << "osm_trunk";
 			
     // list of correpsonding materials
     QStringList csMater;
@@ -661,9 +650,9 @@ void MainWindow::on_pushButton_12_clicked()
             "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
             "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
             "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
-            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad" << "Road" <<
-            "Railroad" << "Road" << "Canal" << "Road" << "Road" << "Road" <<
-            "Road";
+            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad" << "Freeway" <<
+            "Road" << "Railroad" << "Road" << "Canal" << "Road" << "Road" <<
+            "Canal" << "Road" << "Road";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -879,19 +868,7 @@ void MainWindow::on_pushButton_13_clicked()
         QMessageBox::information(this,"NO BUCKETS TO PROCESS",msg);
         return;
     }
-    msg.sprintf("To process %d buckets, of total %d, folders %d\n", argList.size(), gotcnt, folderCnt);
-    msg += "Options: Overwrite=";
-    msg += no_overwrite ? "ON" : "OFF";
-    msg += " Skip_no_data=";
-    msg += skip_nodata ? "ON" : "OFF";
-    msg += " Ignore_Err=";
-    msg += skip_error ? "ON" : "OFF";
-    msg += "\n";
-    outTemp(msg);
-    msg += "Click Ok/Yes to CONTINUE";
-    if ( !getYesNo("CONSTRUCTION PROCESS",msg) ) {
-        return;
-    }
+
     // we are on our way. to construct <index>.btg.gz file(s),
     // plus the associated <index>.stg to load these items in FG
     int setup_ms = rt.restart(); // restart timer
@@ -980,21 +957,32 @@ void MainWindow::on_pushButton_13_clicked()
 
         // if the string end is [Finished successfully], then all is well
         if ( ! info.contains("[Finished successfully]") ) {
-            msg.sprintf("WARNING: %d of %d: fgfs-construct ", dy, dx);
-            msg += "exited with error "+em+"\n";
-            msg += "or failed to output [Finished successfully]\n";
-            msg += "while processing "+path+"\n";
+            if (em == "ERROR CODE -1"){
+                msg = "FGFS Construct failed to ouput [Finished successfully].\n";
+            }
+            else {
+                msg = "FGFS Construct error: ";
+                msg += em+"\n";
+            }
+            msg += "Tile: "+path+"\n\n";
             msg += "This usually indicates some error in processing!\n";
             outTemp(msg);
             if (!skip_error) {
-                msg += "Click OK to continue contruction?";
-                if ( !getYesNo("PROCESS WARNING",msg) ) {
+                msg += "Click OK to continue contruction.";
+                if ( !getYesNo("Process warning",msg) ) {
                     break;
                 }
             }
         }
         ui->label_54->repaint(); // does not seem to always appear, but sometimes???
     }
+
+    // scenery has been successfully created, congratulate developer
+    if ( info.contains("[Finished successfully]") ) {
+        msg = "Your scenery has been successfully created!";
+        QMessageBox::information(this,"Congratulations", msg);
+    }
+
     // ==================================================================
     msg.sprintf("fgfs-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
     msg += " in "+getElapTimeStg(rt.elapsed());
@@ -1113,15 +1101,15 @@ void MainWindow::on_pushButton_16_clicked()
 #endif
     QFile f(TGfile);
     if ( ! f.exists() ) {
-        QString msg = "Unable to locate executable "+TGfile;
-        QMessageBox::critical(this,"ERROR: NO FILE", msg);
+        QString msg = "Unable to locate executable at "+TGfile;
+        QMessageBox::critical(this,"File not found", msg);
         return;
     }
     for (i = 0; i < ui->tblShapesAlign->rowCount(); i++)
     {
         // skip if material are not assigned
         if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
-            QMessageBox::critical(this,"ERROR: NO MATERIAL", "You did not assign materials for each shapefile.");
+            QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
             return;
         }
     }

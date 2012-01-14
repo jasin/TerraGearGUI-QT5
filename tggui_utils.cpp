@@ -46,20 +46,20 @@ QStringList findFiles(const QString &startDir, QStringList filters)
 int getYesNo( QString title, QString msg)
 {
     QMessageBox msgBox;
-    msgBox.setText(title); // set TITLE text
-    msgBox.setIcon(QMessageBox::Information); // set predefined icon, icon is show on left side of text.
-    msgBox.setInformativeText(msg); // set the Question
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No); // Add ok and cancel button.
-    msgBox.setDefaultButton(QMessageBox::Yes);  //Set focus of ok button
+    msgBox.setWindowTitle(title); // set TITLE text
+    msgBox.setIcon(QMessageBox::Warning); // set predefined icon, icon is show on left side of text.
+    msgBox.setInformativeText(msg); // set the question
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel); // Add ok and cancel button.
+    msgBox.setDefaultButton(QMessageBox::Ok);  //Set focus of ok button
     //execute message box. method exec() return the button value of cliecke button
     int ret = msgBox.exec();
     //User get input from returned value (ret). you can handle it here.
     switch (ret)
     {
-    case QMessageBox::Yes:
+    case QMessageBox::Ok:
         ret = 1;    // 1 for OK to continue
         break;
-    case QMessageBox::No:
+    case QMessageBox::Cancel:
         ret = 0; // Cancel was clicked
         break;
     default:
