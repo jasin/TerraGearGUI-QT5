@@ -489,6 +489,10 @@ void MainWindow::on_pushButton_11_clicked()
         QMessageBox::information(this,"ERROR","There are no elevation files in "+elevationDirectory+"\nNothing to do!");
         return;
     }
+
+    // reset progress bar
+    ui->progressBar_3->setValue(0);
+
     rt.start(); // start total running time
     tot.sprintf("%d", list.size());
 
@@ -516,9 +520,12 @@ void MainWindow::on_pushButton_11_clicked()
 
         cnt.sprintf("%d", (i + 1));
         tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
-        ui->label_52->setText("File:"+cnt+" of "+tot+": "+elevationFile+tm); // but the PROBLEM is how to get this PAINTED???
-        // ui->label_52->render(); // no...
-        ui->label_52->repaint(); // wow, ok this seems to work
+        ui->label_52->setText("File:"+cnt+" of "+tot+": "+elevationFile+tm);
+        ui->label_52->repaint();
+
+        // adjust progress bar
+        ui->progressBar_3->setMaximum(tot.toInt()*2);
+        ui->progressBar_3->setValue(cnt.toInt());
 
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
@@ -540,8 +547,8 @@ void MainWindow::on_pushButton_11_clicked()
     }
 
     pt.start();
-    ui->label_52->setText("Now running terrafit..."); // but the PROBLEM is how to get this PAINTED???
-    ui->label_52->repaint(); // wow, ok this seems to work
+    ui->label_52->setText("Now running terrafit...");
+    ui->label_52->repaint();
 
     // generate and run terrafit command
     QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" ";
@@ -575,6 +582,10 @@ void MainWindow::on_pushButton_11_clicked()
         cnt.sprintf("%d", list.size());
         ui->label_52->setText("Done "+cnt+" files in "+tm);
         outputToLog("Done "+cnt+" files in "+tm);
+
+        // adjust progress bar
+        ui->progressBar_3->setMaximum(tot.toInt()*2);
+        ui->progressBar_3->setValue(tot.toInt()+cnt.toInt());
     } else {
         ui->label_52->setText("No files processed...");
     }
