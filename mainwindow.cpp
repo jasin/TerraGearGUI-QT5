@@ -165,6 +165,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    // add shapefiles to list, if empty
+    if (index == 3 and ui->tblShapesAlign->rowCount() == 0) {
+        ui->pushButton_12->click();
+    }
+    // add terraintypes to list, if empty
+    if (index == 4 and ui->listWidget_2->count() == 0) {
+        ui->pushButton_15->click();
+    }
+}
+
 void MainWindow::on_tabWidget_selected(QString )
 {
     show();
@@ -239,6 +251,7 @@ void MainWindow::on_lineEdit_13_textEdited(const QString &arg1)
     if (ui->lineEdit_13->text() != "") {
         empty = 1;
     }
+    ui->label_3->setDisabled(empty);
     ui->label_59->setDisabled(empty);
     ui->label_60->setDisabled(empty);
     ui->label_61->setDisabled(empty);
@@ -247,6 +260,26 @@ void MainWindow::on_lineEdit_13_textEdited(const QString &arg1)
     ui->label_64->setDisabled(empty);
     ui->label_65->setDisabled(empty);
     ui->label_66->setDisabled(empty);
+    ui->lineEdit_18->setDisabled(empty);
+}
+
+// disable lat/lon boundaries when airport ID is entered
+void MainWindow::on_lineEdit_18_textEdited(const QString &arg1)
+{
+    int empty = 0;
+    if (ui->lineEdit_18->text() != "") {
+        empty = 1;
+    }
+    ui->label_20->setDisabled(empty);
+    ui->label_59->setDisabled(empty);
+    ui->label_60->setDisabled(empty);
+    ui->label_61->setDisabled(empty);
+    ui->label_62->setDisabled(empty);
+    ui->label_63->setDisabled(empty);
+    ui->label_64->setDisabled(empty);
+    ui->label_65->setDisabled(empty);
+    ui->label_66->setDisabled(empty);
+    ui->lineEdit_13->setDisabled(empty);
 }
 
 // disable lat/lon boundaries when tile-id is entered
@@ -341,8 +374,6 @@ void MainWindow::on_pushButton_5_clicked()
     QString tm;
     QString msg;
 
-    // if an additional directory to be search, ie --terrain=<dir>, could be added to function
-    // if ( !verifySRTMfiles() ) {
     if ( !util_verifySRTMfiles(minLat, maxLat, minLon, maxLon, workDirectory) ) {
         // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
         arguments = "No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!";
@@ -352,25 +383,27 @@ void MainWindow::on_pushButton_5_clicked()
     rt.start();
     // proceed to do airport generation
     arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
-    if (airportId.size() > 0){
-        arguments += "--airport="+airportId+" ";
-    }
-    if (startAptId.size() > 0) {
-        arguments += "--start-id="+startAptId+" ";
-    }
     if ( !ui->checkBox_minmax->isChecked() ) {
-        // not excluded, so add where there is a min/max range
-        if (maxLat.size() > 0) {
-            arguments += "--max-lat="+maxLat+" ";
+        if (airportId.size() > 0){
+            arguments += "--airport="+airportId+" ";
         }
-        if (maxLon.size() > 0) {
-            arguments += "--max-lon="+maxLon+" ";
+        if (startAptId.size() > 0) {
+            arguments += "--start-id="+startAptId+" ";
         }
-        if (minLat.size() > 0) {
-            arguments += "--min-lat="+minLat+" ";
-        }
-        if (minLon.size() > 0) {
-            arguments += "--min-lon="+minLon+" ";
+        if (airportId == "" and tileId == "") {
+            // not excluded, so add where there is a min/max range
+            if (maxLat.size() > 0) {
+                arguments += "--max-lat="+maxLat+" ";
+            }
+            if (maxLon.size() > 0) {
+                arguments += "--max-lon="+maxLon+" ";
+            }
+            if (minLat.size() > 0) {
+                arguments += "--min-lat="+minLat+" ";
+            }
+            if (minLon.size() > 0) {
+                arguments += "--min-lon="+minLon+" ";
+            }
         }
     }
 
@@ -721,7 +754,7 @@ void MainWindow::on_pushButton_13_clicked()
     bool brk = false;
     int folderCnt = ui->listWidget_2->count();
     if (folderCnt == 0) {
-        QMessageBox::information(this,"ERROR","There are no material folders! Use [Update List] to populate it\nthen select those desired.");
+        QMessageBox::critical(this,"No terraintypes","There are no terraintypes listed. Use [Update list] to populate it, then select those desired.");
         return;
     }
     folderCnt = 0; // RESTART COUNTER
@@ -733,8 +766,7 @@ void MainWindow::on_pushButton_13_clicked()
         }
     }
     if (folderCnt == 0) {
-        msg.sprintf("It appears you have NOT selected any the %d folders!", ui->listWidget_2->count());
-        QMessageBox::information(this,"ERROR",msg);
+        QMessageBox::critical(this,"No terraintype selected","It appears you have not selected any of the terraintypes! Select all types that you would like to include in the scenery.");
         return;
     }
     // reset progress bar
@@ -1500,6 +1532,7 @@ void MainWindow::on_checkBox_minmax_clicked()
     // grey-out boundaries when ignored by genapts
     int checked = ui->checkBox_minmax->isChecked();
     ui->label_3->setDisabled(checked);
+    ui->label_20->setDisabled(checked);
     ui->label_59->setDisabled(checked);
     ui->label_60->setDisabled(checked);
     ui->label_61->setDisabled(checked);
@@ -1508,6 +1541,7 @@ void MainWindow::on_checkBox_minmax_clicked()
     ui->label_64->setDisabled(checked);
     ui->label_65->setDisabled(checked);
     ui->label_66->setDisabled(checked);
+    ui->lineEdit_13->setDisabled(checked);
     ui->lineEdit_18->setDisabled(checked);
 }
 

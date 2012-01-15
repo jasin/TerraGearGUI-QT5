@@ -30,6 +30,7 @@ private slots:
     void on_lineEdit_7_editingFinished();
     void on_lineEdit_8_editingFinished();
     void on_lineEdit_13_textEdited(const QString &arg1);
+    void on_lineEdit_18_textEdited(const QString &arg1);
     void on_lineEdit_35_textEdited(const QString &arg1);
 
     void on_actionQuit_triggered();
@@ -52,6 +53,7 @@ private slots:
     void on_pushButton_17_clicked();
 
     void on_tabWidget_selected(QString );
+    void on_tabWidget_currentChanged(int index);
 
     void on_tblShapesAlign_cellDoubleClicked(int row, int column);
 
