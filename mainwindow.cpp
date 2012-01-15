@@ -694,7 +694,7 @@ void MainWindow::on_pushButton_12_clicked()
             "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
             "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
             "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
-            "Town" << "Transport" << "WaterCourse" << "Canal" << "Railroad" << "Freeway" <<
+            "Town" << "Transport" << "Watercourse" << "Canal" << "Railroad" << "Freeway" <<
             "Road" << "Railroad" << "Road" << "Canal" << "Road" << "Road" <<
             "Canal" << "Road" << "Road";
 
@@ -998,8 +998,24 @@ void MainWindow::on_pushButton_13_clicked()
         outputToLog(msg);
         outTemp(msg+"\n");
 
+        if (info.contains("unknown area = ")) {
+            QMessageBox msgBox;
+            msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
+            msgBox.setDefaultButton(QMessageBox::Abort);
+            msgBox.setWindowTitle("Unknown area");
+            msgBox.setText("A material is not listed in default_priorities.txt.");
+            msgBox.setIcon(QMessageBox::Critical);
+            int ret = msgBox.exec();
+            switch (ret) {
+            case QMessageBox::Ignore:
+                break;
+            case QMessageBox::Abort:
+                return;
+                break;
+            }
+        }
         // if the string end is [Finished successfully], then all is well
-        if ( ! info.contains("[Finished successfully]") ) {
+        else if ( ! info.contains("[Finished successfully]") ) {
             if (em == "ERROR CODE -1"){
                 msg = "FGFS Construct failed to ouput [Finished successfully].\n";
             }
@@ -1148,8 +1164,14 @@ void MainWindow::on_pushButton_16_clicked()
         QMessageBox::critical(this,"File not found", msg);
         return;
     }
-    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++)
-    {
+
+    // skip if no shapefiles are listed
+    if (ui->tblShapesAlign->rowCount() == 0){
+        QMessageBox::critical(this,"Shapefile error", "No shapefiles are listed. Please click the [Retrieve shapefiles] button.");
+        return;
+    }
+
+    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++) {
         // skip if material are not assigned
         if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
             QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
@@ -1158,17 +1180,14 @@ void MainWindow::on_pushButton_16_clicked()
     }
 
     // got executable, and have assigned materials, so do the work
-    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++)
-    {
+    for (i = 0; i < ui->tblShapesAlign->rowCount(); i++) {
         QString material = ui->tblShapesAlign->item(i, 0)->text();
         QString lineWidth;
-        if (ui->tblShapesAlign->item(i, 2) != 0)
-        {
+        if (ui->tblShapesAlign->item(i, 2) != 0) {
             // cell item already created
             lineWidth = ui->tblShapesAlign->item(i, 2)->text();
         }
-        else
-        {
+        else {
             // cell item are not created - default width
             lineWidth = "10";
         }
@@ -1247,6 +1266,23 @@ void MainWindow::on_pushButton_16_clicked()
         if (errCode) {
             info += proc.readAllStandardError();
             arguments.sprintf("\n*PROC_ENDED* with ERROR CODE %d!\n",errCode);
+
+            if ( errCode == -1073741515) {
+                QMessageBox msgBox;
+                msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
+                msgBox.setDefaultButton(QMessageBox::Abort);
+                msgBox.setWindowTitle("Process error");
+                msgBox.setText("Failed to decode shapefiles.\nTry using Shape Decode, instead of OGR Decode.");
+                msgBox.setIcon(QMessageBox::Critical);
+                int ret = msgBox.exec();
+                switch (ret) {
+                case QMessageBox::Ignore:
+                    break;
+                case QMessageBox::Abort:
+                    return;
+                    break;
+                }
+            }
         }
         output += arguments+"\n"+info+"\n";
         outTemp(arguments+"\n"+info+"\n");
