@@ -439,19 +439,13 @@ void MainWindow::on_pushButton_5_clicked()
 // download elevation data SRTM
 void MainWindow::on_pushButton_6_clicked()
 {
-    // QString minElev and maxElev set
-    outputToLog(elevList); /* provide a 'helpful' list of SRTM files */
-    QString info = "\nDownload the SRTM in the range ["+minElev+"] to ["+maxElev+"]";
-    info += "\nA list of the ranges should be in the log.txt file, if enabled";
-    info += "\nWhen the zips are downloaded they should be expanded into a\ndirectory of your choice before running HGT CHop.";
+    // provide a 'helpful' list of SRTM files
+    outputToLog(elevList);
+
     QString url = "http://dds.cr.usgs.gov/srtm/version2_1/";
     QUrl qu(url);
     if ( ! QDesktopServices::openUrl(qu) ) {
-        // QWebView::webview = new QWebView;
-        // webview.load(url);
-        QMessageBox::critical(this,"OPEN URL FAILED","Attempted to opn the URL ["+url+"] but FAILED.\nCopy the URL to your browser"+info);
-    } else {
-        QMessageBox::information(this,"DATA DOWNLOAD","The URL ["+url+"] should be displayed in your default browser. Download the required zips.\nIf this fails, copy the URL to your browser manually."+info);
+        QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened ["+url+"].\nCopy the URL to your browser.");
     }
 }
 
@@ -519,7 +513,7 @@ void MainWindow::on_pushButton_11_clicked()
     int i;
 
     if (list.size() == 0) {
-        QMessageBox::information(this,"ERROR","There are no elevation files in "+elevationDirectory+"\nNothing to do!");
+        QMessageBox::critical(this,"No elevation data","There are no elevation files in "+elevationDirectory+". You can download elevation data on the Start tab.");
         return;
     }
 
@@ -623,7 +617,6 @@ void MainWindow::on_pushButton_11_clicked()
         ui->label_52->setText("No files processed...");
     }
 }
-
 
 // update shapefiles list for ogr-decode
 void MainWindow::on_pushButton_12_clicked()
@@ -751,6 +744,7 @@ void MainWindow::on_pushButton_13_clicked()
     QString y = ui->label_69->text();
     QString selectedMaterials;
     QString msg;
+
     bool brk = false;
     int folderCnt = ui->listWidget_2->count();
     if (folderCnt == 0) {
@@ -902,7 +896,6 @@ void MainWindow::on_pushButton_13_clicked()
     }
     ind = argList.size();
     if (ind != pathList.size()) {
-        // catastophic FAILURE
         QMessageBox::critical(this,"INTERNAL ERROR","Lists are NOT equal in length!");
         return;
     }
@@ -1024,7 +1017,7 @@ void MainWindow::on_pushButton_13_clicked()
                 msg += em+"\n";
             }
             msg += "Tile: "+path+"\n\n";
-            msg += "This usually indicates some error in processing!\n";
+            msg += "This usually indicates some error in processing, eg. a too complex scenery.\n";
             outTemp(msg);
             if (!skip_error) {
                 msg += "Click OK to continue contruction.";
