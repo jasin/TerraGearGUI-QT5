@@ -193,7 +193,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.7"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.8.0"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -323,8 +323,11 @@ void MainWindow::on_pushButton_2_clicked()
         else if (source == "OpenStreetMap"){
             url += "dlosm";
         }
+        else if (source == "CORINE 2000 (Europe)"){
+            url += "dlclc00";
+        }
         else {
-            url += "dlclc";
+            url += "dlclc06";
         }
         url += "?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north;
         // save output to log
