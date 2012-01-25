@@ -39,6 +39,7 @@
 #include <QMessageBox>
 #include <QPalette>
 #include <QProcess>
+#include <QRegExp>
 #include <QSettings>
 #include <QStringList>
 #include <QTextStream>
@@ -193,7 +194,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.8.0"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.8.1"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -624,6 +625,23 @@ void MainWindow::on_pushButton_11_clicked()
 // update shapefiles list for ogr-decode
 void MainWindow::on_pushButton_12_clicked()
 {
+    // confirmation dialog
+    if (ui->tblShapesAlign->rowCount() != 0) {
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        msgBox.setText("Are you sure you want to retrieve shapefiles?\nDoing so will reset all material and line width settings.");
+        msgBox.setIcon(QMessageBox::Warning);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Ok:
+            break;
+        case QMessageBox::Cancel:
+            return;
+            break;
+        }
+    }
+
     // move shapefiles to "private" directories
     QDir dir(dataDirectory); // search 'data' folder, for 'directories'
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
@@ -655,23 +673,23 @@ void MainWindow::on_pushButton_12_clicked()
     // list of scenery shapefiles
     QStringList csShape;
     csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" <<
-            "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" <<
-            "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" <<
-            "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" <<
-            "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" <<
-            "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" <<
-            "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" <<
-            "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" <<
-            "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" <<
-            "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" <<
-            "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" <<
-            "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass" << 
-            "clc_airport" << "clc_complexcrop" << "clc_construction" << "clc_cropgrass" << "clc_deciduousforest" << 
-            "clc_drycrop" << "clc_evergreenforest" << "clc_golfcourse" << "clc_grassland" << "clc_greenspace" << 
-            "clc_industrial" << "clc_lake" << "clc_marsh" << "clc_naturalcrop" << "clc_port" << "clc_sand" << 
-            "clc_town" << "clc_transport" << "clc_watercourse" << "osm_canal" << "osm_light_rail" << "osm_motorway" <<
-            "osm_primary" << "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" <<
-            "osm_stream" << "osm_tertiary" << "osm_trunk";
+               "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" <<
+               "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" <<
+               "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" <<
+               "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" <<
+               "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" <<
+               "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" <<
+               "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" <<
+               "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" <<
+               "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" <<
+               "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" <<
+               "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass" <<
+               "*_airport" << "*_complexcrop" << "*_construction" << "*_cropgrass" << "*_deciduousforest" <<
+               "*_drycrop" << "*_evergreenforest" << "*_golfcourse" << "*_grassland" << "*_greenspace" <<
+               "*_industrial" << "*_lake" << "*_marsh" << "*_naturalcrop" << "*_ocean" << "*_port" << "*_sand" <<
+               "*_town" << "*_transport" << "*_watercourse" << "osm_canal" << "osm_light_rail" << "osm_motorway" <<
+               "osm_primary" << "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" <<
+               "osm_stream" << "osm_tertiary" << "osm_trunk";
 			
     // list of correpsonding materials
     QStringList csMater;
@@ -689,7 +707,7 @@ void MainWindow::on_pushButton_12_clicked()
             "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass" << 
             "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
             "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
-            "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Port" << "Sand" << 
+            "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Ocean" << "Port" << "Sand" <<
             "Town" << "Transport" << "Watercourse" << "Canal" << "Railroad" << "Freeway" <<
             "Road" << "Railroad" << "Road" << "Canal" << "Road" << "Road" <<
             "Canal" << "Road" << "Road";
@@ -711,7 +729,9 @@ void MainWindow::on_pushButton_12_clicked()
         // suggest a material
         QString suggestedMaterial;
         for (int j = 0; j < csShape.length(); ++j) {
-            if (dirInfo.fileName() == csShape[j]){
+            QRegExp rx(csShape[j]);
+            rx.setPatternSyntax(QRegExp::Wildcard);
+            if (rx.exactMatch(dirInfo.fileName())){
                 suggestedMaterial = csMater[j];
             }
         }
