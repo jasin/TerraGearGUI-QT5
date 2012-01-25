@@ -194,7 +194,7 @@ void MainWindow::on_actionQuit_triggered()
 // show about dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.8.1"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.8.2"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 // show wiki article in a browser
@@ -386,7 +386,11 @@ void MainWindow::on_pushButton_5_clicked()
     }
     rt.start();
     // proceed to do airport generation
-    arguments   = "\""+terragearDirectory+"/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
+    arguments   = "\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        arguments += "/bin";
+    #endif
+    arguments += "/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
     if ( !ui->checkBox_minmax->isChecked() ) {
         if (airportId.size() > 0){
             arguments += "--airport="+airportId+" ";
@@ -533,7 +537,11 @@ void MainWindow::on_pushButton_11_clicked()
         QFileInfo fileInfo = list.at(i);
         QString elevationRes = ui->comboBox->currentText();
         elevationFile        = QString("%1").arg(fileInfo.fileName());
-        arguments            = "\""+terragearDirectory+"/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
+        arguments            = "\""+terragearDirectory;
+        #ifdef Q_OS_LINUX
+            arguments += "/bin";
+        #endif
+        arguments += "/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
         // store runtime argument, and file name
         // could add a check that it is a HGT file...
         argList += arguments;
@@ -582,7 +590,11 @@ void MainWindow::on_pushButton_11_clicked()
     ui->label_52->repaint();
 
     // generate and run terrafit command
-    QString argumentsTerrafit = "\""+terragearDirectory+"/terrafit\" ";
+    QString argumentsTerrafit = "\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        arguments += "/bin";
+    #endif
+    arguments += "/terrafit\" ";
     if (minnode.size() > 0){
         argumentsTerrafit += "--minnodes "+minnode+" ";
     }
@@ -853,13 +865,21 @@ void MainWindow::on_pushButton_12_clicked()
     ui->tblShapesAlign->resizeRowsToContents();
 
     // check for tool existance
-    QString tgTool = terragearDirectory+"/ogr-decode";
+    QString tgTool = terragearDirectory;
+    #ifdef Q_OS_LINUX
+        tgTool += "/bin";
+    #endif
+    tgTool += "/ogr-decode";
 #ifdef Q_OS_WIN
     tgTool += ".exe";
 #endif
     QFile f(tgTool);
     if ( ! f.exists() ) {
-        tgTool = terragearDirectory+"/shape-decode";
+        tgTool = terragearDirectory;
+        #ifdef Q_OS_LINUX
+            tgTool += "/bin";
+        #endif
+        tgTool += "/shape-decode";
 #ifdef Q_OS_WIN
         tgTool += ".exe";
 #endif
@@ -926,10 +946,23 @@ void MainWindow::on_pushButton_13_clicked()
     bool add_it = true; // ADD all buckets, unless there is a reason not to
     SGBucket b_cur;
     rt.start();
+
     // build the general runtime string
-    QString runtime = "\""+terragearDirectory+"/fgfs-construct\" ";
-    runtime += "--priorities=\""+terragearDirectory+"/default_priorities.txt\" ";
-    runtime += "--usgs-map=\""+terragearDirectory+"/usgsmap.txt\" ";
+    QString runtime = "\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        runtime += "/bin";
+    #endif
+    runtime += "/fgfs-construct\" ";
+    runtime += "--priorities=\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        runtime += "/share";
+    #endif
+    runtime += "/default_priorities.txt\" ";
+    runtime += "--usgs-map=\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        runtime += "/share";
+    #endif
+    runtime += "/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
     runtime += "--output-dir=\""+outpDirectory+"/Terrain\" ";
     if (ui->checkBox_3->isChecked()) {
@@ -1179,7 +1212,11 @@ void MainWindow::on_pushButton_13_clicked()
 #else // !#ifdef _NEWBUCKET_HXX
 
     // construct fgfs-construct commandline
-    QString arguments = "\""+terragearDirectory+"/fgfs-construct\" ";
+    QString arguments = "\""+terragearDirectory;
+    #ifdef Q_OS_LINUX
+        arguments += "/bin";
+    #endif
+    arguments += "/fgfs-construct\" ";
     arguments += "--work-dir=\""+workDirectory+"\" ";
     arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
 
@@ -1279,9 +1316,17 @@ void MainWindow::on_pushButton_16_clicked()
 
     rt.start();
     // check if terragear tool exists
-    QString TGfile      = terragearDirectory+"/ogr-decode";
+    QString TGfile = terragearDirectory;
+    #ifdef Q_OS_LINUX
+        TGfile += "/bin";
+    #endif
+    TGfile += "/ogr-decode";
     if (ui->checkBox_ogr->isChecked()) {
-        TGfile = terragearDirectory+"/shape-decode";
+        TGfile = terragearDirectory;
+        #ifdef Q_OS_LINUX
+            TGfile += "/bin";
+        #endif
+        TGfile += "/shape-decode";
     }
 #ifdef Q_OS_WIN
     TGfile += ".exe"; // add EXE for windows
@@ -1324,7 +1369,11 @@ void MainWindow::on_pushButton_16_clicked()
 
         if (ui->checkBox_ogr->isChecked()) {
             /* until I can get ogr-decode built ;=() */
-            arguments   = "\""+terragearDirectory+"/shape-decode\" ";
+            arguments  = "\""+terragearDirectory;
+            #ifdef Q_OS_LINUX
+                arguments += "/bin";
+            #endif
+            arguments += "/shape-decode\" ";
             arguments += "--line-width "+lineWidth+" ";
 
             if (ui->lineEdit_24->text() > 0){
@@ -1345,7 +1394,11 @@ void MainWindow::on_pushButton_16_clicked()
             arguments += " "+shapefile+" ";
 
         } else {
-            arguments   = "\""+terragearDirectory+"/ogr-decode\" ";
+            arguments   = "\""+terragearDirectory;
+            #ifdef Q_OS_LINUX
+                arguments += "/bin";
+            #endif
+            arguments += "/ogr-decode\" ";
 
             arguments += "--line-width "+lineWidth+" ";
 
