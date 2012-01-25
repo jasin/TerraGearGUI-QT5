@@ -955,12 +955,12 @@ void MainWindow::on_pushButton_13_clicked()
     runtime += "/fgfs-construct\" ";
     runtime += "--priorities=\""+terragearDirectory;
     #ifdef Q_OS_LINUX
-        runtime += "/share";
+        runtime += "/share/TerraGear";
     #endif
     runtime += "/default_priorities.txt\" ";
     runtime += "--usgs-map=\""+terragearDirectory;
     #ifdef Q_OS_LINUX
-        runtime += "/share";
+        runtime += "/share/TerraGear";
     #endif
     runtime += "/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
