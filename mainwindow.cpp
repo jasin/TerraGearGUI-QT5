@@ -672,45 +672,157 @@ void MainWindow::on_pushButton_12_clicked()
 
     // list of scenery shapefiles
     QStringList csShape;
-    csShape << "cs_agroforest" << "cs_airport" << "cs_asphalt" << "cs_barrencover" << "cs_bog" <<
-               "cs_burnt" << "cs_canal" << "cs_cemetery" << "cs_complexcrop" << "cs_construction" <<
-               "cs_cropgrass" << "cs_deciduousforest" << "cs_default" << "cs_dirt" << "cs_drycrop" <<
-               "cs_dump" << "cs_estuary" << "cs_evergreenforest" << "cs_floodland" << "cs_freeway" <<
-               "cs_glacier" << "cs_golfcourse" << "cs_grassland" << "cs_greenspace" << "cs_heath" <<
-               "cs_hebtundra" << "cs_industrial" << "cs_intermittentlake" << "cs_intermittentstream" <<
-               "cs_irrcrop" << "cs_lagoon" << "cs_lake" << "cs_lava" << "cs_littoral" << "cs_marsh" <<
-               "cs_mixedcrop" << "cs_mixedforest" << "cs_naturalcrop" << "cs_olives" << "cs_openmining" <<
-               "cs_orchard" << "cs_packice" << "cs_polarice" << "cs_port" << "cs_railroad1" << "cs_railroad2" <<
-               "cs_rainforest" << "cs_rice" << "cs_road" << "cs_rock" << "cs_saline" << "cs_saltmarsh" <<
-               "cs_sand" << "cs_sclerophyllous" << "cs_scrub" << "cs_stream" << "cs_suburban" << "cs_town" <<
-               "cs_transport" << "cs_urban" << "cs_vineyard" << "cs_watercourse" << "v0_landmass" <<
-               "*_airport" << "*_complexcrop" << "*_construction" << "*_cropgrass" << "*_deciduousforest" <<
-               "*_drycrop" << "*_evergreenforest" << "*_golfcourse" << "*_grassland" << "*_greenspace" <<
-               "*_industrial" << "*_lake" << "*_marsh" << "*_naturalcrop" << "*_ocean" << "*_port" << "*_sand" <<
-               "*_town" << "*_transport" << "*_watercourse" << "osm_canal" << "osm_light_rail" << "osm_motorway" <<
-               "osm_primary" << "osm_rail" << "osm_residential" << "osm_river" << "osm_secondary" << "osm_service" <<
-               "osm_stream" << "osm_tertiary" << "osm_trunk";
+    csShape << "*_agroforest"
+            << "*_airport"
+            << "*_asphalt"
+            << "*_barrencover"
+            << "*_bog"
+            << "*_burnt"
+            << "*_canal"
+            << "*_cemetery"
+            << "*_complexcrop"
+            << "*_construction"
+            << "*_cropgrass"
+            << "*_deciduousforest"
+            << "*_default"
+            << "*_dirt"
+            << "*_drycrop"
+            << "*_dump"
+            << "*_estuary"
+            << "*_evergreenforest"
+            << "*_floodland"
+            << "*_freeway"
+            << "*_glacier"
+            << "*_golfcourse"
+            << "*_grassland"
+            << "*_greenspace"
+            << "*_heath"
+            << "*_hebtundra"
+            << "*_industrial"
+            << "*_intermittentlake"
+            << "*_intermittentstream"
+            << "*_irrcrop"
+            << "*_lagoon"
+            << "*_lake"
+            << "*_landmass"
+            << "*_lava"
+            << "*_light_rail"
+            << "*_littoral"
+            << "*_marsh"
+            << "*_mixedcrop"
+            << "*_mixedforest"
+            << "*_motorway"
+            << "*_naturalcrop"
+            << "*_ocean"
+            << "*_olives"
+            << "*_openmining"
+            << "*_orchard"
+            << "*_packice"
+            << "*_polarice"
+            << "*_port"
+            << "*_primary"
+            << "*_rail"
+            << "*_railroad1"
+            << "*_railroad2"
+            << "*_rainforest"
+            << "*_residential"
+            << "*_rice"
+            << "*_river"
+            << "*_road"
+            << "*_rock"
+            << "*_saline"
+            << "*_saltmarsh"
+            << "*_sand"
+            << "*_sclerophyllous"
+            << "*_scrub"
+            << "*_secondary"
+            << "*_service"
+            << "*_stream"
+            << "*_suburban"
+            << "*_tertiary"
+            << "*_town"
+            << "*_transport"
+            << "*_trunk"
+            << "*_urban"
+            << "*_vineyard"
+            << "*_watercourse";
 			
     // list of correpsonding materials
     QStringList csMater;
-    csMater << "AgroForest" << "Airport" << "Asphalt" << "BarrenCover" << "Bog" <<
-            "Burnt" << "Canal" << "Cemetery" << "ComplexCrop" << "Construction" <<
-            "CropGrass" << "DeciduousForest" << "Default" << "Dirt" << "DryCrop" <<
-            "Dump" << "Estuary" << "EvergreenForest" << "FloodLand" << "Freeway" <<
-            "Glacier" << "GolfCourse" << "GrassLand" << "GreenSpace" << "Heath" <<
-            "HerbTundra" << "Industrial" << "IntermittentLake" << "IntermittentStream" <<
-            "IrrCrop" << "Lagoon" << "Lake" << "Lava" << "Littoral" << "Marsh" <<
-            "MixedCrop" << "MixedForest" << "NaturalCrop" << "Olives" << "OpenMining" <<
-            "Orchard" << "PackIce" << "PolarIce" << "Port" << "Railroad" << "Railroad" <<
-            "RainForest" << "Rice" << "Road" << "Rock" << "Saline" << "SaltMarsh" <<
-            "Sand" << "Sclerophyllous" << "ScrubCover" << "Stream" << "SubUrban" << "Town" <<
-            "Transport" << "Urban" << "Vineyard" << "Watercourse" << "Landmass" << 
-            "Airport" << "ComplexCrop" << "Construction" << "CropGrass" << "DeciduousForest" << 
-            "DryCrop" << "EvergreenForest" << "GolfCourse" << "GrassLand" << "Greenspace" <<
-            "Industrial" << "Lake" << "Marsh" << "NaturalCrop" << "Ocean" << "Port" << "Sand" <<
-            "Town" << "Transport" << "Watercourse" << "Canal" << "Railroad" << "Freeway" <<
-            "Road" << "Railroad" << "Road" << "Canal" << "Road" << "Road" <<
-            "Canal" << "Road" << "Road";
+    csMater << "AgroForest"
+            << "Airport"
+            << "Asphalt"
+            << "BarrenCover"
+            << "Bog"
+            << "Burnt"
+            << "Canal"
+            << "Cemetery"
+            << "ComplexCrop"
+            << "Construction"
+            << "CropGrass"
+            << "DeciduousForest"
+            << "Default"
+            << "Dirt"
+            << "DryCrop"
+            << "Dump"
+            << "Estuary"
+            << "EvergreenForest"
+            << "FloodLand"
+            << "Freeway"
+            << "Glacier"
+            << "GolfCourse"
+            << "GrassLand"
+            << "Greenspace"
+            << "Heath"
+            << "HerbTundra"
+            << "Industrial"
+            << "IntermittentLake"
+            << "IntermittentStream"
+            << "IrrCrop"
+            << "Lagoon"
+            << "Lake"
+            << "Landmass"
+            << "Lava"
+            << "Railroad"
+            << "Littoral"
+            << "Marsh"
+            << "MixedCrop"
+            << "MixedForest"
+            << "Freeway"
+            << "NaturalCrop"
+            << "Ocean"
+            << "Olives"
+            << "OpenMining"
+            << "Orchard"
+            << "PackIce"
+            << "PolarIce"
+            << "Port"
+            << "Road"
+            << "Railroad"
+            << "Railroad"
+            << "Railroad"
+            << "RainForest"
+            << "Road"
+            << "Rice"
+            << "Canal"
+            << "Road"
+            << "Rock"
+            << "Saline"
+            << "SaltMarsh"
+            << "Sand"
+            << "Sclerophyllous"
+            << "ScrubCover"
+            << "Road"
+            << "Road"
+            << "Stream"
+            << "SubUrban"
+            << "Road"
+            << "Town"
+            << "Transport"
+            << "Road"
+            << "Urban"
+            << "Vineyard"
+            << "Watercourse";
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
