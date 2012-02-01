@@ -29,14 +29,16 @@
 */
 QStringList findFiles(const QString &startDir, QStringList filters)
 {
-    QStringList names;
-    QDir dir(startDir);
+    QStringList names; //= The blank list array
+    QDir dir(startDir); //= A directory on the file system
 
+    //= Itterate the file list.loopy and add to strings
     foreach (QString file, dir.entryList(filters, QDir::Files))
         names += startDir + "/" + file;
 
     foreach (QString subdir, dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot))
         names += findFiles(startDir + "/" + subdir, filters);
+
     return names;
 }
 
@@ -96,17 +98,33 @@ QString getElapTimeStg(int ms)
     return fmt;
 }
 
-int util_verifySRTMfiles(QString minLat, QString maxLat, QString minLon, QString maxLon, QString workDirectory)
+/** TODO Docs for this ????
+  */
+int util_verifySRTMfiles(QString minLat, QString maxLat,
+                         QString minLon, QString maxLon,
+                         QString workDirectory)
 {
     int result = 0;
+
     QStringList elev_src;
-    elev_src <<  "SRTM2-Africa-3" << "SRTM2-Australia-3" << "SRTM2-Eurasia-3" << "SRTM2-Islands-3" <<
-            "SRTM2-North_America-3" << "SRTM2-South_America-3" << "DEM-USGS-3" << "SRTM-1" << "SRTM-3" << "SRTM-30";
+    elev_src <<  "SRTM2-Africa-3"
+            << "SRTM2-Australia-3"
+            << "SRTM2-Eurasia-3"
+            << "SRTM2-Islands-3"
+            << "SRTM2-North_America-3"
+            << "SRTM2-South_America-3"
+            << "DEM-USGS-3"
+            << "SRTM-1"
+            << "SRTM-3"
+            << "SRTM-30";
+
     // QRegExp rx("\/\d+\.arr\.gz");
+
     QStringList indexList;
     QStringList indexList_needed;
     int i, j, k, l;
     QString index = "";
+
 #ifdef _NEWBUCKET_HXX   // we have SGBucket capability
     // break the set into buckets
     double dminLon = minLon.toDouble();

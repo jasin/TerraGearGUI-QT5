@@ -404,15 +404,20 @@ void MainWindow::on_pushButton_5_clicked()
     QString tm;
     QString msg;
 
-    if ( !util_verifySRTMfiles(minLat, maxLat, minLon, maxLon, workDirectory) ) {
+    if ( !util_verifySRTMfiles( minLat, maxLat,
+                                minLon, maxLon,
+                                workDirectory)
+        ) {
         // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
         arguments = "No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!";
         if ( ! getYesNo("No elevation data found",arguments) )
             return;
     }
+
+    //+++ Lets Go!
     rt.start();
     // proceed to do airport generation
-    arguments   = "\""+terragearDirectory;
+    arguments   =  "\"" + terragearDirectory;
     #ifdef Q_OS_LINUX
         arguments += "/bin";
     #endif
@@ -486,7 +491,8 @@ void MainWindow::on_pushButton_6_clicked()
 // select project directory
 void MainWindow::on_pushButton_7_clicked()
 {
-    projDirectory = QFileDialog::getExistingDirectory(this,tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
+    projDirectory = QFileDialog::getExistingDirectory(this,
+                                                      tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
     ui->lineEdit_4->setText(projDirectory);
     settings.setValue("paths/project", projDirectory);
 
@@ -496,10 +502,13 @@ void MainWindow::on_pushButton_7_clicked()
     workDirectory = projDirectory+"/work";
 }
 
-// select FlightGear root
+//== Select FlightGear root
+// TODO consolidate per platform settings.. eg fgx::settings
 void MainWindow::on_pushButton_8_clicked()
 {
-    fgRoot = QFileDialog::getExistingDirectory(this,tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."));
+    fgRoot = QFileDialog::getExistingDirectory(this,
+            tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."
+               ));
     ui->lineEdit_22->setText(fgRoot);
     settings.setValue("paths/fg-root", fgRoot);
 
@@ -509,7 +518,10 @@ void MainWindow::on_pushButton_8_clicked()
 // select TerraGear directory
 void MainWindow::on_pushButton_9_clicked()
 {
-    terragearDirectory = QFileDialog::getExistingDirectory(this,tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."));
+    terragearDirectory = QFileDialog::getExistingDirectory(
+            this,
+            tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."
+               ));
     ui->lineEdit_2->setText(terragearDirectory);
     settings.setValue("paths/terragear", terragearDirectory);
 
@@ -527,14 +539,28 @@ void MainWindow::on_pushButton_9_clicked()
 // run hgt-chop
 void MainWindow::on_pushButton_11_clicked()
 {
-    QString minnode     = ui->lineEdit->text();
-    QString maxnode     = ui->lineEdit_3->text();
-    QString maxerror    = ui->lineEdit_23->text();
 
     QDir dir(elevationDirectory);
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
 
+    //= Crash out if no files
     QFileInfoList list = dir.entryInfoList();
+    if (list.size() == 0) {
+        QMessageBox::critical(this,
+                              "No elevation data",
+                              "There are no elevation files in " + elevationDirectory + ". You can download elevation data on the Start tab."
+                              );
+        return;
+    }
+
+
+    QString minnode     = ui->lineEdit->text();
+    QString maxnode     = ui->lineEdit_3->text();
+    QString maxerror    = ui->lineEdit_23->text();
+
+
+
+
     QString tot;
     QString cnt;
     QString tm;
@@ -546,10 +572,7 @@ void MainWindow::on_pushButton_11_clicked()
     QString arguments;
     int i;
 
-    if (list.size() == 0) {
-        QMessageBox::critical(this,"No elevation data","There are no elevation files in "+elevationDirectory+". You can download elevation data on the Start tab.");
-        return;
-    }
+
 
     // reset progress bar
     ui->progressBar_3->setValue(0);
@@ -611,6 +634,7 @@ void MainWindow::on_pushButton_11_clicked()
         // save output to log - all is now saved at application end
     }
 
+    //++ We need event listeners and Ques instead.. maybe sa
     pt.start();
     ui->label_52->setText("Now running terrafit...");
     ui->label_52->repaint();
@@ -671,6 +695,8 @@ void MainWindow::on_pushButton_12_clicked()
         msgBox.setText("Are you sure you want to retrieve shapefiles?\nDoing so will reset all material and line width settings.");
         msgBox.setIcon(QMessageBox::Warning);
         int ret = msgBox.exec();
+        /* AHA.. This is a really really bad style of returns froma dialog
+           a mix of break and returns??
         switch (ret) {
         case QMessageBox::Ok:
             break;
@@ -678,6 +704,12 @@ void MainWindow::on_pushButton_12_clicked()
             return;
             break;
         }
+        */
+        if(ret == QMessageBox::Cancel){
+            return; // Gone
+        }
+        //case QMessageBox::Ok:
+
     }
 
     // move shapefiles to "private" directories
@@ -693,12 +725,17 @@ void MainWindow::on_pushButton_12_clicked()
         QString fFileName2 = fInfo.fileName();
 
         // move only shapefiles
-        if (fInfo.suffix() == "dbf" or fInfo.suffix() == "prj" or fInfo.suffix() == "shp" or fInfo.suffix() == "shx"){
-            fFileName1.chop(4);     // remove fileformat from name
-            QFile file (fFilePath);
-            QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
-            dir.mkpath(fPath+"/"+fFileName1);
-            dir.rename(fFilePath, fPath_ren);
+        //TODO have shapefile detector ..GBH
+        if (fInfo.suffix() == "dbf" or
+            fInfo.suffix() == "prj" or
+            fInfo.suffix() == "shp" or
+            fInfo.suffix() == "shx"
+            ){
+                fFileName1.chop(4);     // remove fileformat from name
+                QFile file (fFilePath);
+                QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
+                dir.mkpath(fPath+"/"+fFileName1);
+                dir.rename(fFilePath, fPath_ren);
         }
     }
 
@@ -898,6 +935,7 @@ void MainWindow::on_pushButton_12_clicked()
     ui->tblShapesAlign->resizeRowsToContents();
 
     // check for tool existance
+    //TODO this lot sucks to hight heaven and is part of gral/pedro plan to have one master State() instead of lots of bits..
     QString tgTool = terragearDirectory;
     #ifdef Q_OS_LINUX
         tgTool += "/bin";
