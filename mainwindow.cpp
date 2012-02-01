@@ -307,7 +307,7 @@ void MainWindow::on_pushButton_clicked()
     settings.setValue("path/airportFile", airportFile); // keep the last airport file used
 }
 
-// download shapefiles from mapserver
+//== Download shapefiles from mapserver
 void MainWindow::on_pushButton_2_clicked()
 {
     double eastInt     = m_east.toDouble();
@@ -315,29 +315,46 @@ void MainWindow::on_pushButton_2_clicked()
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
+    //= TODO explain constraint..
+    // if( !is_valid() ){
+        // show_massage(oops)
+        //return
+    //}
     if ((westInt < eastInt) && (northInt > southInt)) {
-        QString url  = "http://mapserver.flightgear.org/";
+
+        //== Set server - maybe MAP_SERVER_URL as constant
+        QUrl url("http://mapserver.flightgear.org/");
+
+        //== Set Source Dir
         QString source = ui->comboBox_3->currentText();
         if (source == "Custom scenery"){
-            url += "dlcs";
+            url.setPath("dlcs");
+
+        }else if (source == "OpenStreetMap"){
+            url.setPath("dlosm");
+
+        }else if (source == "CORINE 2000 (Europe)"){
+             url.setPath("dlclc00");
+
+        }else {
+            url.setPath("dlclc06");
         }
-        else if (source == "OpenStreetMap"){
-            url += "dlosm";
-        }
-        else if (source == "CORINE 2000 (Europe)"){
-            url += "dlclc00";
-        }
-        else {
-            url += "dlclc06";
-        }
-        url += "?xmin="+m_west+"&xmax="+m_east+"&ymin="+m_south+"&ymax="+m_north;
-        // save output to log
-        outputToLog(url);
-        QUrl qu(url);
-        if ( ! QDesktopServices::openUrl(qu) ) {
+
+        //== add Query vars
+        url.addQueryItem("xmin", m_west);
+        url.addQueryItem("xmax", m_east);
+        url.addQueryItem("ymin", m_south);
+        url.addQueryItem("ymax", m_north);
+
+        //= save output to log
+        outputToLog(url.toString());
+
+        if ( ! QDesktopServices::openUrl(url) ) {
+            // TODO: Open internal webbrowser
             // QWebView::webview = new QWebView;
             // webview.load(url);
-            QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened "+url+".\nCopy the URL to your browser");
+            QMessageBox::critical(this, "URL cannot be opened",
+                                  "The following URL cannot be opened " + url.toString() +".\nCopy the URL to your browser");
         }
     }
     else{
