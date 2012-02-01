@@ -183,23 +183,29 @@ void MainWindow::on_tabWidget_selected(QString )
     show();
 }
 
-// menu //
 
-// close window
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+// menu //
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+//== Close Window
 void MainWindow::on_actionQuit_triggered()
 {
     MainWindow::close();
+    QApplication::quit(); //= Lets get outta here...
 }
 
-// show about dialog
+
+//== About dialog
 void MainWindow::on_about_triggered()
 {
     QMessageBox::about(this, tr("TerraGUI v0.8.2"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
-// show wiki article in a browser
+//= Show wiki article in a browser
 void MainWindow::on_wiki_triggered()
 {
+    //= TODO make a constant
     QString url = "http://wiki.flightgear.org/TerraGear_GUI";
     QUrl qu(url);
     if ( ! QDesktopServices::openUrl(qu) ) {
@@ -700,6 +706,8 @@ void MainWindow::on_pushButton_12_clicked()
     }
 
     // list of scenery shapefiles
+    // TODO Can we create this as a new class eg QFGMaterials
+    // ?? are these mapped as key value == hash set ?? thinks json
     QStringList csShape;
     csShape << "*_agroforest"
             << "*_airport"
@@ -855,16 +863,21 @@ void MainWindow::on_pushButton_12_clicked()
 
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
+    //= loop around the dir entries..
     QFileInfoList dirList = dir.entryInfoList();
     for (int i = 0; i < dirList.size(); ++i) {
         QFileInfo dirInfo = dirList.at(i);
-        if(dirInfo.fileName()!= "SRTM-30" and dirInfo.fileName()!= "SRTM-3" and dirInfo.fileName()!= "SRTM-1" and dirInfo.fileName()!= "SRTM"){
-            ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
-            QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
-            twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
-            twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
-            ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
+        if( dirInfo.fileName() != "SRTM-30" and
+            dirInfo.fileName() != "SRTM-3" and
+            dirInfo.fileName() != "SRTM-1" and
+            dirInfo.fileName() != "SRTM"){
+                ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
+                QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
+                twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
+                twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+                ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
         }
+
         QTableWidgetItem *twiCellMater = new QTableWidgetItem(0);
 
         // suggest a material
@@ -920,9 +933,13 @@ void MainWindow::on_pushButton_13_clicked()
     bool brk = false;
     int folderCnt = ui->listWidget_2->count();
     if (folderCnt == 0) {
-        QMessageBox::critical(this,"No terraintypes","There are no terraintypes listed. Use [Update list] to populate it, then select those desired.");
+        QMessageBox::critical(  this,
+                                "No terraintypes",
+                                "There are no terraintypes listed. Use [Update list] to populate it, then select those desired."
+                                );
         return;
     }
+
     folderCnt = 0; // RESTART COUNTER
     // create string with selected terraintypes
     for (int i = 0; i < ui->listWidget_2->count(); ++i){
@@ -932,7 +949,10 @@ void MainWindow::on_pushButton_13_clicked()
         }
     }
     if (folderCnt == 0) {
-        QMessageBox::critical(this,"No terraintype selected","It appears you have not selected any of the terraintypes! Select all types that you would like to include in the scenery.");
+        QMessageBox::critical(this,
+                              "No terraintype selected",
+                              "It appears you have not selected any of the terraintypes! Select all types that you would like to include in the scenery."
+                              );
         return;
     }
     // reset progress bar
@@ -1357,15 +1377,19 @@ void MainWindow::on_pushButton_16_clicked()
 
     // skip if no shapefiles are listed
     if (ui->tblShapesAlign->rowCount() == 0){
-        QMessageBox::critical(this,"Shapefile error", "No shapefiles are listed. Please click the [Retrieve shapefiles] button.");
+        QMessageBox::critical(this,
+                              "Shapefile error",
+                              "No shapefiles are listed. Please click the [Retrieve shapefiles] button."
+                              );
         return;
     }
 
     for (i = 0; i < ui->tblShapesAlign->rowCount(); i++) {
         // skip if material are not assigned
-        if ((ui->tblShapesAlign->item(i, 1) == 0) || (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
-            QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
-            return;
+        if ((ui->tblShapesAlign->item(i, 1) == 0) ||
+            (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
+                QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
+                return;
         }
     }
 
@@ -1384,6 +1408,7 @@ void MainWindow::on_pushButton_16_clicked()
 
         shapefile = ui->tblShapesAlign->item(i, 1)->text();
 
+        // TODO = We need to build out this path and verify in interface...
         if (ui->checkBox_ogr->isChecked()) {
             /* until I can get ogr-decode built ;=() */
             arguments  = "\""+terragearDirectory;
@@ -1451,15 +1476,16 @@ void MainWindow::on_pushButton_16_clicked()
         ui->label_53->setText("Doing file "+shapefile);
         ui->label_53->repaint();
 
+        //= Create shell process and start
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
 
-        // run command
+        //= run command in shell ? ummm>?
         proc.waitForReadyRead();
         proc.QProcess::waitForFinished();
         int errCode = proc.exitCode();
         info = proc.readAllStandardOutput();
-        tm = " in "+getElapTimeStg(pt.elapsed());
+        tm = " in " + getElapTimeStg(pt.elapsed());
         arguments = "\n*PROC_ENDED*"+tm+"\n";
         if (errCode) {
             info += proc.readAllStandardError();
@@ -1482,38 +1508,41 @@ void MainWindow::on_pushButton_16_clicked()
                 }
             }
         }
-        output += arguments+"\n"+info+"\n";
-        outTemp(arguments+"\n"+info+"\n");
+        output += arguments + "\n" + info + "\n";
+        outTemp(arguments + "\n" + info + "\n");
 
         ui->textBrowser->setText(info);
         ui->textBrowser->repaint();
 
-        msg = "PROC_ENDED"+tm;
+        msg = "PROC_ENDED" + tm;
         outputToLog(msg);
-        outTemp(msg+"\n");
+        outTemp( msg + "\n" );
 
         // adjust progress bar
-        ui->progressBar_2->setMaximum(argList.size()-1);
+        ui->progressBar_2->setMaximum( argList.size() - 1 );
         ui->progressBar_2->setValue(i);
     }
 
     msg.sprintf("Done %d files", argList.size());
-    msg += " in "+getElapTimeStg(rt.elapsed());
+    msg += " in " + getElapTimeStg(rt.elapsed());
     ui->label_53->setText(msg);
     ui->textBrowser->setText(output);
 }
 
 // add material
+//TODO there's a better on itemchanged event..
 void MainWindow::on_pushButton_17_clicked()
 {
     if (ui->tblShapesAlign->item(ui->tblShapesAlign->currentRow(), 1) == 0) {
         QTableWidgetItem *twiMaterialCell = new QTableWidgetItem(0);
         twiMaterialCell->setText(ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()));
         ui->tblShapesAlign->setItem(ui->tblShapesAlign->currentRow(), 1, twiMaterialCell);
-    }
-    else
+
+    }else
     {
-        ui->tblShapesAlign->item(ui->tblShapesAlign->currentRow(), 1)->setText(ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()));
+        ui->tblShapesAlign->item(   ui->tblShapesAlign->currentRow(), 1)->setText(
+                                    ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()
+                                                             ));
     }
 }
 
@@ -1540,6 +1569,11 @@ void MainWindow::updateElevationRange()
 
     QString prevmin = minElev;
     QString prevmax = maxElev;
+
+    // CAN we invalidate boundaries here... first..
+
+    // sorry mate, your outa bounds..
+
     // check if boundaries are valid
     if (westDbl < eastDbl and northDbl > southDbl){
 
@@ -1547,6 +1581,7 @@ void MainWindow::updateElevationRange()
         minElev = "";
         maxElev = "";
         elevList = ""; // restart SRTM elevation
+
         // use absolute degrees for elevation ranges
         east.sprintf("%03d", abs(eastDbl));
         north.sprintf("%02d", abs(northDbl));
@@ -1632,6 +1667,7 @@ void MainWindow::updateElevationRange()
     }
 
     // change text color in the boundary fields
+    // TODO - change into a widget set said pedro..
     ui->lineEdit_5->setPalette(q1);
     ui->lineEdit_6->setPalette(q1);
     ui->lineEdit_7->setPalette(q2);
@@ -1657,6 +1693,8 @@ void MainWindow::updateMaterials()
 
             QStringList materialList;
             QString material;
+
+            //++ TODO aoptimise this.. this if Geoff in Paris land and others..
             while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
                 if (materialreader.name() == "material") {
                     while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
@@ -1665,11 +1703,27 @@ void MainWindow::updateMaterials()
                         if (materialreader.name() == "name") {
                             material = materialreader.readElementText();
                             // ignore rwy lights, textures and signs
-                            if (!material.startsWith("BlackSign") and !material.startsWith("dirt_rwy") and !material.startsWith("grass_rwy") and !material.startsWith("FramedSign") and !material.startsWith("lakebed_taxiway") and !material.startsWith("lf_") and !material.startsWith("pa_") and !material.startsWith("pc_") and !material.startsWith("RedSign") and !material.startsWith("RunwaySign") and !material.startsWith("RUNWAY_") and !material.startsWith("RWY_") and !material.startsWith("Unidirectional") and !material.startsWith("YellowSign")) {
+                            if (!material.startsWith("BlackSign") and
+                                !material.startsWith("dirt_rwy") and
+                                !material.startsWith("grass_rwy") and
+                                !material.startsWith("FramedSign") and
+                                !material.startsWith("lakebed_taxiway") and
+                                !material.startsWith("lf_") and
+                                !material.startsWith("pa_") and
+                                !material.startsWith("pc_") and
+                                !material.startsWith("RedSign") and
+                                !material.startsWith("RunwaySign") and
+                                !material.startsWith("RUNWAY_") and
+                                !material.startsWith("RWY_") and
+                                !material.startsWith("Unidirectional") and
+                                !material.startsWith("YellowSign")
+                                /* phew = can we make it a hash table ? */
+                               ) {
 
                                 // ignore materials already present
-                                if (materialList.indexOf(material, 0) == -1)
+                                if (materialList.indexOf(material, 0) == -1){
                                     materialList.append(material);
+                                }
                             }
                         }
                         // ignore sign materials
@@ -1690,18 +1744,26 @@ void MainWindow::updateMaterials()
 // calculate center of scenery area and radii
 void MainWindow::updateCenter()
 {
-
+    //== Grab the values from the widget and froce in double int long.. umm the bounds
+    //TODO = we need a bounds Object
+    //== Initialise the Lat Lon params in a square box
     double eastInt     = m_east.toDouble();
     double northInt    = m_north.toDouble();
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
+    //= Add some colour ;-)
     QPalette p;
 
+    //= ? can we kick this out first..
     if ((westInt < eastInt) && (northInt > southInt)) {
-        double latInt      = (northInt + southInt)/2;
-        double lonInt      = (eastInt + westInt)/2;
 
+        //= Find the points across and middle points ?
+        double latInt = (northInt + southInt) / 2;
+        double lonInt = (eastInt + westInt) / 2;
+
+        //= Direct to Widget
+        /*
         QString lat     = QString::number(latInt);
         QString lon     = QString::number(lonInt);
         QString xRad     = QString::number(eastInt-lonInt);
@@ -1711,13 +1773,18 @@ void MainWindow::updateCenter()
         ui->label_68->setText(lon);
         ui->label_70->setText(xRad);
         ui->label_69->setText(yRad);
-
+        */
+        ui->label_67->setText( QString::number(latInt) );
+        ui->label_68->setText( QString::number(lonInt) );
+        ui->label_70->setText( QString::number(eastInt - lonInt) );
+        ui->label_69->setText( QString::number(northInt - latInt) ) ;
+        //== Its invalid or valid
         p.setColor(QPalette::WindowText, Qt::black);
     }
     else{
         p.setColor(QPalette::WindowText, Qt::red);
     }
-
+    //== WE NEED to send signal .. valid or invalid..
     // change label colors on error - on Start tab/page
     ui->label_7->setPalette(p);
     ui->label_10->setPalette(p);
@@ -1763,7 +1830,10 @@ void MainWindow::on_checkBox_4_toggled(bool checked)
 
 void MainWindow::on_checkBox_minmax_clicked()
 {
+    //== This need to be a listener and set settings based on a complete change of state..
+
     // grey-out boundaries when ignored by genapts
+    // TODO this should be in a button group.. pedro
     int checked = ui->checkBox_minmax->isChecked();
     ui->label_3->setDisabled(checked);
     ui->label_20->setDisabled(checked);
