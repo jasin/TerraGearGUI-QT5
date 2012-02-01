@@ -326,6 +326,9 @@ void MainWindow::on_pushButton_2_clicked()
         // show_massage(oops)
         //return
     //}
+
+    //+++ CAN we break off this function into a lob part eg.. a position.. ?
+    //
     if ((westInt < eastInt) && (northInt > southInt)) {
 
         //== Set server - maybe MAP_SERVER_URL as constant
