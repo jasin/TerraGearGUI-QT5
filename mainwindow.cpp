@@ -783,7 +783,7 @@ void MainWindow::on_pushButton_12_clicked()
             << "Freeway"
             << "Glacier"
             << "GolfCourse"
-            << "GrassLand"
+            << "Grassland"
             << "Greenspace"
             << "Heath"
             << "HerbTundra"
