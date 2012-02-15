@@ -195,7 +195,6 @@ void MainWindow::on_actionQuit_triggered()
     QApplication::quit(); //= Lets get outta here...
 }
 
-
 //== About dialog
 void MainWindow::on_about_triggered()
 {
@@ -1898,6 +1897,17 @@ void MainWindow::on_checkBox_nodata_toggled(bool checked)
 void MainWindow::on_checkBox_igerr_toggled(bool checked)
 {
     settings.setValue("check/ign_errors", checked);
+}
+
+// show/hide output field
+void MainWindow::on_checkBox_showOutput_clicked()
+{
+    if ( ui->checkBox_showOutput->isChecked() ) {
+        ui->textBrowser->show();
+    }
+    else {
+        ui->textBrowser->hide();
+    }
 }
 
 // eof - mainwindow.cpp
