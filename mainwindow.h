@@ -54,6 +54,11 @@ private slots:
     void on_pushButton_16_clicked();
     void on_pushButton_17_clicked();
 
+    void on_radioButton_clicked();
+    void on_radioButton_2_clicked();
+    void on_radioButton_3_clicked();
+    void on_radioButton_4_clicked();
+
     void on_tabWidget_selected(QString );
     void on_tabWidget_currentChanged(int index);
 
@@ -62,6 +67,7 @@ private slots:
     void updateCenter();
     void updateElevationRange();
     void updateMaterials();
+
     void outputToLog(QString s);
     void outTemp(QString s); /* write to projDirectory+"/templog.txt" *TBD* should restart on app start */
 };

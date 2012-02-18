@@ -112,12 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // TAB: FGFS Construct
     updateCenter(); // set the center/distance
 
-    // TAB: GenApts
-    ui->label_65->setText(m_south);
-    ui->label_63->setText(m_north);
-    ui->label_59->setText(m_west);
-    ui->label_61->setText(m_east);
-
     ui->tblShapesAlign->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblShapesAlign->setHorizontalHeaderLabels(QStringList() << tr("Shapefile") << tr("Material"));
     ui->tblShapesAlign->horizontalHeader()->setResizeMode( QHeaderView::Stretch);
@@ -198,7 +192,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.8.2"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.8.3"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -217,7 +211,6 @@ void MainWindow::on_wiki_triggered()
 void MainWindow::on_lineEdit_5_editingFinished()
 {
     m_east = ui->lineEdit_5->text();
-    ui->label_61->setText(m_east);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/east", m_east);
@@ -226,7 +219,6 @@ void MainWindow::on_lineEdit_5_editingFinished()
 void MainWindow::on_lineEdit_6_editingFinished()
 {
     m_west = ui->lineEdit_6->text();
-    ui->label_59->setText(m_west);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/west", m_west);
@@ -235,7 +227,6 @@ void MainWindow::on_lineEdit_6_editingFinished()
 void MainWindow::on_lineEdit_7_editingFinished()
 {
     m_north = ui->lineEdit_7->text();
-    ui->label_65->setText(m_north);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/north", m_north);
@@ -244,7 +235,6 @@ void MainWindow::on_lineEdit_7_editingFinished()
 void MainWindow::on_lineEdit_8_editingFinished()
 {
     m_south = ui->lineEdit_8->text();
-    ui->label_63->setText(m_south);
     updateElevationRange();
     updateCenter();
     settings.setValue("boundaries/south", m_south);
@@ -257,16 +247,6 @@ void MainWindow::on_lineEdit_13_textEdited(const QString &arg1)
     if (ui->lineEdit_13->text() != "") {
         empty = 1;
     }
-    ui->label_3->setDisabled(empty);
-    ui->label_59->setDisabled(empty);
-    ui->label_60->setDisabled(empty);
-    ui->label_61->setDisabled(empty);
-    ui->label_62->setDisabled(empty);
-    ui->label_63->setDisabled(empty);
-    ui->label_64->setDisabled(empty);
-    ui->label_65->setDisabled(empty);
-    ui->label_66->setDisabled(empty);
-    ui->lineEdit_18->setDisabled(empty);
 }
 
 // disable lat/lon boundaries when airport ID is entered
@@ -276,16 +256,6 @@ void MainWindow::on_lineEdit_18_textEdited(const QString &arg1)
     if (ui->lineEdit_18->text() != "") {
         empty = 1;
     }
-    ui->label_20->setDisabled(empty);
-    ui->label_59->setDisabled(empty);
-    ui->label_60->setDisabled(empty);
-    ui->label_61->setDisabled(empty);
-    ui->label_62->setDisabled(empty);
-    ui->label_63->setDisabled(empty);
-    ui->label_64->setDisabled(empty);
-    ui->label_65->setDisabled(empty);
-    ui->label_66->setDisabled(empty);
-    ui->lineEdit_13->setDisabled(empty);
 }
 
 // disable lat/lon boundaries when tile-id is entered
@@ -421,8 +391,9 @@ void MainWindow::on_pushButton_5_clicked()
         arguments += "/bin";
     #endif
     arguments += "/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
-    if ( !ui->checkBox_minmax->isChecked() ) {
-        if (airportId.size() > 0){
+    if ( !ui->radioButton->isChecked() ) {
+        // single airport
+        if (airportId.size() > 0 and ui->radioButton_2->isChecked()){
             arguments += "--airport="+airportId+" ";
         }
         if (startAptId.size() > 0) {
@@ -1874,17 +1845,9 @@ void MainWindow::on_checkBox_minmax_clicked()
 
     // grey-out boundaries when ignored by genapts
     // TODO this should be in a button group.. pedro
-    int checked = ui->checkBox_minmax->isChecked();
+    int checked = ui->radioButton->isChecked();
     ui->label_3->setDisabled(checked);
     ui->label_20->setDisabled(checked);
-    ui->label_59->setDisabled(checked);
-    ui->label_60->setDisabled(checked);
-    ui->label_61->setDisabled(checked);
-    ui->label_62->setDisabled(checked);
-    ui->label_63->setDisabled(checked);
-    ui->label_64->setDisabled(checked);
-    ui->label_65->setDisabled(checked);
-    ui->label_66->setDisabled(checked);
     ui->lineEdit_13->setDisabled(checked);
     ui->lineEdit_18->setDisabled(checked);
 }
@@ -1907,6 +1870,58 @@ void MainWindow::on_checkBox_showOutput_clicked()
     }
     else {
         ui->textBrowser->hide();
+    }
+}
+
+// all airports in .dat
+void MainWindow::on_radioButton_clicked()
+{
+    if ( ui->radioButton->isChecked() ) {
+        ui->label_3->hide();
+        ui->label_4->show();
+        ui->label_20->hide();
+        ui->lineEdit_13->hide();
+        ui->lineEdit_18->hide();
+        ui->lineEdit_19->show();
+    }
+}
+
+// single airport
+void MainWindow::on_radioButton_2_clicked()
+{
+    if ( ui->radioButton_2->isChecked() ) {
+        ui->label_3->show();
+        ui->label_4->hide();
+        ui->label_20->hide();
+        ui->lineEdit_13->hide();
+        ui->lineEdit_18->show();
+        ui->lineEdit_19->hide();
+    }
+}
+
+// all airports in area
+void MainWindow::on_radioButton_3_clicked()
+{
+    if ( ui->radioButton_3->isChecked() ) {
+        ui->label_3->hide();
+        ui->label_4->hide();
+        ui->label_20->hide();
+        ui->lineEdit_13->hide();
+        ui->lineEdit_18->hide();
+        ui->lineEdit_19->hide();
+    }
+}
+
+// all airports on single tile
+void MainWindow::on_radioButton_4_clicked()
+{
+    if ( ui->radioButton_4->isChecked() ) {
+        ui->label_3->hide();
+        ui->label_4->hide();
+        ui->label_20->show();
+        ui->lineEdit_13->show();
+        ui->lineEdit_18->hide();
+        ui->lineEdit_19->hide();
     }
 }
 
