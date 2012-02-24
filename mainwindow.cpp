@@ -578,8 +578,6 @@ void MainWindow::on_pushButton_11_clicked()
 
         cnt.sprintf("%d", (i + 1));
         tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
-        ui->label_52->setText("File:"+cnt+" of "+tot+": "+elevationFile+tm);
-        ui->label_52->repaint();
 
         // adjust progress bar
         ui->progressBar_3->setMaximum(tot.toInt()*2);
@@ -606,8 +604,6 @@ void MainWindow::on_pushButton_11_clicked()
 
     //++ We need event listeners and Ques instead.. maybe sa
     pt.start();
-    ui->label_52->setText("Now running terrafit...");
-    ui->label_52->repaint();
 
     // generate and run terrafit command
     QString argumentsTerrafit = "\""+terragearDirectory;
@@ -643,14 +639,11 @@ void MainWindow::on_pushButton_11_clicked()
     if (list.size() > 0) {
         tm = " "+getElapTimeStg(rt.elapsed()); // get elapsed time string
         cnt.sprintf("%d", list.size());
-        ui->label_52->setText("Done "+cnt+" files in "+tm);
         outputToLog("Done "+cnt+" files in "+tm);
 
         // adjust progress bar
         ui->progressBar_3->setMaximum(tot.toInt()*2);
         ui->progressBar_3->setValue(tot.toInt()+cnt.toInt());
-    } else {
-        ui->label_52->setText("No files processed...");
     }
 }
 
@@ -1166,8 +1159,6 @@ void MainWindow::on_pushButton_13_clicked()
 
         msg += path;
         msg += tm;
-        ui->label_54->setText(msg);
-        ui->label_54->repaint(); // does not seem to always appear, but sometimes???
 
         // start command
         QProcess proc;
@@ -1242,7 +1233,6 @@ void MainWindow::on_pushButton_13_clicked()
                 }
             }
         }
-        ui->label_54->repaint(); // does not seem to always appear, but sometimes???
     }
 
     // scenery has been successfully created, congratulate developer
@@ -1254,7 +1244,6 @@ void MainWindow::on_pushButton_13_clicked()
     // ==================================================================
     msg.sprintf("fgfs-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
     msg += " in "+getElapTimeStg(rt.elapsed());
-    ui->label_54->setText(msg);
     ui->textBrowser->setText(output); // add it ALL
 
 #else // !#ifdef _NEWBUCKET_HXX
@@ -1289,8 +1278,6 @@ void MainWindow::on_pushButton_13_clicked()
 
     // and show starting proc
     msg.sprintf("Start fgfs-construct with %d folders - moment...", cnt);
-    ui->label_54->setText(msg);
-    ui->label_54->repaint(); // does not seem to appear???
 
     rt.start();
 
@@ -1315,7 +1302,6 @@ void MainWindow::on_pushButton_13_clicked()
     ui->textBrowser->setText(output);
     outputToLog("PROC_ENDED"+tm);
     msg = "fgfs-construct ran for "+tm;
-    ui->label_54->setText(msg);
 
 #endif // #ifdef _NEWBUCKET_HXX y/n
 
@@ -1483,10 +1469,6 @@ void MainWindow::on_pushButton_16_clicked()
         // save commandline to log
         outputToLog(arguments);
 
-        // advise file in process
-        ui->label_53->setText("Doing file "+shapefile);
-        ui->label_53->repaint();
-
         //= Create shell process and start
         QProcess proc;
         proc.start(arguments, QIODevice::ReadWrite);
@@ -1536,7 +1518,6 @@ void MainWindow::on_pushButton_16_clicked()
 
     msg.sprintf("Done %d files", argList.size());
     msg += " in " + getElapTimeStg(rt.elapsed());
-    ui->label_53->setText(msg);
     ui->textBrowser->setText(output);
 }
 
