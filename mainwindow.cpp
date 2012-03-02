@@ -192,7 +192,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.8.3"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.8.4"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -523,13 +523,9 @@ void MainWindow::on_pushButton_11_clicked()
         return;
     }
 
-
     QString minnode     = ui->lineEdit->text();
     QString maxnode     = ui->lineEdit_3->text();
     QString maxerror    = ui->lineEdit_23->text();
-
-
-
 
     QString tot;
     QString cnt;
@@ -542,8 +538,6 @@ void MainWindow::on_pushButton_11_clicked()
     QString arguments;
     int i;
 
-
-
     // reset progress bar
     ui->progressBar_3->setValue(0);
 
@@ -555,6 +549,9 @@ void MainWindow::on_pushButton_11_clicked()
     {
         QFileInfo fileInfo = list.at(i);
         QString elevationRes = ui->comboBox->currentText();
+        if (elevationRes == "1 (USA only)") {
+            elevationRes = "1";
+        }
         elevationFile        = QString("%1").arg(fileInfo.fileName());
         arguments            = "\""+terragearDirectory;
         #ifdef Q_OS_LINUX
@@ -1198,12 +1195,19 @@ void MainWindow::on_pushButton_13_clicked()
         outputToLog(msg);
         outTemp(msg+"\n");
 
-        if (info.contains("unknown area = ")) {
+        if (info.contains("unknown area = '")) {
+
+            // find material name
+            QStringList unknownArea1 = info.split("unknown area = '");
+            QStringList unknownArea2 = unknownArea1[1].split("'");
+            QString unknownMaterial = unknownArea2[0];
+
             QMessageBox msgBox;
             msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
             msgBox.setDefaultButton(QMessageBox::Abort);
             msgBox.setWindowTitle("Unknown area");
-            msgBox.setText("A material is not listed in default_priorities.txt.");
+            msgBox.setText(QString("Material '%1' is not listed in default_priorities.txt.")
+                    .arg(unknownMaterial));
             msgBox.setIcon(QMessageBox::Critical);
             int ret = msgBox.exec();
             switch (ret) {
