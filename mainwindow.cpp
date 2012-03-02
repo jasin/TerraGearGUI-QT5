@@ -605,9 +605,9 @@ void MainWindow::on_pushButton_11_clicked()
     // generate and run terrafit command
     QString argumentsTerrafit = "\""+terragearDirectory;
     #ifdef Q_OS_LINUX
-        arguments += "/bin";
+        argumentsTerrafit += "/bin";
     #endif
-    arguments += "/terrafit\" ";
+    argumentsTerrafit += "/terrafit\" ";
     if (minnode.size() > 0){
         argumentsTerrafit += "--minnodes "+minnode+" ";
     }
