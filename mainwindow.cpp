@@ -79,8 +79,8 @@ bool m_break;
 QSettings settings("TerraGear", "TerraGearGUI");
 
 MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::MainWindow)
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle( tr("TerraGear GUI") );
@@ -109,7 +109,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_6->setText(m_west);
     ui->lineEdit_5->setText(m_east);
 
-    // TAB: FGFS Construct
+    // TAB: Airports
+    updateAirportRadios(); // hide the non-selected options
+
+    // TAB: Construct
     updateCenter(); // set the center/distance
 
     ui->tblShapesAlign->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -131,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent) :
             QString apfile = fgRoot+"/Airports/apt.dat.gz";
             QFile apf(apfile);
             if (apf.exists()) {
-               airportFile = apfile;
+                airportFile = apfile;
                 settings.setValue("path/airportFile", airportFile); // keep the airport file found
             }
         }
@@ -140,8 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     updateElevationRange();
     updateCenter();
-	
-	// re-apply the check boxes (for construct)
+
+    // re-apply the check boxes (for construct)
     bool no_over = settings.value("check/no_overwrite").toBool();
     ui->checkBox_noovr->setCheckState(no_over ? Qt::Checked : Qt::Unchecked);
     bool ign_lm = settings.value("check/ignore_landmass").toBool();
@@ -151,7 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
     bool ign_err = settings.value("check/ign_errors").toBool();
     ui->checkBox_igerr->setCheckState(ign_err ? Qt::Checked : Qt::Unchecked);
 
-	
+
     m_break = false;
 }
 
@@ -192,7 +195,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.8.4"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.0"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -292,8 +295,8 @@ void MainWindow::on_pushButton_2_clicked()
 
     //= TODO explain constraint..
     // if( !is_valid() ){
-        // show_massage(oops)
-        //return
+    // show_massage(oops)
+    //return
     //}
 
     //+++ CAN we break off this function into a lob part eg.. a position.. ?
@@ -312,7 +315,7 @@ void MainWindow::on_pushButton_2_clicked()
             url.setPath("dlosm");
 
         }else if (source == "CORINE 2000 (Europe)"){
-             url.setPath("dlclc00");
+            url.setPath("dlclc00");
 
         }else {
             url.setPath("dlclc06");
@@ -376,7 +379,7 @@ void MainWindow::on_pushButton_5_clicked()
     if ( !util_verifySRTMfiles( minLat, maxLat,
                                 minLon, maxLon,
                                 workDirectory)
-        ) {
+         ) {
         // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
         arguments = "No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!";
         if ( ! getYesNo("No elevation data found",arguments) )
@@ -387,10 +390,14 @@ void MainWindow::on_pushButton_5_clicked()
     rt.start();
     // proceed to do airport generation
     arguments   =  "\"" + terragearDirectory;
-    #ifdef Q_OS_LINUX
-        arguments += "/bin";
-    #endif
-    arguments += "/genapts\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
+#ifdef Q_OS_LINUX
+    arguments += "/bin";
+#endif
+    arguments += "/genapts";
+    if (ui->comboBox_4->currentText() == "850") {
+        arguments += "850";
+    }
+    arguments += "\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
     if ( !ui->radioButton->isChecked() ) {
         // single airport
         if (airportId.size() > 0 and ui->radioButton_2->isChecked()){
@@ -443,6 +450,23 @@ void MainWindow::on_pushButton_5_clicked()
     ui->textBrowser->setText(output);
     outputToLog("PROC_ENDED"+tm);
 
+    // error
+    if (msg.contains("Data version = 850")) {
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.setWindowTitle("Wrong data version");
+        msgBox.setText(QString("This .dat file contains airport data in the 850 format.\nPlease select the correct format from the dropdown."));
+        msgBox.setIcon(QMessageBox::Critical);
+
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+            break;
+        }
+    }
+
 }
 
 // download elevation data SRTM
@@ -477,8 +501,8 @@ void MainWindow::on_pushButton_7_clicked()
 void MainWindow::on_pushButton_8_clicked()
 {
     fgRoot = QFileDialog::getExistingDirectory(this,
-            tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."
-               ));
+                                               tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."
+                                                  ));
     ui->lineEdit_22->setText(fgRoot);
     settings.setValue("paths/fg-root", fgRoot);
 
@@ -489,9 +513,9 @@ void MainWindow::on_pushButton_8_clicked()
 void MainWindow::on_pushButton_9_clicked()
 {
     terragearDirectory = QFileDialog::getExistingDirectory(
-            this,
-            tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."
-               ));
+                this,
+                tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."
+                   ));
     ui->lineEdit_2->setText(terragearDirectory);
     settings.setValue("paths/terragear", terragearDirectory);
 
@@ -554,9 +578,9 @@ void MainWindow::on_pushButton_11_clicked()
         }
         elevationFile        = QString("%1").arg(fileInfo.fileName());
         arguments            = "\""+terragearDirectory;
-        #ifdef Q_OS_LINUX
-            arguments += "/bin";
-        #endif
+#ifdef Q_OS_LINUX
+        arguments += "/bin";
+#endif
         arguments += "/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
         // store runtime argument, and file name
         // could add a check that it is a HGT file...
@@ -604,9 +628,9 @@ void MainWindow::on_pushButton_11_clicked()
 
     // generate and run terrafit command
     QString argumentsTerrafit = "\""+terragearDirectory;
-    #ifdef Q_OS_LINUX
-        argumentsTerrafit += "/bin";
-    #endif
+#ifdef Q_OS_LINUX
+    argumentsTerrafit += "/bin";
+#endif
     argumentsTerrafit += "/terrafit\" ";
     if (minnode.size() > 0){
         argumentsTerrafit += "--minnodes "+minnode+" ";
@@ -687,15 +711,15 @@ void MainWindow::on_pushButton_12_clicked()
         // move only shapefiles
         //TODO have shapefile detector ..GBH
         if (fInfo.suffix() == "dbf" or
-            fInfo.suffix() == "prj" or
-            fInfo.suffix() == "shp" or
-            fInfo.suffix() == "shx"
-            ){
-                fFileName1.chop(4);     // remove fileformat from name
-                QFile file (fFilePath);
-                QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
-                dir.mkpath(fPath+"/"+fFileName1);
-                dir.rename(fFilePath, fPath_ren);
+                fInfo.suffix() == "prj" or
+                fInfo.suffix() == "shp" or
+                fInfo.suffix() == "shx"
+                ){
+            fFileName1.chop(4);     // remove fileformat from name
+            QFile file (fFilePath);
+            QString fPath_ren = fPath+"/"+fFileName1+"/"+fFileName2;
+            dir.mkpath(fPath+"/"+fFileName1);
+            dir.rename(fFilePath, fPath_ren);
         }
     }
 
@@ -783,7 +807,7 @@ void MainWindow::on_pushButton_12_clicked()
             << "*_urban"
             << "*_vineyard"
             << "*_watercourse";
-			
+
     // list of correpsonding materials
     QStringList csMater;
     csMater << "AgroForest"
@@ -868,14 +892,14 @@ void MainWindow::on_pushButton_12_clicked()
     for (int i = 0; i < dirList.size(); ++i) {
         QFileInfo dirInfo = dirList.at(i);
         if( dirInfo.fileName() != "SRTM-30" and
-            dirInfo.fileName() != "SRTM-3" and
-            dirInfo.fileName() != "SRTM-1" and
-            dirInfo.fileName() != "SRTM"){
-                ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
-                QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
-                twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
-                twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
-                ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
+                dirInfo.fileName() != "SRTM-3" and
+                dirInfo.fileName() != "SRTM-1" and
+                dirInfo.fileName() != "SRTM"){
+            ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
+            QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
+            twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
+            twiCellShape->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+            ui->tblShapesAlign->setItem(ui->tblShapesAlign->rowCount()-1, 0, twiCellShape);
         }
 
         QTableWidgetItem *twiCellMater = new QTableWidgetItem(0);
@@ -897,9 +921,9 @@ void MainWindow::on_pushButton_12_clicked()
     // check for tool existance
     //TODO this lot sucks to hight heaven and is part of gral/pedro plan to have one master State() instead of lots of bits..
     QString tgTool = terragearDirectory;
-    #ifdef Q_OS_LINUX
-        tgTool += "/bin";
-    #endif
+#ifdef Q_OS_LINUX
+    tgTool += "/bin";
+#endif
     tgTool += "/ogr-decode";
 #ifdef Q_OS_WIN
     tgTool += ".exe";
@@ -907,9 +931,9 @@ void MainWindow::on_pushButton_12_clicked()
     QFile f(tgTool);
     if ( ! f.exists() ) {
         tgTool = terragearDirectory;
-        #ifdef Q_OS_LINUX
-            tgTool += "/bin";
-        #endif
+#ifdef Q_OS_LINUX
+        tgTool += "/bin";
+#endif
         tgTool += "/shape-decode";
 #ifdef Q_OS_WIN
         tgTool += ".exe";
@@ -987,19 +1011,19 @@ void MainWindow::on_pushButton_13_clicked()
 
     // build the general runtime string
     QString runtime = "\""+terragearDirectory;
-    #ifdef Q_OS_LINUX
-        runtime += "/bin";
-    #endif
+#ifdef Q_OS_LINUX
+    runtime += "/bin";
+#endif
     runtime += "/fgfs-construct\" ";
     runtime += "--priorities=\""+terragearDirectory;
-    #ifdef Q_OS_LINUX
-        runtime += "/share/TerraGear";
-    #endif
+#ifdef Q_OS_LINUX
+    runtime += "/share/TerraGear";
+#endif
     runtime += "/default_priorities.txt\" ";
     runtime += "--usgs-map=\""+terragearDirectory;
-    #ifdef Q_OS_LINUX
-        runtime += "/share/TerraGear";
-    #endif
+#ifdef Q_OS_LINUX
+    runtime += "/share/TerraGear";
+#endif
     runtime += "/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
     runtime += "--output-dir=\""+outpDirectory+"/Terrain\" ";
@@ -1207,7 +1231,7 @@ void MainWindow::on_pushButton_13_clicked()
             msgBox.setDefaultButton(QMessageBox::Abort);
             msgBox.setWindowTitle("Unknown area");
             msgBox.setText(QString("Material '%1' is not listed in default_priorities.txt.")
-                    .arg(unknownMaterial));
+                           .arg(unknownMaterial));
             msgBox.setIcon(QMessageBox::Critical);
             int ret = msgBox.exec();
             switch (ret) {
@@ -1254,9 +1278,9 @@ void MainWindow::on_pushButton_13_clicked()
 
     // construct fgfs-construct commandline
     QString arguments = "\""+terragearDirectory;
-    #ifdef Q_OS_LINUX
-        arguments += "/bin";
-    #endif
+#ifdef Q_OS_LINUX
+    arguments += "/bin";
+#endif
     arguments += "/fgfs-construct\" ";
     arguments += "--work-dir=\""+workDirectory+"\" ";
     arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
@@ -1297,7 +1321,7 @@ void MainWindow::on_pushButton_13_clicked()
     output += proc.readAllStandardOutput();
 
     tm = " in "+getElapTimeStg(rt.elapsed())
-    arguments = "\n*PROC_ENDED*"+tm+"\n";
+            arguments = "\n*PROC_ENDED*"+tm+"\n";
     if (errCode) {
         output += proc.readAllStandardError();
         arguments.sprintf("\nPROC_ENDED with ERROR CODE %d!\n",errCode);
@@ -1355,15 +1379,15 @@ void MainWindow::on_pushButton_16_clicked()
     rt.start();
     // check if terragear tool exists
     QString TGfile = terragearDirectory;
-    #ifdef Q_OS_LINUX
-        TGfile += "/bin";
-    #endif
+#ifdef Q_OS_LINUX
+    TGfile += "/bin";
+#endif
     TGfile += "/ogr-decode";
     if (ui->checkBox_ogr->isChecked()) {
         TGfile = terragearDirectory;
-        #ifdef Q_OS_LINUX
-            TGfile += "/bin";
-        #endif
+#ifdef Q_OS_LINUX
+        TGfile += "/bin";
+#endif
         TGfile += "/shape-decode";
     }
 #ifdef Q_OS_WIN
@@ -1388,9 +1412,9 @@ void MainWindow::on_pushButton_16_clicked()
     for (i = 0; i < ui->tblShapesAlign->rowCount(); i++) {
         // skip if material are not assigned
         if ((ui->tblShapesAlign->item(i, 1) == 0) ||
-            (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
-                QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
-                return;
+                (ui->tblShapesAlign->item(i, 1)->text().length() == 0)){
+            QMessageBox::critical(this,"Material error", "You did not assign materials for each shapefile.");
+            return;
         }
     }
 
@@ -1413,9 +1437,9 @@ void MainWindow::on_pushButton_16_clicked()
         if (ui->checkBox_ogr->isChecked()) {
             /* until I can get ogr-decode built ;=() */
             arguments  = "\""+terragearDirectory;
-            #ifdef Q_OS_LINUX
-                arguments += "/bin";
-            #endif
+#ifdef Q_OS_LINUX
+            arguments += "/bin";
+#endif
             arguments += "/shape-decode\" ";
             arguments += "--line-width "+lineWidth+" ";
 
@@ -1438,9 +1462,9 @@ void MainWindow::on_pushButton_16_clicked()
 
         } else {
             arguments   = "\""+terragearDirectory;
-            #ifdef Q_OS_LINUX
-                arguments += "/bin";
-            #endif
+#ifdef Q_OS_LINUX
+            arguments += "/bin";
+#endif
             arguments += "/ogr-decode\" ";
 
             arguments += "--line-width "+lineWidth+" ";
@@ -1537,8 +1561,8 @@ void MainWindow::on_pushButton_17_clicked()
     }else
     {
         ui->tblShapesAlign->item(   ui->tblShapesAlign->currentRow(), 1)->setText(
-                                    ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()
-                                                             ));
+                    ui->comboBox_2->itemText(ui->comboBox_2->currentIndex()
+                                             ));
     }
 }
 
@@ -1700,21 +1724,21 @@ void MainWindow::updateMaterials()
                             material = materialreader.readElementText();
                             // ignore rwy lights, textures and signs
                             if (!material.startsWith("BlackSign") and
-                                !material.startsWith("dirt_rwy") and
-                                !material.startsWith("grass_rwy") and
-                                !material.startsWith("FramedSign") and
-                                !material.startsWith("lakebed_taxiway") and
-                                !material.startsWith("lf_") and
-                                !material.startsWith("pa_") and
-                                !material.startsWith("pc_") and
-                                !material.startsWith("RedSign") and
-                                !material.startsWith("RunwaySign") and
-                                !material.startsWith("RUNWAY_") and
-                                !material.startsWith("RWY_") and
-                                !material.startsWith("Unidirectional") and
-                                !material.startsWith("YellowSign")
-                                /* phew = can we make it a hash table ? */
-                               ) {
+                                    !material.startsWith("dirt_rwy") and
+                                    !material.startsWith("grass_rwy") and
+                                    !material.startsWith("FramedSign") and
+                                    !material.startsWith("lakebed_taxiway") and
+                                    !material.startsWith("lf_") and
+                                    !material.startsWith("pa_") and
+                                    !material.startsWith("pc_") and
+                                    !material.startsWith("RedSign") and
+                                    !material.startsWith("RunwaySign") and
+                                    !material.startsWith("RUNWAY_") and
+                                    !material.startsWith("RWY_") and
+                                    !material.startsWith("Unidirectional") and
+                                    !material.startsWith("YellowSign")
+                                    /* phew = can we make it a hash table ? */
+                                    ) {
 
                                 // ignore materials already present
                                 if (materialList.indexOf(material, 0) == -1){
@@ -1861,6 +1885,29 @@ void MainWindow::on_checkBox_showOutput_clicked()
 // all airports in .dat
 void MainWindow::on_radioButton_clicked()
 {
+    updateAirportRadios();
+}
+
+// single airport
+void MainWindow::on_radioButton_2_clicked()
+{
+    updateAirportRadios();
+}
+
+// all airports in area
+void MainWindow::on_radioButton_3_clicked()
+{
+    updateAirportRadios();
+}
+
+// all airports on single tile
+void MainWindow::on_radioButton_4_clicked()
+{
+    updateAirportRadios();
+}
+
+void MainWindow::updateAirportRadios()
+{
     if ( ui->radioButton->isChecked() ) {
         ui->label_3->hide();
         ui->label_4->show();
@@ -1869,11 +1916,6 @@ void MainWindow::on_radioButton_clicked()
         ui->lineEdit_18->hide();
         ui->lineEdit_19->show();
     }
-}
-
-// single airport
-void MainWindow::on_radioButton_2_clicked()
-{
     if ( ui->radioButton_2->isChecked() ) {
         ui->label_3->show();
         ui->label_4->hide();
@@ -1882,11 +1924,6 @@ void MainWindow::on_radioButton_2_clicked()
         ui->lineEdit_18->show();
         ui->lineEdit_19->hide();
     }
-}
-
-// all airports in area
-void MainWindow::on_radioButton_3_clicked()
-{
     if ( ui->radioButton_3->isChecked() ) {
         ui->label_3->hide();
         ui->label_4->hide();
@@ -1895,11 +1932,6 @@ void MainWindow::on_radioButton_3_clicked()
         ui->lineEdit_18->hide();
         ui->lineEdit_19->hide();
     }
-}
-
-// all airports on single tile
-void MainWindow::on_radioButton_4_clicked()
-{
     if ( ui->radioButton_4->isChecked() ) {
         ui->label_3->hide();
         ui->label_4->hide();

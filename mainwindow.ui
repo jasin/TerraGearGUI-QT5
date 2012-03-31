@@ -1457,7 +1457,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_3">
+       <widget class="QWidget" name="tab_1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1517,7 +1517,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="10" column="0" colspan="4">
+            <item row="11" column="0" colspan="4">
              <widget class="QRadioButton" name="radioButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1526,14 +1526,14 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Process all airports in .dat file (takes extremely long on lengthy files)</string>
+               <string>All airports in .dat file (takes extremely long on lengthy files)</string>
               </property>
               <attribute name="buttonGroup">
                <string>buttonGroup_2</string>
               </attribute>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="QRadioButton" name="radioButton_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1552,7 +1552,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="6" column="0" colspan="2">
+            <item row="7" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
               <property name="spacing">
                <number>6</number>
@@ -1601,7 +1601,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="12" column="0" colspan="3">
+            <item row="13" column="0" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_12">
               <property name="sizeConstraint">
                <enum>QLayout::SetNoConstraint</enum>
@@ -1650,7 +1650,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QRadioButton" name="radioButton_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1666,7 +1666,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="7" column="0">
+            <item row="8" column="0">
              <widget class="QRadioButton" name="radioButton_4">
               <property name="text">
                <string>All airports on a single tile</string>
@@ -1676,7 +1676,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="9" column="0">
+            <item row="10" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_14">
               <property name="leftMargin">
                <number>50</number>
@@ -1722,16 +1722,73 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="0" column="0">
+            <item row="0" column="0" colspan="3">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>You can use custom .dat files, generated with TaxiDraw, or the global one provided with FlightGear ($FG_ROOT/Airports/apt.dat.gz).</string>
+               <string>You can use custom .dat files, generated with TaxiDraw(810) or WorldEditor (85), or the global one provided with FlightGear (Airports/apt.dat.gz, 810).</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignJustify|Qt::AlignTop</set>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>apt.dat format</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>810</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>850</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_14">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="Line" name="line_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>

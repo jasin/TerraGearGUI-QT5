@@ -64,6 +64,7 @@ private slots:
 
     void on_tblShapesAlign_cellDoubleClicked(int row, int column);
 
+    void updateAirportRadios();
     void updateCenter();
     void updateElevationRange();
     void updateMaterials();
