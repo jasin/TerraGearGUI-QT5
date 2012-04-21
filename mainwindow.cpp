@@ -390,10 +390,7 @@ void MainWindow::on_pushButton_5_clicked()
     rt.start();
     // proceed to do airport generation
     arguments   =  "\"" + terragearDirectory;
-#ifdef Q_OS_LINUX
-    arguments += "/bin";
-#endif
-    arguments += "/genapts";
+    arguments += "/bin/genapts";
     if (ui->comboBox_4->currentText() == "850") {
         arguments += "850";
     }
@@ -578,10 +575,7 @@ void MainWindow::on_pushButton_11_clicked()
         }
         elevationFile        = QString("%1").arg(fileInfo.fileName());
         arguments            = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-        arguments += "/bin";
-#endif
-        arguments += "/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
+        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
         // store runtime argument, and file name
         // could add a check that it is a HGT file...
         argList += arguments;
@@ -628,10 +622,7 @@ void MainWindow::on_pushButton_11_clicked()
 
     // generate and run terrafit command
     QString argumentsTerrafit = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-    argumentsTerrafit += "/bin";
-#endif
-    argumentsTerrafit += "/terrafit\" ";
+    argumentsTerrafit += "/bin/terrafit\" ";
     if (minnode.size() > 0){
         argumentsTerrafit += "--minnodes "+minnode+" ";
     }
@@ -921,20 +912,14 @@ void MainWindow::on_pushButton_12_clicked()
     // check for tool existance
     //TODO this lot sucks to hight heaven and is part of gral/pedro plan to have one master State() instead of lots of bits..
     QString tgTool = terragearDirectory;
-#ifdef Q_OS_LINUX
-    tgTool += "/bin";
-#endif
-    tgTool += "/ogr-decode";
+    tgTool += "/bin/ogr-decode";
 #ifdef Q_OS_WIN
     tgTool += ".exe";
 #endif
     QFile f(tgTool);
     if ( ! f.exists() ) {
         tgTool = terragearDirectory;
-#ifdef Q_OS_LINUX
-        tgTool += "/bin";
-#endif
-        tgTool += "/shape-decode";
+        tgTool += "/bin/shape-decode";
 #ifdef Q_OS_WIN
         tgTool += ".exe";
 #endif
@@ -1011,20 +996,11 @@ void MainWindow::on_pushButton_13_clicked()
 
     // build the general runtime string
     QString runtime = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-    runtime += "/bin";
-#endif
-    runtime += "/fgfs-construct\" ";
+    runtime += "/bin/fgfs-construct\" ";
     runtime += "--priorities=\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-    runtime += "/share/TerraGear";
-#endif
-    runtime += "/default_priorities.txt\" ";
+    runtime += "/share/TerraGear/default_priorities.txt\" ";
     runtime += "--usgs-map=\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-    runtime += "/share/TerraGear";
-#endif
-    runtime += "/usgsmap.txt\" ";
+    runtime += "/share/TerraGear/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
     runtime += "--output-dir=\""+outpDirectory+"/Terrain\" ";
     if (ui->checkBox_3->isChecked()) {
@@ -1278,10 +1254,7 @@ void MainWindow::on_pushButton_13_clicked()
 
     // construct fgfs-construct commandline
     QString arguments = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-    arguments += "/bin";
-#endif
-    arguments += "/fgfs-construct\" ";
+    arguments += "/bin/fgfs-construct\" ";
     arguments += "--work-dir=\""+workDirectory+"\" ";
     arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
 
@@ -1379,16 +1352,10 @@ void MainWindow::on_pushButton_16_clicked()
     rt.start();
     // check if terragear tool exists
     QString TGfile = terragearDirectory;
-#ifdef Q_OS_LINUX
-    TGfile += "/bin";
-#endif
-    TGfile += "/ogr-decode";
+    TGfile += "/bin/ogr-decode";
     if (ui->checkBox_ogr->isChecked()) {
         TGfile = terragearDirectory;
-#ifdef Q_OS_LINUX
-        TGfile += "/bin";
-#endif
-        TGfile += "/shape-decode";
+        TGfile += "/bin/shape-decode";
     }
 #ifdef Q_OS_WIN
     TGfile += ".exe"; // add EXE for windows
@@ -1437,10 +1404,7 @@ void MainWindow::on_pushButton_16_clicked()
         if (ui->checkBox_ogr->isChecked()) {
             /* until I can get ogr-decode built ;=() */
             arguments  = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-            arguments += "/bin";
-#endif
-            arguments += "/shape-decode\" ";
+            arguments += "/bin/shape-decode\" ";
             arguments += "--line-width "+lineWidth+" ";
 
             if (ui->lineEdit_24->text() > 0){
@@ -1462,10 +1426,7 @@ void MainWindow::on_pushButton_16_clicked()
 
         } else {
             arguments   = "\""+terragearDirectory;
-#ifdef Q_OS_LINUX
-            arguments += "/bin";
-#endif
-            arguments += "/ogr-decode\" ";
+            arguments += "/bin/ogr-decode\" ";
 
             arguments += "--line-width "+lineWidth+" ";
 
