@@ -6,6 +6,7 @@
 
 QT          += core gui
 QT          += xmlpatterns
+QT          += network
 
 TARGET      = TerraGUI
 TEMPLATE    = app

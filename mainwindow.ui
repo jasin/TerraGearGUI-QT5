@@ -429,7 +429,7 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_15">
                 <property name="bottomMargin">
-                 <number>5</number>
+                 <number>0</number>
                 </property>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -675,7 +675,7 @@
                    <widget class="QLabel" name="label_21">
                     <property name="minimumSize">
                      <size>
-                      <width>0</width>
+                      <width>58</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -763,6 +763,13 @@
                  </layout>
                 </item>
                 <item>
+                 <widget class="QProgressBar" name="progressBar_5">
+                  <property name="value">
+                   <number>0</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="pushButton_2">
                   <property name="minimumSize">
                    <size>
@@ -785,30 +792,8 @@
                   <property name="text">
                    <string>Download shapefiles</string>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_12">
-                  <property name="maximumSize">
-                   <size>
-                    <width>350</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Lucida Sans</family>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Unpack the download to the above-set [project directory]/data.</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
+                  <property name="flat">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -826,43 +811,9 @@
                 <property name="sizeConstraint">
                  <enum>QLayout::SetNoConstraint</enum>
                 </property>
-                <item>
-                 <widget class="QLabel" name="label_6">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>300</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Lucida Sans</family>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Download all elevation files in the following range:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                  <property name="margin">
-                   <number>0</number>
-                  </property>
-                 </widget>
-                </item>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_10">
                   <item>
@@ -981,29 +932,8 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label_48">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>300</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Unpack the downloads to a directory of your choice. </string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignJustify|Qt::AlignTop</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                  <property name="margin">
+                 <widget class="QProgressBar" name="progressBar_4">
+                  <property name="value">
                    <number>0</number>
                   </property>
                  </widget>
@@ -1015,6 +945,12 @@
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>23</height>
+                   </size>
                   </property>
                   <property name="font">
                    <font>

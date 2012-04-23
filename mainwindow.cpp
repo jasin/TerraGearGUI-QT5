@@ -154,6 +154,9 @@ MainWindow::MainWindow(QWidget *parent) :
     bool ign_err = settings.value("check/ign_errors").toBool();
     ui->checkBox_igerr->setCheckState(ign_err ? Qt::Checked : Qt::Unchecked);
 
+    // Network manager
+    _manager = new QNetworkAccessManager(this);
+    connect(_manager, SIGNAL(finished(QNetworkReply*)), SLOT(downloadFinished(QNetworkReply*)));
 
     m_break = false;
 }
@@ -195,7 +198,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.0"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.1"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -330,7 +333,14 @@ void MainWindow::on_pushButton_2_clicked()
         //= save output to log
         outputToLog(url.toString());
 
-        if ( ! QDesktopServices::openUrl(url) ) {
+        // reset progressbar
+        ui->progressBar_5->setValue(0);
+        ui->progressBar_5->setMaximum(1);
+
+        // disable button during download
+        ui->pushButton_2->setEnabled(0);
+
+        if ( ! _manager->get(QNetworkRequest(url)) ) {
             // TODO: Open internal webbrowser
             // QWebView::webview = new QWebView;
             // webview.load(url);
@@ -472,10 +482,141 @@ void MainWindow::on_pushButton_6_clicked()
     // provide a 'helpful' list of SRTM files
     outputToLog(elevList);
 
-    QString url = "http://dds.cr.usgs.gov/srtm/version2_1/";
+    /* QString url = "http://dds.cr.usgs.gov/srtm/version2_1/";
     QUrl qu(url);
     if ( ! QDesktopServices::openUrl(qu) ) {
         QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened ["+url+"].\nCopy the URL to your browser.");
+    } */
+
+    double latMin = ui->lineEdit_8->text().toDouble();
+    double latMax = ui->lineEdit_7->text().toDouble();
+    double lonMin = ui->lineEdit_6->text().toDouble();
+    double lonMax = ui->lineEdit_5->text().toDouble();
+
+    QString tileLat;
+    QString tileLon;
+
+    // reset progress bar
+    ui->progressBar_4->setValue(0);
+    double totalDouble = (latMax-latMin)*(lonMax-lonMin);
+    QString totalString;
+    totalString.sprintf("%.0f", totalDouble);
+    int totalTiles = totalString.toInt();
+    if (totalTiles == 0)
+        totalTiles = 1;
+    ui->progressBar_4->setMaximum(totalTiles);
+
+    // disable button during download
+    ui->pushButton_6->setEnabled(0);
+
+    qDebug() << totalTiles;
+    for (int lat = latMin; lat < latMax; lat++) {
+        for (int lon = lonMin; lon < lonMax; lon++) {
+            QString tile = "";
+            if (lat < 0) {
+                tile += "S";
+            } else {
+                tile += "N";
+            }
+            tileLat.sprintf("%02d",abs(lat));
+            tile += tileLat;
+            if (lon < 0) {
+                tile += "W";
+            } else {
+                tile += "E";
+            }
+            tileLon.sprintf("%03d",abs(lon));
+            tile += tileLon;
+            QUrl url("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/"+tile+".hgt.zip");
+            _manager->get(QNetworkRequest(url));
+        }
+    }
+}
+
+// download manager
+void MainWindow::downloadFinished(QNetworkReply *reply)
+{
+    QUrl url = reply->url();
+    if (reply->error()) {
+        qDebug() << "Download of " <<  url.toEncoded().constData()
+                 << " failed: " << reply->errorString();
+    } else {
+        QString path = url.path();
+        QString fileName = QFileInfo(path).fileName();
+        if (fileName.isEmpty()) fileName = "download";
+
+        QDir dir(dataDirectory);
+        QFile file(dataDirectory+"/"+fileName);
+
+        if (fileName.contains("dlc")) {
+            // obtain url
+            QFile file(dataDirectory+"/"+fileName);
+        } else if (fileName.contains("hgt")) {
+            // obtain elevation files
+            dir.mkpath(dataDirectory+"/SRTM/");
+            file.setFileName(dataDirectory+"/SRTM/"+fileName);
+        }
+
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(reply->readAll());
+            file.close();
+        }
+
+        // download actual shapefile package
+        if (fileName.contains("dlc")) {
+            QFile dlFile(dataDirectory+"/"+fileName);
+            if (!dlFile.open(QIODevice::ReadOnly | QIODevice::Text))
+                return;
+            QTextStream textStream( &dlFile);
+            QString dlUrl = textStream.readAll();
+            dlUrl.remove("<p>The document has moved <a href=\"");
+            dlUrl.remove("\">here</a></p>\n");
+            _manager->get(QNetworkRequest("http://mapserver.flightgear.org"+dlUrl));
+        }
+
+        qDebug() << "Download of " <<  url.toEncoded().constData()
+                 << " succeded saved to: " << fileName;
+
+        // unzip shapefile package
+        if (fileName.contains("-")) {
+            // unpack zip
+            QString arguments;
+            #ifdef Q_OS_WIN
+                arguments += "\"C:/Program Files (x86)/7-Zip/7z.exe\" x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\"";
+            #endif
+            #ifdef Q_OS_UNIX
+                arguments += "unzip "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
+            #endif
+            qDebug() << arguments;
+            QProcess proc;
+            proc.start(arguments, QIODevice::ReadWrite);
+            proc.waitForReadyRead();
+            proc.waitForFinished();
+
+            // delete temporary files
+            QFile shapeFile(dataDirectory+"/"+fileName);
+            shapeFile.remove();
+            QFile dlcsFile(dataDirectory+"/dlcs");
+            dlcsFile.remove();
+            QFile dlclc00(dataDirectory+"/dlclc00");
+            dlclc00.remove();
+            QFile dlclc06(dataDirectory+"/dlclc06");
+            dlclc06.remove();
+        } else {
+            if (fileName.contains("dlc")) {
+                // adjust progress bar
+                ui->progressBar_5->setValue(ui->progressBar_5->maximum());
+                // re-enable download button
+                ui->pushButton_2->setEnabled(1);
+            } else {
+                // adjust progress bar
+                ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
+                // re-enable download button
+                if (ui->progressBar_4->value() == ui->progressBar_4->maximum()) {
+                    ui->pushButton_6->setEnabled(1);
+                }
+            }
+        }
     }
 }
 
@@ -518,7 +659,7 @@ void MainWindow::on_pushButton_9_clicked()
 
     // disable tabs if terragear path is not set
     int enabled = 0;
-    if (terragearDirectory != ""){
+    if (terragearDirectory != "") {
         enabled = 1;
     }
     ui->tabWidget->setTabEnabled(1,enabled);

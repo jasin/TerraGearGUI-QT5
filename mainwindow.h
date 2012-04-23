@@ -3,6 +3,14 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QNetworkAccessManager>
+#include <QDebug>
+#include <QUrl>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QFile>
+#include <QFileInfo>
+#include <QPushButton>
 
 namespace Ui {
     class MainWindow;
@@ -18,6 +26,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QNetworkAccessManager* _manager;
 
 private slots:
     void on_checkBox_4_toggled(bool checked);
@@ -71,6 +80,8 @@ private slots:
 
     void outputToLog(QString s);
     void outTemp(QString s); /* write to projDirectory+"/templog.txt" *TBD* should restart on app start */
+
+    void downloadFinished(QNetworkReply *reply);
 };
 
 #endif // MAINWINDOW_H
