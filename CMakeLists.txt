@@ -7,7 +7,6 @@ FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTNETWORK TRUE)
 
 INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 SET(terrageargui_SOURCES
 	main.cpp
@@ -35,3 +34,5 @@ add_executable(terrageargui
 target_link_libraries(terrageargui
 	${QT_LIBRARIES}
 	)
+
+install(TARGETS terrageargui RUNTIME DESTINATION bin)
