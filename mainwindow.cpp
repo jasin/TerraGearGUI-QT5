@@ -335,7 +335,7 @@ void MainWindow::on_pushButton_2_clicked()
 
         // reset progressbar
         ui->progressBar_5->setValue(0);
-        ui->progressBar_5->setMaximum(1);
+        ui->progressBar_5->setMaximum(100);
 
         // disable button during download
         ui->pushButton_2->setEnabled(0);
@@ -445,7 +445,7 @@ void MainWindow::on_pushButton_5_clicked()
 
     // run genapts command
     proc.waitForReadyRead();
-    proc.QProcess::waitForFinished();
+    proc.QProcess::waitForFinished(-1);
     int errCode = proc.exitCode();
     tm = " in "+getElapTimeStg(rt.elapsed());
     msg = proc.readAllStandardOutput()+"\n";
@@ -591,7 +591,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             QProcess proc;
             proc.start(arguments, QIODevice::ReadWrite);
             proc.waitForReadyRead();
-            proc.waitForFinished();
+            proc.waitForFinished(-1);
 
             // delete temporary files
             QFile shapeFile(dataDirectory+"/"+fileName);
@@ -602,12 +602,15 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             dlclc00.remove();
             QFile dlclc06(dataDirectory+"/dlclc06");
             dlclc06.remove();
+
+            // adjust progress bar
+            ui->progressBar_5->setValue(ui->progressBar_5->maximum());
+            // re-enable download button
+            ui->pushButton_2->setEnabled(1);
         } else {
             if (fileName.contains("dlc")) {
                 // adjust progress bar
-                ui->progressBar_5->setValue(ui->progressBar_5->maximum());
-                // re-enable download button
-                ui->pushButton_2->setEnabled(1);
+                ui->progressBar_5->setValue(0.1*ui->progressBar_5->maximum());
             } else {
                 // adjust progress bar
                 ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
@@ -744,7 +747,7 @@ void MainWindow::on_pushButton_11_clicked()
 
         // run hgtchop command
         proc.waitForReadyRead();
-        proc.QProcess::waitForFinished();
+        proc.QProcess::waitForFinished(-1);
 
         output += proc.readAllStandardOutput()+"\n*PROC_ENDED*\n";
         ui->textBrowser->setText(output);
@@ -780,7 +783,7 @@ void MainWindow::on_pushButton_11_clicked()
     QProcess procTerrafit;
     procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
     procTerrafit.waitForReadyRead();
-    procTerrafit.QProcess::waitForFinished();
+    procTerrafit.QProcess::waitForFinished(-1);
 
     tm = " in "+getElapTimeStg(pt.elapsed());
     output += procTerrafit.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
@@ -1305,7 +1308,7 @@ void MainWindow::on_pushButton_13_clicked()
 
         // wait for process to finish, before allowing the next action
         proc.waitForReadyRead();
-        proc.QProcess::waitForFinished();
+        proc.QProcess::waitForFinished(-1);
 
         int errCode = proc.exitCode();
         info = proc.readAllStandardOutput();
@@ -1430,7 +1433,7 @@ void MainWindow::on_pushButton_13_clicked()
 
     // wait for process to finish, before allowing the next action
     proc.waitForReadyRead();
-    proc.QProcess::waitForFinished();
+    proc.QProcess::waitForFinished(-1);
     int errCode = proc.exitCode();
     output += proc.readAllStandardOutput();
 
@@ -1605,7 +1608,7 @@ void MainWindow::on_pushButton_16_clicked()
 
         //= run command in shell ? ummm>?
         proc.waitForReadyRead();
-        proc.QProcess::waitForFinished();
+        proc.QProcess::waitForFinished(-1);
         int errCode = proc.exitCode();
         info = proc.readAllStandardOutput();
         tm = " in " + getElapTimeStg(pt.elapsed());
