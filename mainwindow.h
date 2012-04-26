@@ -2,15 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QListWidgetItem>
-#include <QNetworkAccessManager>
+
 #include <QDebug>
-#include <QUrl>
-#include <QNetworkReply>
-#include <QNetworkRequest>
 #include <QFile>
 #include <QFileInfo>
+#include <QListWidgetItem>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QPushButton>
+#include <QScrollBar>
+#include <QUrl>
 
 namespace Ui {
     class MainWindow;
@@ -27,6 +29,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager* _manager;
+    QScrollBar* scrollBar;
 
 private slots:
     void on_checkBox_4_toggled(bool checked);

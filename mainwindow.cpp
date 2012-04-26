@@ -198,7 +198,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.1"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.2"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -405,47 +405,81 @@ void MainWindow::on_pushButton_5_clicked()
         arguments += "850";
     }
     arguments += "\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
-    if ( !ui->radioButton->isChecked() ) {
-        // single airport
-        if (airportId.size() > 0 and ui->radioButton_2->isChecked()){
-            arguments += "--airport="+airportId+" ";
+
+    // all airports within area
+    if (ui->radioButton_3->isChecked()) {
+        // not excluded, so add where there is a min/max range
+        if (maxLat.size() > 0) {
+            arguments += "--max-lat="+maxLat+" ";
         }
-        if (startAptId.size() > 0) {
-            arguments += "--start-id="+startAptId+" ";
+        if (maxLon.size() > 0) {
+            arguments += "--max-lon="+maxLon+" ";
         }
-        if (airportId == "" and tileId == "") {
-            // not excluded, so add where there is a min/max range
-            if (maxLat.size() > 0) {
-                arguments += "--max-lat="+maxLat+" ";
-            }
-            if (maxLon.size() > 0) {
-                arguments += "--max-lon="+maxLon+" ";
-            }
-            if (minLat.size() > 0) {
-                arguments += "--min-lat="+minLat+" ";
-            }
-            if (minLon.size() > 0) {
-                arguments += "--min-lon="+minLon+" ";
-            }
+        if (minLat.size() > 0) {
+            arguments += "--min-lat="+minLat+" ";
         }
+        if (minLon.size() > 0) {
+            arguments += "--min-lon="+minLon+" ";
+        }
+    }
+    // single airport
+    if (airportId.size() > 0 and ui->radioButton_2->isChecked()){
+        arguments += "--airport="+airportId+" ";
+    }
+    // all airports on a single tile
+    if (tileId.size() > 0 and ui->radioButton_4->isChecked()){
+        arguments += "--tile="+tileId+" ";
+    }
+    // all airports in file (optionally starting with...)
+    if (startAptId.size() > 0 and ui->radioButton->isChecked()) {
+        arguments += "--start-id="+startAptId+" ";
     }
 
     if (maxSlope.size() > 0){
         arguments += "--max-slope="+maxSlope+" ";
     }
-    if (tileId.size() > 0){
-        arguments += "--tile="+tileId+" ";
-    }
 
     // save output to log
     outputToLog(arguments);
 
+    QByteArray data;
     QProcess proc;
+    proc.setProcessChannelMode(QProcess::MergedChannels);
     proc.start(arguments, QIODevice::ReadWrite);
 
+    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
+
+    // reset progress bar
+    ui->progressBar_6->setValue(0);
+
+    while(proc.waitForReadyRead()){
+        QCoreApplication::processEvents();
+        data.append(proc.readAll());
+        ui->textBrowser->setText(data.data()); // Output the data
+        sb->setValue(sb->maximum()); // scroll down
+
+        QString output = data;
+        if (output.contains("Finished building Linear Features")) {
+            ui->progressBar_6->setValue(50);
+        }
+        if (output.contains("Finished building runways")) {
+            ui->progressBar_6->setValue(60);
+        }
+        if (output.contains("Finished collecting nodes")) {
+            ui->progressBar_6->setValue(70);
+        }
+        if (output.contains("Finished adding intermediate nodes")) {
+            ui->progressBar_6->setValue(80);
+        }
+        if (output.contains("Finished cleaning polys")) {
+            ui->progressBar_6->setValue(90);
+        }
+    }
+    ui->progressBar_6->setValue(100);
+
     // run genapts command
-    proc.waitForReadyRead();
     proc.QProcess::waitForFinished(-1);
+
     int errCode = proc.exitCode();
     tm = " in "+getElapTimeStg(rt.elapsed());
     msg = proc.readAllStandardOutput()+"\n";
@@ -454,7 +488,6 @@ void MainWindow::on_pushButton_5_clicked()
     }
     msg += "*PROC_ENDED*"+tm+"\n";
     output += msg;
-    ui->textBrowser->setText(output);
     outputToLog("PROC_ENDED"+tm);
 
     // error
@@ -473,7 +506,6 @@ void MainWindow::on_pushButton_5_clicked()
             break;
         }
     }
-
 }
 
 // download elevation data SRTM
@@ -540,6 +572,11 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
     if (reply->error()) {
         qDebug() << "Download of " <<  url.toEncoded().constData()
                  << " failed: " << reply->errorString();
+        QString fileUrl = url.toEncoded().constData();
+        if (fileUrl.contains("hgt.zip")) {
+            // adjust progress bar
+            ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
+        }
     } else {
         QString path = url.path();
         QString fileName = QFileInfo(path).fileName();
@@ -553,8 +590,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             QFile file(dataDirectory+"/"+fileName);
         } else if (fileName.contains("hgt")) {
             // obtain elevation files
-            dir.mkpath(dataDirectory+"/SRTM/");
-            file.setFileName(dataDirectory+"/SRTM/"+fileName);
+            dir.mkpath(dataDirectory+"/SRTM-3/");
+            file.setFileName(dataDirectory+"/SRTM-3/"+fileName);
         }
 
         if (file.open(QIODevice::WriteOnly)) {
@@ -582,7 +619,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             // unpack zip
             QString arguments;
             #ifdef Q_OS_WIN
-                arguments += "\"C:/Program Files (x86)/7-Zip/7z.exe\" x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\"";
+                arguments += "7z.exe x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\"";
             #endif
             #ifdef Q_OS_UNIX
                 arguments += "unzip "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
@@ -614,12 +651,12 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             } else {
                 // adjust progress bar
                 ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
-                // re-enable download button
-                if (ui->progressBar_4->value() == ui->progressBar_4->maximum()) {
-                    ui->pushButton_6->setEnabled(1);
-                }
             }
         }
+    }
+    // re-enable download button
+    if (ui->progressBar_4->value() == ui->progressBar_4->maximum()) {
+        ui->pushButton_6->setEnabled(1);
     }
 }
 
@@ -719,7 +756,7 @@ void MainWindow::on_pushButton_11_clicked()
         }
         elevationFile        = QString("%1").arg(fileInfo.fileName());
         arguments            = "\""+terragearDirectory;
-        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-30\"";
+        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-3\"";
         // store runtime argument, and file name
         // could add a check that it is a HGT file...
         argList += arguments;
@@ -777,7 +814,7 @@ void MainWindow::on_pushButton_11_clicked()
         argumentsTerrafit += "--maxerror "+maxerror+" ";
     }
 
-    argumentsTerrafit +="\""+workDirectory+"/SRTM-30\"";
+    argumentsTerrafit +="\""+workDirectory+"/SRTM-3\"";
 
     outputToLog(argumentsTerrafit);
     QProcess procTerrafit;
