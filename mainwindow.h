@@ -85,6 +85,7 @@ private slots:
     void outTemp(QString s); /* write to projDirectory+"/templog.txt" *TBD* should restart on app start */
 
     void downloadFinished(QNetworkReply *reply);
+    void progressBar_5(qint64 bytesReceived, qint64 bytesTotal);
 };
 
 #endif // MAINWINDOW_H

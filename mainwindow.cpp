@@ -198,7 +198,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.2"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.3"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -291,6 +291,15 @@ void MainWindow::on_pushButton_clicked()
 //== Download shapefiles from mapserver
 void MainWindow::on_pushButton_2_clicked()
 {
+#ifdef Q_OS_WIN
+    QFile f("7z.exe");
+    if ( !f.exists() ) {
+        QString msg = "Unable to locate /7z.exe";
+        QMessageBox::critical(this,"File not found", msg);
+        return;
+    }
+#endif
+
     double eastInt     = m_east.toDouble();
     double northInt    = m_north.toDouble();
     double southInt    = m_south.toDouble();
@@ -334,11 +343,12 @@ void MainWindow::on_pushButton_2_clicked()
         outputToLog(url.toString());
 
         // reset progressbar
-        ui->progressBar_5->setValue(0);
-        ui->progressBar_5->setMaximum(100);
+        ui->progressBar_5->setMinimum(0);
+        ui->progressBar_5->setMaximum(0);
 
         // disable button during download
         ui->pushButton_2->setEnabled(0);
+        ui->pushButton_2->setText("Connecting to server...");
 
         if ( ! _manager->get(QNetworkRequest(url)) ) {
             // TODO: Open internal webbrowser
@@ -511,6 +521,15 @@ void MainWindow::on_pushButton_5_clicked()
 // download elevation data SRTM
 void MainWindow::on_pushButton_6_clicked()
 {
+#ifdef Q_OS_WIN
+    QFile f("7zip.exe");
+    if ( !f.exists() ) {
+        QString msg = "Unable to locate "+terragearDirectory+"/bin/7z.exe";
+        QMessageBox::critical(this,"File not found", msg);
+        return;
+    }
+#endif
+
     // provide a 'helpful' list of SRTM files
     outputToLog(elevList);
 
@@ -585,7 +604,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
         QDir dir(dataDirectory);
         QFile file(dataDirectory+"/"+fileName);
 
-        if (fileName.contains("dlc")) {
+        if (fileName.contains("dl")) {
             // obtain url
             QFile file(dataDirectory+"/"+fileName);
         } else if (fileName.contains("hgt")) {
@@ -600,7 +619,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
         }
 
         // download actual shapefile package
-        if (fileName.contains("dlc")) {
+        if (fileName.contains("dl")) {
             QFile dlFile(dataDirectory+"/"+fileName);
             if (!dlFile.open(QIODevice::ReadOnly | QIODevice::Text))
                 return;
@@ -608,7 +627,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             QString dlUrl = textStream.readAll();
             dlUrl.remove("<p>The document has moved <a href=\"");
             dlUrl.remove("\">here</a></p>\n");
-            _manager->get(QNetworkRequest("http://mapserver.flightgear.org"+dlUrl));
+            QNetworkReply *r = _manager->get(QNetworkRequest("http://mapserver.flightgear.org"+dlUrl));
+            connect(r, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(progressBar_5(qint64, qint64)));
         }
 
         qDebug() << "Download of " <<  url.toEncoded().constData()
@@ -619,10 +639,10 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             // unpack zip
             QString arguments;
             #ifdef Q_OS_WIN
-                arguments += "7z.exe x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\"";
+                arguments += "7z.exe x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\" -aoa";
             #endif
             #ifdef Q_OS_UNIX
-                arguments += "unzip "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
+                arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
             #endif
             qDebug() << arguments;
             QProcess proc;
@@ -639,24 +659,31 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             dlclc00.remove();
             QFile dlclc06(dataDirectory+"/dlclc06");
             dlclc06.remove();
+            QFile dlosm(dataDirectory+"/dlosm");
+            dlosm.remove();
 
-            // adjust progress bar
-            ui->progressBar_5->setValue(ui->progressBar_5->maximum());
             // re-enable download button
+            ui->pushButton_2->setText("Download shapefiles");
             ui->pushButton_2->setEnabled(1);
-        } else {
-            if (fileName.contains("dlc")) {
-                // adjust progress bar
-                ui->progressBar_5->setValue(0.1*ui->progressBar_5->maximum());
-            } else {
-                // adjust progress bar
-                ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
-            }
+        } else if (!fileName.contains("dlc")){
+            // adjust progress bar
+            ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
         }
     }
     // re-enable download button
     if (ui->progressBar_4->value() == ui->progressBar_4->maximum()) {
         ui->pushButton_6->setEnabled(1);
+    }
+}
+
+// progressBar for shapefiles synchronized with downloadManager
+void MainWindow::progressBar_5(qint64 bytesReceived, qint64 bytesTotal)
+{
+    if (bytesTotal != -1)
+    {
+        ui->pushButton_2->setText(QString("Downloading... (%L1MB/%L2MB)").arg(bytesReceived/1048576.0, 0, 'f', 2).arg(bytesTotal/1048576.0, 0, 'f', 2));
+        ui->progressBar_5->setMaximum(bytesTotal);
+        ui->progressBar_5->setValue(bytesReceived);
     }
 }
 
@@ -1422,8 +1449,42 @@ void MainWindow::on_pushButton_13_clicked()
 
     // scenery has been successfully created, congratulate developer
     if ( info.contains("[Finished successfully]") ) {
-        msg = "Your scenery has been successfully created!";
-        QMessageBox::information(this,"Congratulations", msg);
+
+        // copy airport files to output directory
+
+        // first level
+            QDir airportObj(workDirectory+"/AirportObj/");
+            QFileInfoList dirList = airportObj.entryInfoList();
+            for (int i = 0; i < dirList.size(); ++i) {
+                QFileInfo dirInfo = dirList.at(i);
+                if (    dirInfo.fileName() != "." and
+                        dirInfo.fileName() != ".."){
+
+                    // second level
+                    QDir dir2(workDirectory+"/AirportObj/"+dirInfo.fileName());
+                    QFileInfoList dirList2 = dir2.entryInfoList();
+                    for (int i2 = 0; i2 < dirList2.size(); ++i2) {
+                        QFileInfo dirInfo2 = dirList2.at(i2);
+
+                        if (    dirInfo2.fileName() != "." and
+                                dirInfo2.fileName() != ".."){
+
+                            // third level
+                            QDir dir3(workDirectory+"/AirportObj/"+dirInfo.fileName()+"/"+dirInfo2.fileName());
+                            QFileInfoList dirList3 = dir3.entryInfoList();
+                            for (int i3 = 0; i3 < dirList3.size(); ++i3) {
+                                QFileInfo dirInfo3 = dirList3.at(i3);
+
+                                if ( dirInfo3.fileName().contains(".btg.gz")){
+                                    QFileInfo fileInfo(dirInfo3.filePath());
+                                    QString destinationFile = outpDirectory+"/Terrain/"+dirInfo.fileName()+"/"+dirInfo2.fileName()+"/"+fileInfo.fileName();
+                                    QFile::copy(dirInfo3.filePath(), destinationFile);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
     }
 
     // ==================================================================
@@ -1813,6 +1874,10 @@ void MainWindow::updateElevationRange()
             }
             // outputToLog(elevList); /* provide a 'helpful' list of SRTM files */
         }
+
+        // enable download buttons
+        ui->pushButton_2->setEnabled(1);
+        ui->pushButton_6->setEnabled(1);
     }
 
     // if boundaries are not valid: do not display elevation range and set text color to red
@@ -1826,6 +1891,10 @@ void MainWindow::updateElevationRange()
         if (northDbl == southDbl or southDbl > northDbl){
             q2.setColor(QPalette::Text, Qt::red);
         }
+
+        // disable download buttons
+        ui->pushButton_2->setDisabled(1);
+        ui->pushButton_6->setDisabled(1);
     }
 
     // change text color in the boundary fields
@@ -1914,44 +1983,17 @@ void MainWindow::updateCenter()
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
-    //= Add some colour ;-)
-    QPalette p;
-
-    //= ? can we kick this out first..
     if ((westInt < eastInt) && (northInt > southInt)) {
-
-        //= Find the points across and middle points ?
+        // Calculate center
         double latInt = (northInt + southInt) / 2;
         double lonInt = (eastInt + westInt) / 2;
 
-        //= Direct to Widget
-        /*
-        QString lat     = QString::number(latInt);
-        QString lon     = QString::number(lonInt);
-        QString xRad     = QString::number(eastInt-lonInt);
-        QString yRad     = QString::number(northInt-latInt);
-
-        ui->label_67->setText(lat);
-        ui->label_68->setText(lon);
-        ui->label_70->setText(xRad);
-        ui->label_69->setText(yRad);
-        */
+        // Display center and radii
         ui->label_67->setText( QString::number(latInt) );
         ui->label_68->setText( QString::number(lonInt) );
         ui->label_70->setText( QString::number(eastInt - lonInt) );
         ui->label_69->setText( QString::number(northInt - latInt) ) ;
-        //== Its invalid or valid
-        p.setColor(QPalette::WindowText, Qt::black);
     }
-    else{
-        p.setColor(QPalette::WindowText, Qt::red);
-    }
-    //== WE NEED to send signal .. valid or invalid..
-    // change label colors on error - on Start tab/page
-    ui->label_7->setPalette(p);
-    ui->label_10->setPalette(p);
-    ui->label_11->setPalette(p);
-    ui->label_9->setPalette(p);
 }
 
 void MainWindow::outputToLog(QString s)
