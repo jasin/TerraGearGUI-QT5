@@ -183,10 +183,11 @@ void MainWindow::on_tabWidget_selected(QString )
     show();
 }
 
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-// menu //
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+//################################################################//
+//################################################################//
+//######################        MENU       #######################//
+//################################################################//
+//################################################################//
 
 //== Close Window
 void MainWindow::on_actionQuit_triggered()
@@ -288,13 +289,18 @@ void MainWindow::on_pushButton_clicked()
     settings.setValue("path/airportFile", airportFile); // keep the last airport file used
 }
 
-//== Download shapefiles from mapserver
+//################################################################//
+//################################################################//
+//#########      DOWNLOAD SHAPEFILES FROM MAPSERVER      #########//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_2_clicked()
 {
 #ifdef Q_OS_WIN
     QFile f("7z.exe");
     if ( !f.exists() ) {
-        QString msg = "Unable to locate "+QDir::currentPath()+"/7z.exe";
+        QString msg = "Unable to locate /7z.exe";
         QMessageBox::critical(this,"File not found", msg);
         return;
     }
@@ -373,6 +379,12 @@ void MainWindow::on_pushButton_3_clicked()
     ui->lineEdit_11->setText(elevationDirectory);
     settings.setValue("path/elevationDir", elevationDirectory); // keep the last directory used
 }
+
+//################################################################//
+//################################################################//
+//######################      RUN GENAPTS      ###################//
+//################################################################//
+//################################################################//
 
 // run genapts
 // missing adding an elevation source directory - ie --terrain=<path> - This would be in addition to the
@@ -465,7 +477,7 @@ void MainWindow::on_pushButton_5_clicked()
     while(proc.waitForReadyRead()){
         QCoreApplication::processEvents();
         data.append(proc.readAll());
-        ui->textBrowser->setText(data.data()); // Output the data
+        ui->textBrowser->append(data.data()); // Output the data
         sb->setValue(sb->maximum()); // scroll down
 
         QString output = data;
@@ -518,13 +530,18 @@ void MainWindow::on_pushButton_5_clicked()
     }
 }
 
-// download elevation data SRTM
+//################################################################//
+//################################################################//
+//##############   DOWNLOAD ELEVATION DATA SRTM    ###############//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_6_clicked()
 {
 #ifdef Q_OS_WIN
-    QFile f("7z.exe");
+    QFile f("7zip.exe");
     if ( !f.exists() ) {
-        QString msg = "Unable to locate "+QDir::currentPath()+"/7z.exe";
+        QString msg = "Unable to locate "+terragearDirectory+"/bin/7z.exe";
         QMessageBox::critical(this,"File not found", msg);
         return;
     }
@@ -560,7 +577,7 @@ void MainWindow::on_pushButton_6_clicked()
     // disable button during download
     ui->pushButton_6->setEnabled(0);
 
-    qDebug() << totalTiles;
+//    qDebug() << totalTiles;
     for (int lat = latMin; lat < latMax; lat++) {
         for (int lon = lonMin; lon < lonMax; lon++) {
             QString tile = "";
@@ -584,13 +601,24 @@ void MainWindow::on_pushButton_6_clicked()
     }
 }
 
-// download manager
+//################################################################//
+//################################################################//
+//#####################    DOWNLOAD MANAGER    ###################//
+//################################################################//
+//################################################################//
+
 void MainWindow::downloadFinished(QNetworkReply *reply)
 {
+    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
     QUrl url = reply->url();
+
     if (reply->error()) {
-        qDebug() << "Download of " <<  url.toEncoded().constData()
-                 << " failed: " << reply->errorString();
+//        qDebug() << "Download of " <<  url.toEncoded().constData()
+//                 << " failed: " << reply->errorString();
+
+        ui->textBrowser->append("Download of " + QString(url.toEncoded().constData()) + " failed: " + QString(reply->errorString()));
+        sb->setValue(sb->maximum()); // get the info shown
+
         QString fileUrl = url.toEncoded().constData();
         if (fileUrl.contains("hgt.zip")) {
             // adjust progress bar
@@ -631,8 +659,11 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             connect(r, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(progressBar_5(qint64, qint64)));
         }
 
-        qDebug() << "Download of " <<  url.toEncoded().constData()
-                 << " succeded saved to: " << fileName;
+//        qDebug() << "Download of " <<  url.toEncoded().constData()
+//                 << " succeded saved to: " << fileName;
+
+        ui->textBrowser->append("Download of "+QString(url.toEncoded().constData())+" succeded saved to: "+QString(fileName));
+        sb->setValue(sb->maximum()); // get the info shown
 
         // unzip shapefile package
         if (fileName.contains("-")) {
@@ -644,7 +675,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             #ifdef Q_OS_UNIX
                 arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
             #endif
-            qDebug() << arguments;
+            //qDebug() << arguments;
+            ui->textBrowser->append(arguments);
             QProcess proc;
             proc.start(arguments, QIODevice::ReadWrite);
             proc.waitForReadyRead();
@@ -687,7 +719,12 @@ void MainWindow::progressBar_5(qint64 bytesReceived, qint64 bytesTotal)
     }
 }
 
-// select project directory
+//################################################################//
+//################################################################//
+//###############    SELECT PROJECT DIRECTORY    #################//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_7_clicked()
 {
     projDirectory = QFileDialog::getExistingDirectory(this,
@@ -735,9 +772,16 @@ void MainWindow::on_pushButton_9_clicked()
     ui->tabWidget->setTabEnabled(4,enabled);
 }
 
-// run hgt-chop
+//################################################################//
+//################################################################//
+//#####################       RUN HGTCHOP      ###################//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_11_clicked()
 {
+
+    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
 
     QDir dir(elevationDirectory);
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
@@ -765,6 +809,7 @@ void MainWindow::on_pushButton_11_clicked()
     QStringList filList;
     QString elevationFile;
     QString arguments;
+    QByteArray data;
     int i;
 
     // reset progress bar
@@ -810,17 +855,22 @@ void MainWindow::on_pushButton_11_clicked()
         proc.start(arguments, QIODevice::ReadWrite);
 
         // run hgtchop command
-        proc.waitForReadyRead();
+        while(proc.waitForReadyRead()){
+            QCoreApplication::processEvents();
+            data.append(proc.readAll());
+            ui->textBrowser->append(data.data()); // Output the data
+            sb->setValue(sb->maximum()); // scroll down
+        }
         proc.QProcess::waitForFinished(-1);
 
         output += proc.readAllStandardOutput()+"\n*PROC_ENDED*\n";
-        ui->textBrowser->setText(output);
+//        ui->textBrowser->append(output);
         outputToLog("PROC_ENDED");
 
         tm = " in "+getElapTimeStg(pt.elapsed());
         output += proc.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
-        ui->textBrowser->setText(output);
-        ui->textBrowser->repaint(); // get the info shown
+        ui->textBrowser->append(output);
+        sb->setValue(sb->maximum()); // get the info shown
         outputToLog("PROC_ENDED"+tm);
         // save output to log - all is now saved at application end
     }
@@ -852,8 +902,8 @@ void MainWindow::on_pushButton_11_clicked()
     tm = " in "+getElapTimeStg(pt.elapsed());
     output += procTerrafit.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
 
-    ui->textBrowser->setText(output);
-    ui->textBrowser->repaint(); // get the info shown
+    ui->textBrowser->append(output);
+    sb->setValue(sb->maximum()); // get the info shown
     outputToLog("PROC_ENDED"+tm);
 
     if (list.size() > 0) {
@@ -1138,15 +1188,24 @@ void MainWindow::on_pushButton_12_clicked()
     }
 }
 
-// run fgfs-construct (fgfs_construct)
+
+//################################################################//
+//################################################################//
+//##################      RUN FGFS-CONSTRUCT      ################//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_13_clicked()
 {
+
+    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
     QString lat = ui->label_67->text();
     QString lon = ui->label_68->text();
     QString x = ui->label_70->text();
     QString y = ui->label_69->text();
     QString selectedMaterials;
     QString msg;
+    QByteArray data;
 
     bool brk = false;
     int folderCnt = ui->listWidget_2->count();
@@ -1371,7 +1430,12 @@ void MainWindow::on_pushButton_13_clicked()
         proc.start(arguments, QIODevice::ReadWrite);
 
         // wait for process to finish, before allowing the next action
-        proc.waitForReadyRead();
+        while(proc.waitForReadyRead()){
+            QCoreApplication::processEvents();
+            data.append(proc.readAll());
+            ui->textBrowser->append(data.data()); // Output the data
+            sb->setValue(sb->maximum()); // scroll down
+        }
         proc.QProcess::waitForFinished(-1);
 
         int errCode = proc.exitCode();
@@ -1396,8 +1460,8 @@ void MainWindow::on_pushButton_13_clicked()
         ui->progressBar->setMaximum(dx);
         ui->progressBar->setValue(dy);
 
-        ui->textBrowser->setText(info); // only the last
-        ui->textBrowser->repaint();
+        ui->textBrowser->append(info); // only the last
+        sb->setValue(sb->maximum());
 
         msg = "PROC_ENDED "+tm+", total "+getElapTimeStg(rt.elapsed())+" "+path;
         outputToLog(msg);
@@ -1490,7 +1554,8 @@ void MainWindow::on_pushButton_13_clicked()
     // ==================================================================
     msg.sprintf("fgfs-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
     msg += " in "+getElapTimeStg(rt.elapsed());
-    ui->textBrowser->setText(output); // add it ALL
+    ui->textBrowser->append(output); // add it ALL
+    sb->setValue(sb->maximum()); // get the info shown
 
 #else // !#ifdef _NEWBUCKET_HXX
 
@@ -1530,7 +1595,12 @@ void MainWindow::on_pushButton_13_clicked()
     proc.start(arguments, QIODevice::ReadWrite);
 
     // wait for process to finish, before allowing the next action
-    proc.waitForReadyRead();
+    while(proc.waitForReadyRead()){
+        QCoreApplication::processEvents();
+        data.append(proc.readAll());
+        ui->textBrowser->append(data.data()); // Output the data
+        sb->setValue(sb->maximum()); // scroll down
+    }
     proc.QProcess::waitForFinished(-1);
     int errCode = proc.exitCode();
     output += proc.readAllStandardOutput();
@@ -1542,7 +1612,8 @@ void MainWindow::on_pushButton_13_clicked()
         arguments.sprintf("\nPROC_ENDED with ERROR CODE %d!\n",errCode);
     }
     output += arguments;
-    ui->textBrowser->setText(output);
+    ui->textBrowser->append(output);
+    sb->setValue(sb->maximum()); // get the info shown
     outputToLog("PROC_ENDED"+tm);
     msg = "fgfs-construct ran for "+tm;
 
@@ -1574,9 +1645,17 @@ void MainWindow::on_pushButton_15_clicked()
     }
 }
 
-// run ogr-decode (or shape-decode)
+
+//################################################################//
+//################################################################//
+//###################       RUN OGR-DECODE      ##################//
+//################################################################//
+//################################################################//
+
 void MainWindow::on_pushButton_16_clicked()
 {
+
+    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
     QTime rt;
     QTime pt;
     QString tm;
@@ -1587,6 +1666,7 @@ void MainWindow::on_pushButton_16_clicked()
     QString arguments;
     QString info;
     QString shapefile;
+    QByteArray data;
 
     // reset progress bar
     ui->progressBar_2->setValue(0);
@@ -1705,7 +1785,12 @@ void MainWindow::on_pushButton_16_clicked()
         proc.start(arguments, QIODevice::ReadWrite);
 
         //= run command in shell ? ummm>?
-        proc.waitForReadyRead();
+        while(proc.waitForReadyRead()){
+            QCoreApplication::processEvents();
+            //data.append(proc.readAll()); // no output from ogr-decode...
+            //ui->textBrowser->append(data.data()); // Output the data
+            //sb->setValue(sb->maximum()); // scroll down
+        }
         proc.QProcess::waitForFinished(-1);
         int errCode = proc.exitCode();
         info = proc.readAllStandardOutput();
@@ -1735,8 +1820,8 @@ void MainWindow::on_pushButton_16_clicked()
         output += arguments + "\n" + info + "\n";
         outTemp(arguments + "\n" + info + "\n");
 
-        ui->textBrowser->setText(info);
-        ui->textBrowser->repaint();
+        ui->textBrowser->append(info);
+        sb->setValue(sb->maximum());
 
         msg = "PROC_ENDED" + tm;
         outputToLog(msg);
@@ -1749,7 +1834,8 @@ void MainWindow::on_pushButton_16_clicked()
 
     msg.sprintf("Done %d files", argList.size());
     msg += " in " + getElapTimeStg(rt.elapsed());
-    ui->textBrowser->setText(output);
+    ui->textBrowser->append(output);
+    sb->setValue(sb->maximum()); // get the info shown
 }
 
 // add material
