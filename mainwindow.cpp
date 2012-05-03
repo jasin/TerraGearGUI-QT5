@@ -300,7 +300,7 @@ void MainWindow::on_pushButton_2_clicked()
 #ifdef Q_OS_WIN
     QFile f("7z.exe");
     if ( !f.exists() ) {
-        QString msg = "Unable to locate /7z.exe";
+        QString msg = "Unable to locate "+QDir::currentPath()+"/7z.exe";
         QMessageBox::critical(this,"File not found", msg);
         return;
     }
@@ -539,9 +539,9 @@ void MainWindow::on_pushButton_5_clicked()
 void MainWindow::on_pushButton_6_clicked()
 {
 #ifdef Q_OS_WIN
-    QFile f("7zip.exe");
+    QFile f("7z.exe");
     if ( !f.exists() ) {
-        QString msg = "Unable to locate "+terragearDirectory+"/bin/7z.exe";
+        QString msg = "Unable to locate "+QDir::currentPath()+"/7z.exe";
         QMessageBox::critical(this,"File not found", msg);
         return;
     }
