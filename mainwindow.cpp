@@ -1430,12 +1430,12 @@ void MainWindow::on_pushButton_13_clicked()
         proc.start(arguments, QIODevice::ReadWrite);
 
         // wait for process to finish, before allowing the next action
-        while(proc.waitForReadyRead()){
+        /*while(proc.waitForReadyRead()){
             QCoreApplication::processEvents();
             data.append(proc.readAll());
             ui->textBrowser->append(data.data()); // Output the data
             sb->setValue(sb->maximum()); // scroll down
-        }
+        }*/
         proc.QProcess::waitForFinished(-1);
 
         int errCode = proc.exitCode();
@@ -1595,12 +1595,12 @@ void MainWindow::on_pushButton_13_clicked()
     proc.start(arguments, QIODevice::ReadWrite);
 
     // wait for process to finish, before allowing the next action
-    while(proc.waitForReadyRead()){
+    /*while(proc.waitForReadyRead()){
         QCoreApplication::processEvents();
         data.append(proc.readAll());
         ui->textBrowser->append(data.data()); // Output the data
         sb->setValue(sb->maximum()); // scroll down
-    }
+    }*/
     proc.QProcess::waitForFinished(-1);
     int errCode = proc.exitCode();
     output += proc.readAllStandardOutput();
