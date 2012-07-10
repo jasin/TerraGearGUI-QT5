@@ -199,7 +199,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.3"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.4"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -425,6 +425,27 @@ void MainWindow::on_pushButton_5_clicked()
     arguments += "/bin/genapts";
     if (ui->comboBox_4->currentText() == "850") {
         arguments += "850";
+
+#ifdef Q_OS_WIN
+        // check for dll required to run genapts
+        QList<QString> dll;
+        dll << "gdal12.dll" << "PocoFoundation.dll" << "PocoNet.dll";
+        int miss = 0;
+        QString msg = "Unable to locate:\n\n";
+        foreach(QString str, dll)
+        {
+            QFile f(str);
+            if ( !f.exists() ) {
+                msg += QDir::currentPath()+"/"+str+"\n";
+                miss++;
+            }
+        }
+        if (miss > 0)
+        {
+            QMessageBox::critical(this,"File(s) not found", msg);
+            return;
+        }
+#endif
     }
     arguments += "\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
 
@@ -1513,42 +1534,11 @@ void MainWindow::on_pushButton_13_clicked()
 
     // scenery has been successfully created, congratulate developer
     if ( info.contains("[Finished successfully]") ) {
-
-        // copy airport files to output directory
-
-        // first level
-            QDir airportObj(workDirectory+"/AirportObj/");
-            QFileInfoList dirList = airportObj.entryInfoList();
-            for (int i = 0; i < dirList.size(); ++i) {
-                QFileInfo dirInfo = dirList.at(i);
-                if (    dirInfo.fileName() != "." and
-                        dirInfo.fileName() != ".."){
-
-                    // second level
-                    QDir dir2(workDirectory+"/AirportObj/"+dirInfo.fileName());
-                    QFileInfoList dirList2 = dir2.entryInfoList();
-                    for (int i2 = 0; i2 < dirList2.size(); ++i2) {
-                        QFileInfo dirInfo2 = dirList2.at(i2);
-
-                        if (    dirInfo2.fileName() != "." and
-                                dirInfo2.fileName() != ".."){
-
-                            // third level
-                            QDir dir3(workDirectory+"/AirportObj/"+dirInfo.fileName()+"/"+dirInfo2.fileName());
-                            QFileInfoList dirList3 = dir3.entryInfoList();
-                            for (int i3 = 0; i3 < dirList3.size(); ++i3) {
-                                QFileInfo dirInfo3 = dirList3.at(i3);
-
-                                if ( dirInfo3.fileName().contains(".btg.gz")){
-                                    QFileInfo fileInfo(dirInfo3.filePath());
-                                    QString destinationFile = outpDirectory+"/Terrain/"+dirInfo.fileName()+"/"+dirInfo2.fileName()+"/"+fileInfo.fileName();
-                                    QFile::copy(dirInfo3.filePath(), destinationFile);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.setWindowTitle("Finished successfully");
+        msgBox.setText(QString("Congratulations, you've successfully built some scenery!"));
     }
 
     // ==================================================================

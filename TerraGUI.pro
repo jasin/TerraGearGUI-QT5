@@ -13,11 +13,11 @@ TEMPLATE    = app
 
 SOURCES     += main.cpp\
             mainwindow.cpp \
-    newbucket.cpp \
-    tggui_utils.cpp
+            newbucket.cpp \
+            tggui_utils.cpp
 
 HEADERS     += mainwindow.h \
-    newbucket.h \
-    tggui_utils.h
+            newbucket.h \
+            tggui_utils.h
 
 FORMS       += mainwindow.ui
