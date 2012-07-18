@@ -559,15 +559,6 @@ void MainWindow::on_pushButton_5_clicked()
 
 void MainWindow::on_pushButton_6_clicked()
 {
-#ifdef Q_OS_WIN
-    QFile f("7z.exe");
-    if ( !f.exists() ) {
-        QString msg = "Unable to locate "+QDir::currentPath()+"/7z.exe";
-        QMessageBox::critical(this,"File not found", msg);
-        return;
-    }
-#endif
-
     // provide a 'helpful' list of SRTM files
     outputToLog(elevList);
 
@@ -806,9 +797,13 @@ void MainWindow::on_pushButton_11_clicked()
 
     QDir dir(elevationDirectory);
     dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    QStringList filters;
+    filters << "*.hgt" << "*.hgt.zip";
+    dir.setNameFilters(filters);
 
     //= Crash out if no files
     QFileInfoList list = dir.entryInfoList();
+
     if (list.size() == 0) {
         QMessageBox::critical(this,
                               "No elevation data",
