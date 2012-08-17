@@ -199,7 +199,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.4"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.5"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -322,24 +322,26 @@ void MainWindow::on_pushButton_2_clicked()
     if ((westInt < eastInt) && (northInt > southInt)) {
 
         //== Set server - maybe MAP_SERVER_URL as constant
-        QUrl url("http://mapserver.flightgear.org/");
+        QUrl url("http://mapserver.flightgear.org/dlshp?");
 
         //== Set Source Dir
         QString source = ui->comboBox_3->currentText();
+        QString layer;
         if (source == "Custom scenery"){
-            url.setPath("dlcs");
+            layer = "cs";
 
         }else if (source == "OpenStreetMap"){
-            url.setPath("dlosm");
+            layer = "osm";
 
         }else if (source == "CORINE 2000 (Europe)"){
-            url.setPath("dlclc00");
+            layer = "clc00";
 
         }else {
-            url.setPath("dlclc06");
+            layer = "clc06";
         }
 
         //== add Query vars
+        url.addQueryItem("layer", layer);
         url.addQueryItem("xmin", m_west);
         url.addQueryItem("xmax", m_east);
         url.addQueryItem("ymin", m_south);
@@ -697,14 +699,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             // delete temporary files
             QFile shapeFile(dataDirectory+"/"+fileName);
             shapeFile.remove();
-            QFile dlcsFile(dataDirectory+"/dlcs");
-            dlcsFile.remove();
-            QFile dlclc00(dataDirectory+"/dlclc00");
-            dlclc00.remove();
-            QFile dlclc06(dataDirectory+"/dlclc06");
-            dlclc06.remove();
-            QFile dlosm(dataDirectory+"/dlosm");
-            dlosm.remove();
+            QFile dlshpFile(dataDirectory+"/dlshp");
+            dlshpFile.remove();
 
             // re-enable download button
             ui->pushButton_2->setText("Download shapefiles");
