@@ -395,7 +395,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are in degrees. Click the button to auto-download shapefiles for that area.</string>
+               <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery. Values are in degrees. Click the buttons to auto-download data for the specified area.</string>
               </property>
               <property name="textFormat">
                <enum>Qt::AutoText</enum>
@@ -815,7 +815,29 @@
                  <number>0</number>
                 </property>
                 <item>
+                 <widget class="QLabel" name="label_12">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Download all tiles within the following range:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
                   <item>
                    <widget class="QLabel" name="label_50">
                     <property name="enabled">
@@ -927,6 +949,52 @@
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
                     </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_19">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Source</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBox_5">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>23</height>
+                     </size>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>usgs.gov</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>fgx.ch</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
@@ -1078,7 +1146,7 @@
             <item>
              <widget class="QLabel" name="label_13">
               <property name="text">
-               <string>Select the directory where the .hgt.zip files are located, that you downloaded on the Start tab.</string>
+               <string>Select the directory where the .hgt.zip files are located, that you downloaded on the Start tab. Unzip those files before clicking the &quot;Convert elevation data&quot;!!!</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

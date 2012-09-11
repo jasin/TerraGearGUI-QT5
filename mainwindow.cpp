@@ -37,6 +37,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QNetworkReply>
 #include <QPalette>
 #include <QProcess>
 #include <QRegExp>
@@ -199,7 +200,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.5"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::about(this, tr("TerraGUI v0.9.6"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -564,12 +565,6 @@ void MainWindow::on_pushButton_6_clicked()
     // provide a 'helpful' list of SRTM files
     outputToLog(elevList);
 
-    /* QString url = "http://dds.cr.usgs.gov/srtm/version2_1/";
-    QUrl qu(url);
-    if ( ! QDesktopServices::openUrl(qu) ) {
-        QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened ["+url+"].\nCopy the URL to your browser.");
-    } */
-
     double latMin = ui->lineEdit_8->text().toDouble();
     double latMax = ui->lineEdit_7->text().toDouble();
     double lonMin = ui->lineEdit_6->text().toDouble();
@@ -591,7 +586,14 @@ void MainWindow::on_pushButton_6_clicked()
     // disable button during download
     ui->pushButton_6->setEnabled(0);
 
-//    qDebug() << totalTiles;
+    QString sourceElev = ui->comboBox_5->currentText();
+    QString urlElev;
+    if (sourceElev == "usgs.gov"){
+        urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/";
+    } else {
+        urlElev = "http://downloads.fgx.ch/geodata/data/srtm/";
+    }
+
     for (int lat = latMin; lat < latMax; lat++) {
         for (int lon = lonMin; lon < lonMax; lon++) {
             QString tile = "";
@@ -609,8 +611,19 @@ void MainWindow::on_pushButton_6_clicked()
             }
             tileLon.sprintf("%03d",abs(lon));
             tile += tileLon;
-            QUrl url("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/"+tile+".hgt.zip");
-            _manager->get(QNetworkRequest(url));
+
+            QList<QString> continents;
+            continents << "Africa" << "Australia" << "Eurasia" << "Islands" << "North_America" << "South_America";
+            int i = 0;
+            bool succes = 0;
+            while (!succes and i < 5) {
+                QUrl url(urlElev+continents.at(i)+"/"+tile+".hgt.zip");
+                QNetworkReply *reply = _manager->get(QNetworkRequest(url));
+                if (reply->error()) {
+                     succes = 1;
+                }
+                i++;
+            }
         }
     }
 }
@@ -634,10 +647,6 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
         sb->setValue(sb->maximum()); // get the info shown
 
         QString fileUrl = url.toEncoded().constData();
-        if (fileUrl.contains("hgt.zip")) {
-            // adjust progress bar
-            ui->progressBar_4->setValue(ui->progressBar_4->value()+1);
-        }
     } else {
         QString path = url.path();
         QString fileName = QFileInfo(path).fileName();
