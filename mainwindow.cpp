@@ -1296,6 +1296,13 @@ void MainWindow::on_pushButton_13_clicked()
     }
     if (ui->checkBox_4->isChecked()) {
         runtime += "--ignore-landmass ";
+    } else if (!selectedMaterials.contains("Default ")) {
+        // Check if this option is valid: "Default" material must be present
+        QMessageBox::critical(this,
+                              "No landmass found",
+                              "There is no explicit landmass shapefile loaded. Landmass is generally NOT required to generate scenery. Please enable the 'ignore landmass' option and retry if you don't know what it does."
+                              );
+        return;
     }
     gotcnt = 0;
     if (ui->lineEdit_35->text() > 0) {
