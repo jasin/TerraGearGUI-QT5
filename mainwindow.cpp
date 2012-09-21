@@ -1256,6 +1256,19 @@ void MainWindow::on_pushButton_13_clicked()
     // reset progress bar
     ui->progressBar->setValue(0);
 
+    QFile prioritiesFile(terragearDirectory + "/share/TerraGear/default_priorities.txt");
+    if ( ! prioritiesFile.exists() ) {
+        QString msg = "Unable to locate default_priorities at\n" + terragearDirectory + "/share/TerraGear/default_priorities.txt";
+        QMessageBox::critical(this,"File not found", msg);
+        return;
+    }
+    QFile usgmapFile(terragearDirectory + "/share/TerraGear/usgsmap.txt");
+    if ( ! usgmapFile.exists() ) {
+        QString msg = "Unable to locate usgsmap at\n" + terragearDirectory + "/share/TerraGear/usgsmap.txt";
+        QMessageBox::critical(this,"File not found", msg);
+        return;
+    }
+
 #ifdef _NEWBUCKET_HXX   // we have SGBucket capability
     // construct fgfs-construct commandline,
     // FOR EACH BUCKET SEPARATELY, like master/client do
