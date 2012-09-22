@@ -1028,7 +1028,7 @@ void MainWindow::on_pushButton_12_clicked()
             << "*_grassland"
             << "*_greenspace"
             << "*_heath"
-            << "*_hebtundra"
+            << "*_herbtundra"
             << "*_industrial"
             << "*_intermittentlake"
             << "*_intermittentstream"
