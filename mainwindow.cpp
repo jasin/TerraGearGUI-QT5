@@ -36,6 +36,7 @@
 #include <QListView>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QMap>
 #include <QMessageBox>
 #include <QNetworkReply>
 #include <QPalette>
@@ -620,7 +621,7 @@ void MainWindow::on_pushButton_6_clicked()
                 QUrl url(urlElev+continents.at(i)+"/"+tile+".hgt.zip");
                 QNetworkReply *reply = _manager->get(QNetworkRequest(url));
                 if (reply->error()) {
-                     succes = 1;
+                    succes = 1;
                 }
                 i++;
             }
@@ -640,8 +641,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
     QUrl url = reply->url();
 
     if (reply->error()) {
-//        qDebug() << "Download of " <<  url.toEncoded().constData()
-//                 << " failed: " << reply->errorString();
+        //        qDebug() << "Download of " <<  url.toEncoded().constData()
+        //                 << " failed: " << reply->errorString();
 
         ui->textBrowser->append("Download of " + QString(url.toEncoded().constData()) + " failed: " + QString(reply->errorString()));
         sb->setValue(sb->maximum()); // get the info shown
@@ -682,8 +683,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             connect(r, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(progressBar_5(qint64, qint64)));
         }
 
-//        qDebug() << "Download of " <<  url.toEncoded().constData()
-//                 << " succeded saved to: " << fileName;
+        //        qDebug() << "Download of " <<  url.toEncoded().constData()
+        //                 << " succeded saved to: " << fileName;
 
         ui->textBrowser->append("Download of "+QString(url.toEncoded().constData())+" succeded saved to: "+QString(fileName));
         sb->setValue(sb->maximum()); // get the info shown
@@ -692,12 +693,12 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
         if (fileName.contains("-")) {
             // unpack zip
             QString arguments;
-            #ifdef Q_OS_WIN
-                arguments += "7z.exe x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\" -aoa";
-            #endif
-            #ifdef Q_OS_UNIX
-                arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
-            #endif
+#ifdef Q_OS_WIN
+            arguments += "7z.exe x \""+dataDirectory+"/"+fileName+"\" -o\""+dataDirectory+"\" -aoa";
+#endif
+#ifdef Q_OS_UNIX
+            arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
+#endif
             //qDebug() << arguments;
             ui->textBrowser->append(arguments);
             QProcess proc;
@@ -885,7 +886,7 @@ void MainWindow::on_pushButton_11_clicked()
         proc.QProcess::waitForFinished(-1);
 
         output += proc.readAllStandardOutput()+"\n*PROC_ENDED*\n";
-//        ui->textBrowser->append(output);
+        //        ui->textBrowser->append(output);
         outputToLog("PROC_ENDED");
 
         tm = " in "+getElapTimeStg(pt.elapsed());
@@ -2010,64 +2011,89 @@ void MainWindow::on_tblShapesAlign_cellDoubleClicked(int row, int column)
 // populate material list with materials from FG's materials.xml
 void MainWindow::updateMaterials()
 {
-    QFile materialfile(fgRoot+"/Materials/regions/materials.xml");
+    QFile materialfile(fgRoot+"/Materials/default/materials.xml");
     if (materialfile.exists() == false) {
         // For FlightGear version before 2.8.0
         materialfile.setFileName(fgRoot+"/materials.xml");
     }
     if (materialfile.exists() == true) {
 
-        if (materialfile.open(QIODevice::ReadOnly)) {
-
-            QXmlStreamReader materialreader(&materialfile);
-            QXmlStreamReader::TokenType tokenType;
+        if (materialfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 
             QStringList materialList;
+            QStringList textureList;
             QString material;
+            QString texture;
+            QStringList materials;
+            bool textureFound = false;
+            int numTexture = 0;
 
-            //++ TODO aoptimise this.. this if Geoff in Paris land and others..
-            while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
-                if (materialreader.name() == "material") {
-                    while ((tokenType = materialreader.readNext()) != QXmlStreamReader::EndDocument) {
-
-
-                        if (materialreader.name() == "name") {
-                            material = materialreader.readElementText();
-                            // ignore rwy lights, textures and signs
-                            if (!material.startsWith("BlackSign") and
-                                    !material.startsWith("dirt_rwy") and
-                                    !material.startsWith("grass_rwy") and
-                                    !material.startsWith("FramedSign") and
-                                    !material.startsWith("lakebed_taxiway") and
-                                    !material.startsWith("lf_") and
-                                    !material.startsWith("pa_") and
-                                    !material.startsWith("pc_") and
-                                    !material.startsWith("RedSign") and
-                                    !material.startsWith("RunwaySign") and
-                                    !material.startsWith("RUNWAY_") and
-                                    !material.startsWith("RWY_") and
-                                    !material.startsWith("Unidirectional") and
-                                    !material.startsWith("YellowSign")
-                                    /* phew = can we make it a hash table ? */
-                                    ) {
-
-                                // ignore materials already present
-                                if (materialList.indexOf(material, 0) == -1){
-                                    materialList.append(material);
-                                }
-                            }
-                        }
-                        // ignore sign materials
-                        if (materialreader.name() == "glyph") {
-                            materialreader.skipCurrentElement();
-                        }
+            QTextStream in(&materialfile);
+            while (!in.atEnd()) {
+                QString line = in.readLine();
+                QRegExp rx("*<name>*</name>");
+                rx.setPatternSyntax(QRegExp::Wildcard);
+                if (rx.exactMatch(line)) {
+                    material = line;
+                    QRegExp r1("*<name>");
+                    r1.setPatternSyntax(QRegExp::Wildcard);
+                    texture.remove(r1);
+                    material.remove(r1);
+                    material.remove(QRegExp("</name>"));
+                    if (!material.startsWith("Bidirectional") and
+                            !material.startsWith("BlackSign") and
+                            !material.startsWith("dirt_rwy") and
+                            !material.startsWith("grass_rwy") and
+                            !material.startsWith("FramedSign") and
+                            !material.startsWith("lakebed_taxiway") and
+                            !material.startsWith("lf_") and
+                            !material.startsWith("pa_") and
+                            !material.startsWith("pc_") and
+                            !material.startsWith("RedSign") and
+                            !material.startsWith("RunwaySign") and
+                            !material.startsWith("RUNWAY_") and
+                            !material.startsWith("RWY_") and
+                            !material.startsWith("SpecialSign") and
+                            !material.startsWith("Unidirectional") and
+                            !material.startsWith("YellowSign") and
+                            materialList.indexOf(material, 0) == -1) {
+                        materialList.append(material);
+                        numTexture++;
                     }
+                }
+                if (!textureFound) {
+                    QRegExp rx("*<texture>*</texture>");
+                    rx.setPatternSyntax(QRegExp::Wildcard);
+                    if (rx.exactMatch(line)) {
+                        texture = line;
+                        textureFound = true;
+                    }
+                }
+                QRegExp rx2("*</material>");
+                rx2.setPatternSyntax(QRegExp::Wildcard);
+                if (rx2.exactMatch(line)) {
+                    for (int j = 0; j < numTexture; j++) {
+                        QRegExp r2("*<texture>");
+                        r2.setPatternSyntax(QRegExp::Wildcard);
+                        texture.remove(r2);
+                        texture.remove(QRegExp("</texture>"));
+                        textureList.append(texture);
+                    }
+                    numTexture = 0;
+                    textureFound = false;
                 }
             }
             materialfile.close();
+
+            QMap<QString, QString> map;
+            for (int i = 0; i < materialList.size(); i++) {
+                map[materialList[i]] = textureList[i];
+            }
             materialList.sort();
             ui->comboBox_2->clear();
-            ui->comboBox_2->addItems(materialList);
+            for (int i = 0; i < materialList.size(); i++) {
+                ui->comboBox_2->addItem(QIcon("C:/FlightGear/fgdata/Textures/"+map.value(materialList[i])),materialList[i]);
+            }
         }
     }
 }

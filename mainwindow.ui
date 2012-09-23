@@ -2066,6 +2066,15 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              <property name="insertPolicy">
               <enum>QComboBox::InsertAlphabetically</enum>
              </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
              <item>
               <property name="text">
                <string>Airport</string>
