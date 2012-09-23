@@ -2010,7 +2010,11 @@ void MainWindow::on_tblShapesAlign_cellDoubleClicked(int row, int column)
 // populate material list with materials from FG's materials.xml
 void MainWindow::updateMaterials()
 {
-    QFile materialfile(fgRoot+"/materials.xml");
+    QFile materialfile(fgRoot+"/Materials/regions/materials.xml");
+    if (materialfile.exists() == false) {
+        // For FlightGear version before 2.8.0
+        materialfile.setFileName(fgRoot+"/materials.xml");
+    }
     if (materialfile.exists() == true) {
 
         if (materialfile.open(QIODevice::ReadOnly)) {
