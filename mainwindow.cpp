@@ -45,10 +45,9 @@
 #include <QSettings>
 #include <QStringList>
 #include <QTextStream>
+#include <QTime>
 #include <QUrl>
 #include <QXmlStreamReader>
-#include <QTime> // found it - a ms timer
-// #include <QWebView> // maybe try this in place of QDesktopServices::openUrl(qu)!?!?
 
 #include "newbucket.h"
 #include "tggui_utils.h"
@@ -313,14 +312,6 @@ void MainWindow::on_pushButton_2_clicked()
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
-    //= TODO explain constraint..
-    // if( !is_valid() ){
-    // show_massage(oops)
-    //return
-    //}
-
-    //+++ CAN we break off this function into a lob part eg.. a position.. ?
-    //
     if ((westInt < eastInt) && (northInt > southInt)) {
 
         //== Set server - maybe MAP_SERVER_URL as constant
@@ -641,9 +632,6 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
     QUrl url = reply->url();
 
     if (reply->error()) {
-        //        qDebug() << "Download of " <<  url.toEncoded().constData()
-        //                 << " failed: " << reply->errorString();
-
         ui->textBrowser->append("Download of " + QString(url.toEncoded().constData()) + " failed: " + QString(reply->errorString()));
         sb->setValue(sb->maximum()); // get the info shown
 
@@ -683,9 +671,6 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             connect(r, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(progressBar_5(qint64, qint64)));
         }
 
-        //        qDebug() << "Download of " <<  url.toEncoded().constData()
-        //                 << " succeded saved to: " << fileName;
-
         ui->textBrowser->append("Download of "+QString(url.toEncoded().constData())+" succeded saved to: "+QString(fileName));
         sb->setValue(sb->maximum()); // get the info shown
 
@@ -699,7 +684,6 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
 #ifdef Q_OS_UNIX
             arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
 #endif
-            //qDebug() << arguments;
             ui->textBrowser->append(arguments);
             QProcess proc;
             proc.start(arguments, QIODevice::ReadWrite);
@@ -950,21 +934,9 @@ void MainWindow::on_pushButton_12_clicked()
         msgBox.setText("Are you sure you want to retrieve shapefiles?\nDoing so will reset all material and line width settings.");
         msgBox.setIcon(QMessageBox::Warning);
         int ret = msgBox.exec();
-        /* AHA.. This is a really really bad style of returns froma dialog
-           a mix of break and returns??
-        switch (ret) {
-        case QMessageBox::Ok:
-            break;
-        case QMessageBox::Cancel:
-            return;
-            break;
-        }
-        */
         if(ret == QMessageBox::Cancel){
-            return; // Gone
+            return;
         }
-        //case QMessageBox::Ok:
-
     }
 
     // move shapefiles to "private" directories
@@ -1471,13 +1443,6 @@ void MainWindow::on_pushButton_13_clicked()
         proc.setWorkingDirectory(terragearDirectory);
         proc.start(arguments, QIODevice::ReadWrite);
 
-        // wait for process to finish, before allowing the next action
-        /*while(proc.waitForReadyRead()){
-            QCoreApplication::processEvents();
-            data.append(proc.readAll());
-            ui->textBrowser->append(data.data()); // Output the data
-            sb->setValue(sb->maximum()); // scroll down
-        }*/
         proc.QProcess::waitForFinished(-1);
 
         int errCode = proc.exitCode();
@@ -1605,13 +1570,6 @@ void MainWindow::on_pushButton_13_clicked()
     proc.setWorkingDirectory(terragearDirectory);
     proc.start(arguments, QIODevice::ReadWrite);
 
-    // wait for process to finish, before allowing the next action
-    /*while(proc.waitForReadyRead()){
-        QCoreApplication::processEvents();
-        data.append(proc.readAll());
-        ui->textBrowser->append(data.data()); // Output the data
-        sb->setValue(sb->maximum()); // scroll down
-    }*/
     proc.QProcess::waitForFinished(-1);
     int errCode = proc.exitCode();
     output += proc.readAllStandardOutput();
@@ -1798,9 +1756,6 @@ void MainWindow::on_pushButton_16_clicked()
         //= run command in shell ? ummm>?
         while(proc.waitForReadyRead()){
             QCoreApplication::processEvents();
-            //data.append(proc.readAll()); // no output from ogr-decode...
-            //ui->textBrowser->append(data.data()); // Output the data
-            //sb->setValue(sb->maximum()); // scroll down
         }
         proc.QProcess::waitForFinished(-1);
         int errCode = proc.exitCode();
