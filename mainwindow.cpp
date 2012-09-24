@@ -1113,7 +1113,7 @@ void MainWindow::on_pushButton_12_clicked()
             << "IrrCrop"
             << "Lagoon"
             << "Lake"
-            << "Landmass"
+            << "Default"
             << "Lava"
             << "Railroad"
             << "Littoral"
