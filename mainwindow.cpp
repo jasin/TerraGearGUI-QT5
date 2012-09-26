@@ -2061,7 +2061,7 @@ void MainWindow::updateMaterials()
             materialList.sort();
             ui->comboBox_2->clear();
             for (int i = 0; i < materialList.size(); i++) {
-                ui->comboBox_2->addItem(QIcon("C:/FlightGear/fgdata/Textures/"+map.value(materialList[i])),materialList[i]);
+                ui->comboBox_2->addItem(QIcon(fgRoot+"/Textures/"+map.value(materialList[i])),materialList[i]);
             }
         }
     }
