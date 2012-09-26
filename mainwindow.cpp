@@ -403,6 +403,20 @@ void MainWindow::on_pushButton_5_clicked()
     QString tm;
     QString msg;
 
+    // Check if executable can be located
+    QString genapts = terragearDirectory+"/bin/genapts";
+    if (ui->comboBox_4->currentText() == "850") {
+        genapts += "850";
+    }
+#ifdef Q_OS_WIN
+    genapts += ".exe"; // add EXE for windows
+#endif
+    QFile f(genapts);
+    if ( ! f.exists() ) {
+        QMessageBox::critical(this,"File not found", "Unable to locate executable at \n"+genapts);
+        return;
+    }
+
     if ( !util_verifySRTMfiles( minLat, maxLat,
                                 minLon, maxLon,
                                 workDirectory)
