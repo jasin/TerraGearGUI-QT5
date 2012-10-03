@@ -33,6 +33,7 @@
 #include <QtGlobal>
 #include <QIcon>
 #include <QIODevice>
+#include <QLibrary>
 #include <QListView>
 #include <QListWidget>
 #include <QListWidgetItem>
@@ -200,7 +201,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::about(this, tr("TerraGUI v0.9.6"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.7"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -417,16 +418,6 @@ void MainWindow::on_pushButton_5_clicked()
         return;
     }
 
-    if ( !util_verifySRTMfiles( minLat, maxLat,
-                                minLon, maxLon,
-                                workDirectory)
-         ) {
-        // potentially NO elevations for AIRPORT - generally a BIG waste of time to continue
-        arguments = "No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!";
-        if ( ! getYesNo("No elevation data found",arguments) )
-            return;
-    }
-
     //+++ Lets Go!
     rt.start();
     // proceed to do airport generation
@@ -438,24 +429,31 @@ void MainWindow::on_pushButton_5_clicked()
 #ifdef Q_OS_WIN
         // check for dll required to run genapts
         QList<QString> dll;
-        dll << "gdal12.dll" << "PocoFoundation.dll" << "PocoNet.dll";
+        dll << "gdal12" << "msvcp71" << "msvcr71" << "PocoFoundation" << "PocoNet";
         int miss = 0;
         QString msg = "Unable to locate:\n\n";
-        foreach(QString str, dll)
-        {
-            QFile f(str);
-            if ( !f.exists() ) {
-                msg += QDir::currentPath()+"/"+str+"\n";
+        foreach(QString str, dll) {
+            QLibrary lib(str); // QLibrary will try the platform's library suffix
+            if (! lib.load()) {
+                msg += lib.errorString()+"\n";
                 miss++;
             }
         }
-        if (miss > 0)
-        {
+        if (miss > 0) {
             QMessageBox::critical(this,"File(s) not found", msg);
             return;
         }
 #endif
     }
+
+    if ( !util_verifySRTMfiles( minLat, maxLat,
+                                minLon, maxLon,
+                                workDirectory)
+         ) {
+        if ( ! getYesNo("No elevation data found","No elevation data was found in "+workDirectory+"\n\nThis means airports will be generated with no elevation information!") )
+            return;
+    }
+
     arguments += "\" --input=\""+airportFile+"\" --work=\""+workDirectory+"\" ";
 
     // all airports within area
