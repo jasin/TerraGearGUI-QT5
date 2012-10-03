@@ -1729,7 +1729,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <item row="0" column="0" colspan="3">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>You can use custom .dat files, generated with TaxiDraw(810) or WorldEditor (85), or the global one provided with FlightGear (Airports/apt.dat.gz, 810).</string>
+               <string>You can use custom .dat files, generated with TaxiDraw(810) or WorldEditor (850), or the global one provided with FlightGear (Airports/apt.dat.gz, 810).</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignJustify|Qt::AlignTop</set>

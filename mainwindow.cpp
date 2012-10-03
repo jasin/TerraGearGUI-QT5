@@ -413,8 +413,14 @@ void MainWindow::on_pushButton_5_clicked()
     genapts += ".exe"; // add EXE for windows
 #endif
     QFile f(genapts);
-    if ( ! f.exists() ) {
+    if ( !f.exists() ) {
         QMessageBox::critical(this,"File not found", "Unable to locate executable at \n"+genapts);
+        return;
+    }
+
+    QFile aptFile(airportFile);
+    if ( !aptFile.exists() ) {
+        QMessageBox::critical(this,"File not found", "Unable to locate airports at \n"+airportFile);
         return;
     }
 
@@ -434,7 +440,7 @@ void MainWindow::on_pushButton_5_clicked()
         QString msg = "Unable to locate:\n\n";
         foreach(QString str, dll) {
             QLibrary lib(str); // QLibrary will try the platform's library suffix
-            if (! lib.load()) {
+            if (!lib.load()) {
                 msg += lib.errorString()+"\n";
                 miss++;
             }
