@@ -420,6 +420,9 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetNoConstraint</enum>
+              </property>
               <property name="rightMargin">
                <number>5</number>
               </property>
@@ -508,7 +511,7 @@
                     <item>
                      <widget class="QLineEdit" name="lineEdit_8">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -539,7 +542,7 @@
                     <item>
                      <widget class="QLineEdit" name="lineEdit_6">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -564,6 +567,9 @@
                       </property>
                       <property name="text">
                        <string/>
+                      </property>
+                      <property name="readOnly">
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -593,7 +599,7 @@
                     <item>
                      <widget class="QLineEdit" name="lineEdit_7">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -621,7 +627,7 @@
                     <item>
                      <widget class="QLineEdit" name="lineEdit_5">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -752,6 +758,9 @@
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -764,6 +773,12 @@
                 </item>
                 <item>
                  <widget class="QProgressBar" name="progressBar_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="value">
                    <number>0</number>
                   </property>
@@ -771,6 +786,12 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -817,7 +838,7 @@
                 <item>
                  <widget class="QLabel" name="label_12">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -844,7 +865,7 @@
                      <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -887,6 +908,12 @@
                     <property name="enabled">
                      <bool>true</bool>
                     </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>20</width>
@@ -913,7 +940,7 @@
                      <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -974,7 +1001,7 @@
                   <item>
                    <widget class="QComboBox" name="comboBox_5">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -985,14 +1012,22 @@
                       <height>23</height>
                      </size>
                     </property>
+                    <property name="currentIndex">
+                     <number>2</number>
+                    </property>
                     <item>
                      <property name="text">
-                      <string>usgs.gov</string>
+                      <string>fgx.ch (SRTM-3)</string>
                      </property>
                     </item>
                     <item>
                      <property name="text">
-                      <string>fgx.ch</string>
+                      <string>usgs.gov (SRTM-1)</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>usgs.gov (SRTM-3)</string>
                      </property>
                     </item>
                    </widget>
@@ -1009,7 +1044,7 @@
                 <item>
                  <widget class="QPushButton" name="pushButton_6">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -1231,12 +1266,21 @@
               </item>
               <item>
                <widget class="QComboBox" name="comboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="currentIndex">
                  <number>1</number>
                 </property>
+                <property name="frame">
+                 <bool>true</bool>
+                </property>
                 <item>
                  <property name="text">
-                  <string comment="1">1 (USA only)</string>
+                  <string comment="1">1</string>
                  </property>
                 </item>
                 <item>

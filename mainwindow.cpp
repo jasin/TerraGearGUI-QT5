@@ -594,7 +594,9 @@ void MainWindow::on_pushButton_6_clicked()
 
     QString sourceElev = ui->comboBox_5->currentText();
     QString urlElev;
-    if (sourceElev == "usgs.gov"){
+    if (sourceElev == "usgs.gov (SRTM-1)"){
+        urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM1/";
+    } else if (sourceElev == "usgs.gov (SRTM-3)"){
         urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/";
     } else {
         urlElev = "http://downloads.fgx.ch/geodata/data/srtm/";
@@ -618,12 +620,16 @@ void MainWindow::on_pushButton_6_clicked()
             tileLon.sprintf("%03d",abs(lon));
             tile += tileLon;
 
-            QList<QString> continents;
-            continents << "Africa" << "Australia" << "Eurasia" << "Islands" << "North_America" << "South_America";
+            QList<QString> folders;
+            if (sourceElev.contains("SRTM-1")) {
+                folders << "Region_01" << "Region_02" << "Region_03" << "Region_04" << "Region_05" << "Region_06" << "Region_07";
+            } else {
+                folders << "Africa" << "Australia" << "Eurasia" << "Islands" << "North_America" << "South_America";
+            }
             int i = 0;
             bool succes = 0;
             while (!succes and i < 5) {
-                QUrl url(urlElev+continents.at(i)+"/"+tile+".hgt.zip");
+                QUrl url(urlElev+folders.at(i)+"/"+tile+".hgt.zip");
                 QNetworkReply *reply = _manager->get(QNetworkRequest(url));
                 if (reply->error()) {
                     succes = 1;
@@ -838,17 +844,15 @@ void MainWindow::on_pushButton_11_clicked()
     rt.start(); // start total running time
     tot.sprintf("%d", list.size());
 
+    QString elevationRes = ui->comboBox->currentText();
+
     // build set of arguments
     for (i = 0; i < list.size(); ++i)
     {
         QFileInfo fileInfo = list.at(i);
-        QString elevationRes = ui->comboBox->currentText();
-        if (elevationRes == "1 (USA only)") {
-            elevationRes = "1";
-        }
         elevationFile        = QString("%1").arg(fileInfo.fileName());
         arguments            = "\""+terragearDirectory;
-        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-3\"";
+        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-"+elevationRes+"\"";
         // store runtime argument, and file name
         // could add a check that it is a HGT file...
         argList += arguments;
@@ -911,7 +915,7 @@ void MainWindow::on_pushButton_11_clicked()
         argumentsTerrafit += "--maxerror "+maxerror+" ";
     }
 
-    argumentsTerrafit +="\""+workDirectory+"/SRTM-3\"";
+    argumentsTerrafit +="\""+workDirectory+"/SRTM-"+elevationRes+"\"";
 
     outputToLog(argumentsTerrafit);
     QProcess procTerrafit;
@@ -1148,10 +1152,7 @@ void MainWindow::on_pushButton_12_clicked()
     QFileInfoList dirList = dir.entryInfoList();
     for (int i = 0; i < dirList.size(); ++i) {
         QFileInfo dirInfo = dirList.at(i);
-        if( dirInfo.fileName() != "SRTM-30" and
-                dirInfo.fileName() != "SRTM-3" and
-                dirInfo.fileName() != "SRTM-1" and
-                dirInfo.fileName() != "SRTM"){
+        if (!dirInfo.fileName().contains("SRTM")) {
             ui->tblShapesAlign->insertRow(ui->tblShapesAlign->rowCount());
             QTableWidgetItem *twiCellShape = new QTableWidgetItem(0);
             twiCellShape->setText(tr(qPrintable(QString("%1").arg(dirInfo.fileName()))));
