@@ -427,12 +427,9 @@ void MainWindow::on_pushButton_5_clicked()
     //+++ Lets Go!
     rt.start();
     // proceed to do airport generation
-    arguments   =  "\"" + terragearDirectory;
-    arguments += "/bin/genapts";
+    arguments   =  "\"" + genapts;
     if (ui->comboBox_4->currentText() == "850") {
-        arguments += "850";
 
-#ifdef Q_OS_WIN
         // check for dll required to run genapts
         QList<QString> dll;
         dll << "gdal12" << "msvcp71" << "msvcr71" << "PocoFoundation" << "PocoNet";
@@ -449,7 +446,6 @@ void MainWindow::on_pushButton_5_clicked()
             QMessageBox::critical(this,"File(s) not found", msg);
             return;
         }
-#endif
     }
 
     if ( !util_verifySRTMfiles( minLat, maxLat,
