@@ -201,7 +201,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.7"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.8"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -432,7 +432,10 @@ void MainWindow::on_pushButton_5_clicked()
 
         // check for dll required to run genapts
         QList<QString> dll;
-        dll << "gdal12" << "msvcp71" << "msvcr71" << "PocoFoundation" << "PocoNet";
+        dll << "PocoFoundation" << "PocoNet";
+#ifdef Q_OS_WIN
+        dll << "gdal12" << "msvcp71" << "msvcr71";
+#endif
         int miss = 0;
         QString msg = "Unable to locate:\n\n";
         foreach(QString str, dll) {
