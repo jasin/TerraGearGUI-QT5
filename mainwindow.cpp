@@ -432,9 +432,9 @@ void MainWindow::on_pushButton_5_clicked()
 
         // check for dll required to run genapts
         QList<QString> dll;
-        dll << "PocoFoundation" << "PocoNet";
+        dll << "gdal" << "PocoFoundation" << "PocoNet";
 #ifdef Q_OS_WIN
-        dll << "gdal12" << "msvcp71" << "msvcr71";
+        dll << "msvcp71" << "msvcr71";
 #endif
         int miss = 0;
         QString msg = "Unable to locate:\n\n";
