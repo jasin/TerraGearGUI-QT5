@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QtGui>
 #include <QListWidgetItem>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -13,6 +14,10 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QUrl>
+
+#include "QMapControl/qmapcontrol.h"
+
+using namespace qmapcontrol;
 
 namespace Ui {
     class MainWindow;
@@ -30,6 +35,13 @@ private:
     Ui::MainWindow *ui;
     QNetworkAccessManager* _manager;
     QScrollBar* scrollBar;
+
+    MapControl* mc;
+    MapAdapter* mapadapter;
+    Layer* mainlayer;
+
+    void addZoomButtons();
+    void wheelEvent(QWheelEvent *event);
 
 private slots:
     void on_checkBox_4_toggled(bool checked);
@@ -86,6 +98,11 @@ private slots:
 
     void downloadFinished(QNetworkReply *reply);
     void progressBar_5(qint64 bytesReceived, qint64 bytesTotal);
+
+    void draggedRect(QRectF rect);
+
+protected:
+    virtual void resizeEvent ( QResizeEvent * event );
 };
 
 #endif // MAINWINDOW_H

@@ -1,6 +1,4 @@
 The current todo list contains the following items:
 
-- Add interactive map on which we can "draw" a boundary.
-- Support downloading 1 arcsec data for the US.
 - Add support for custom scenery paths.
 - Improve layout for larger displays (currently optimised for the mimimum window size).

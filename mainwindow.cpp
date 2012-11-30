@@ -23,6 +23,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <iostream>
 #include <QApplication>
 #include <QDateTime>
@@ -40,14 +41,19 @@
 #include <QMap>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include <QPaintEvent>
 #include <QPalette>
+#include <QPoint>
+#include <QPointF>
 #include <QProcess>
+#include <QRectF>
 #include <QRegExp>
 #include <QSettings>
 #include <QStringList>
 #include <QTextStream>
 #include <QTime>
 #include <QUrl>
+#include <QWheelEvent>
 #include <QXmlStreamReader>
 
 #include "newbucket.h"
@@ -161,21 +167,50 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_manager, SIGNAL(finished(QNetworkReply*)), SLOT(downloadFinished(QNetworkReply*)));
 
     m_break = false;
+
+    // create MapControl
+    mc = new MapControl(QSize(450, 260));
+    mc->setMouseMode(MapControl::Dragging);
+    mc->showScale(true);
+    mapadapter = new OSMMapAdapter();
+    mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
+    mc->addLayer(mainlayer);
+    connect(mc, SIGNAL(boxDragged(QRectF)),
+            this, SLOT(draggedRect(QRectF)));
+    addZoomButtons();
+    ui->verticalLayout_14->addWidget(mc);
+
+    QList<QPointF> coords;
+    coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
+    coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
+    mc->setViewAndZoomIn(coords);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete mc;
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
+    // hide log on download tab
+    if (index == 1) {
+        ui->textBrowser->hide();
+    } else {
+        if ( ui->checkBox_showOutput->isChecked() ) {
+            ui->textBrowser->show();
+        }
+        else {
+            ui->textBrowser->hide();
+        }
+    }
     // add shapefiles to list, if empty
-    if (index == 3 and ui->tblShapesAlign->rowCount() == 0) {
+    if (index == 4 and ui->tblShapesAlign->rowCount() == 0) {
         ui->pushButton_12->click();
     }
     // add terraintypes to list, if empty
-    if (index == 4 and ui->listWidget_2->count() == 0) {
+    if (index == 5 and ui->listWidget_2->count() == 0) {
         ui->pushButton_15->click();
     }
 }
@@ -201,7 +236,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.8"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.9"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -432,9 +467,9 @@ void MainWindow::on_pushButton_5_clicked()
 
         // check for dll required to run genapts
         QList<QString> dll;
-        dll << "gdal" << "PocoFoundation" << "PocoNet";
+        dll << "PocoFoundation" << "PocoNet";
 #ifdef Q_OS_WIN
-        dll << "msvcp71" << "msvcr71";
+        dll << "gdal" << "msvcp71" << "msvcr71";
 #endif
         int miss = 0;
         QString msg = "Unable to locate:\n\n";
@@ -2082,6 +2117,12 @@ void MainWindow::updateCenter()
     double southInt    = m_south.toDouble();
     double westInt     = m_west.toDouble();
 
+    // save values for next session
+    settings.setValue("boundaries/north", m_north);
+    settings.setValue("boundaries/south", m_south);
+    settings.setValue("boundaries/east", m_east);
+    settings.setValue("boundaries/west", m_west);
+
     if ((westInt < eastInt) && (northInt > southInt)) {
         // Calculate center
         double latInt = (northInt + southInt) / 2;
@@ -2223,6 +2264,77 @@ void MainWindow::updateAirportRadios()
         ui->lineEdit_18->hide();
         ui->lineEdit_19->hide();
     }
+}
+
+void MainWindow::addZoomButtons()
+{
+    // create buttons as controls for zoom
+    QPushButton* zoomin = new QPushButton("+");
+    QPushButton* zoomout = new QPushButton("-");
+    zoomin->setMaximumWidth(50);
+    zoomout->setMaximumWidth(50);
+
+    connect(zoomin, SIGNAL(clicked(bool)),
+            mc, SLOT(zoomIn()));
+    connect(zoomout, SIGNAL(clicked(bool)),
+            mc, SLOT(zoomOut()));
+    // add zoom buttons to the layout of the MapControl
+    QVBoxLayout* innerlayout = new QVBoxLayout;
+    innerlayout->addWidget(zoomin);
+    innerlayout->addWidget(zoomout);
+    mc->setLayout(innerlayout);
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    int numDegrees = event->delta() / 8;
+    int numSteps = numDegrees / 15;
+    if (event->orientation() == Qt::Vertical) {
+        if (numSteps > 0) {
+            mc->zoomIn();
+        } else {
+            mc->zoomOut();
+        }
+    }
+    event->accept();
+}
+
+void MainWindow::draggedRect(QRectF rect)
+{
+    QList<QPointF> coords;
+    coords.append(rect.topLeft());
+    coords.append(rect.bottomRight());
+    mc->setViewAndZoomIn(coords);
+
+    double latminpoint = rect.bottom();
+    double latmaxpoint = rect.top();
+    double lonminpoint = rect.left();
+    double lonmaxpoint = rect.right();
+
+    ui->lineEdit_8->setText(QString::number(latminpoint));
+    ui->lineEdit_7->setText(QString::number(latmaxpoint));
+    ui->lineEdit_6->setText(QString::number(lonminpoint));
+    ui->lineEdit_5->setText(QString::number(lonmaxpoint));
+
+    QList<Point*> points;
+    points.append(new Point(lonminpoint, latminpoint, "1"));
+    points.append(new Point(lonminpoint, latmaxpoint, "1"));
+    points.append(new Point(lonmaxpoint, latmaxpoint, "1"));
+    points.append(new Point(lonmaxpoint, latminpoint, "1"));
+    points.append(new Point(lonminpoint, latminpoint, "1"));
+    QPen* linepen = new QPen(Qt::red);
+    linepen->setWidth(2);
+    LineString* ls = new LineString(points, "Busline 54", linepen);
+    mainlayer->addGeometry(ls);
+
+    updateCenter();
+    updateElevationRange();
+}
+
+// resize the widget
+void MainWindow::resizeEvent ( QResizeEvent * event )
+{
+    mc->resize(ui->groupBox_5->size());
 }
 
 // eof - mainwindow.cpp
