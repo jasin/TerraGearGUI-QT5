@@ -170,7 +170,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // create MapControl
     mc = new MapControl(QSize(450, 260));
-    mc->setMouseMode(MapControl::Dragging);
     mc->showScale(true);
     mapadapter = new OSMMapAdapter();
     mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
@@ -2271,17 +2270,23 @@ void MainWindow::addZoomButtons()
     // create buttons as controls for zoom
     QPushButton* zoomin = new QPushButton("+");
     QPushButton* zoomout = new QPushButton("-");
+    QPushButton* pan = new QPushButton("Select area");
     zoomin->setMaximumWidth(50);
     zoomout->setMaximumWidth(50);
+    pan->setCheckable(true);
+    pan->setMaximumWidth(100);
 
     connect(zoomin, SIGNAL(clicked(bool)),
             mc, SLOT(zoomIn()));
     connect(zoomout, SIGNAL(clicked(bool)),
             mc, SLOT(zoomOut()));
+    connect(pan, SIGNAL(toggled(bool)),
+            mc, SLOT(buttonToggled(bool)));
     // add zoom buttons to the layout of the MapControl
     QVBoxLayout* innerlayout = new QVBoxLayout;
     innerlayout->addWidget(zoomin);
     innerlayout->addWidget(zoomout);
+    innerlayout->addWidget(pan);
     mc->setLayout(innerlayout);
 }
 

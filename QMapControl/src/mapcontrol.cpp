@@ -203,6 +203,9 @@ namespace qmapcontrol
         if (mousepressed && mymousemode == Dragging)
         {
             QRect rect = QRect(pre_click_px, current_mouse_pos);
+            QPen pen( Qt::red );
+            pen.setWidth( 2 );
+            painter.setPen( pen );
             painter.drawRect(rect);
         }
         emit viewChanged(currentCoordinate(), currentZoom());
@@ -308,6 +311,13 @@ namespace qmapcontrol
     {
         layermanager->zoomOut();
         update();
+    }
+    void MapControl::buttonToggled(bool active)
+    {
+        if (active)
+            setMouseMode(MapControl::Dragging);
+        else
+            setMouseMode(MapControl::Panning);
     }
     void MapControl::setZoom(int zoomlevel)
     {

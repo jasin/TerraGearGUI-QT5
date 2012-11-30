@@ -286,6 +286,8 @@ namespace qmapcontrol
         //! zooms out one step
         void zoomOut();
 
+        void buttonToggled(bool active);
+
         //! sets the given zoomlevel
         /*!
          * @param zoomlevel the zoomlevel
