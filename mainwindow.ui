@@ -443,8 +443,8 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
             <widget class="QGroupBox" name="groupBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -482,10 +482,7 @@
              <property name="checkable">
               <bool>false</bool>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <property name="spacing">
-               <number>6</number>
-              </property>
+             <layout class="QGridLayout" name="gridLayout">
               <property name="leftMargin">
                <number>9</number>
               </property>
@@ -495,57 +492,14 @@
               <property name="rightMargin">
                <number>9</number>
               </property>
-              <item>
-               <widget class="QLabel" name="label_5">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>40</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>40</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Lucida Sans</family>
-                  <pointsize>8</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery, or drag a box on the map. Values are in degrees. Click the buttons to auto-download data for the specified area.</string>
-                </property>
-                <property name="textFormat">
-                 <enum>Qt::AutoText</enum>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignJustify|Qt::AlignTop</set>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-                <property name="indent">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item>
+              <item row="2" column="0">
                <widget class="Line" name="line_5">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="3" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_9">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
@@ -928,7 +882,7 @@
                     <property name="maximumSize">
                      <size>
                       <width>350</width>
-                      <height>16777215</height>
+                      <height>23</height>
                      </size>
                     </property>
                     <property name="font">
@@ -1139,6 +1093,12 @@
                         <height>23</height>
                        </size>
                       </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>23</height>
+                       </size>
+                      </property>
                       <property name="currentIndex">
                        <number>2</number>
                       </property>
@@ -1182,6 +1142,12 @@
                       <height>23</height>
                      </size>
                     </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>23</height>
+                     </size>
+                    </property>
                     <property name="font">
                      <font>
                       <family>Lucida Sans</family>
@@ -1210,34 +1176,77 @@
                 </item>
                </layout>
               </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Lucida Sans</family>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Use the boxes below to set the boundaries of the &quot;to-be-created&quot; scenery, or drag a box on the map. Values are in degrees. Click the buttons to auto-download data for the specified area.</string>
+                </property>
+                <property name="textFormat">
+                 <enum>Qt::AutoText</enum>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignJustify|Qt::AlignTop</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="indent">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_5">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="1" column="0">
+            <widget class="QFrame" name="frame">
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>0</height>
+               <height>10</height>
               </size>
              </property>
-             <property name="title">
-              <string/>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
              </property>
-             <layout class="QGridLayout" name="gridLayout">
-              <property name="margin">
-               <number>0</number>
-              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
               <property name="spacing">
                <number>0</number>
               </property>
-              <item row="0" column="0">
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item>
                <layout class="QVBoxLayout" name="verticalLayout_14">
                 <property name="spacing">
                  <number>0</number>

@@ -34,7 +34,7 @@ namespace qmapcontrol
         composedOffscreenImage = QPixmap(offSize);
         composedOffscreenImage2 = QPixmap(offSize);
         zoomImage = QPixmap(size);
-        zoomImage.fill(Qt::white);
+        zoomImage.fill(Qt::transparent);
         screenmiddle = QPoint(size.width()/2, size.height()/2);
     }
 
@@ -221,7 +221,7 @@ namespace qmapcontrol
 
         if (clearImage)
         {
-            composedOffscreenImage2.fill(Qt::white);
+            composedOffscreenImage2.fill(Qt::transparent);
         }
 
         QPainter painter(&composedOffscreenImage2);
@@ -256,7 +256,7 @@ namespace qmapcontrol
         // layer rendern abbrechen?
         zoomImageScroll = QPoint(0,0);
 
-        zoomImage.fill(Qt::white);
+        zoomImage.fill(Qt::transparent);
         QPixmap tmpImg = composedOffscreenImage.copy(screenmiddle.x()+scroll.x(),screenmiddle.y()+scroll.y(), size.width(), size.height());
 
         QPainter painter(&zoomImage);
@@ -306,7 +306,7 @@ namespace qmapcontrol
         QCoreApplication::processEvents();
         ImageManager::instance()->abortLoading();
         zoomImageScroll = QPoint(0,0);
-        zoomImage.fill(Qt::white);
+        zoomImage.fill(Qt::transparent);
         QPixmap tmpImg = composedOffscreenImage.copy(screenmiddle.x()+scroll.x(),screenmiddle.y()+scroll.y(), size.width(), size.height());
         QPainter painter(&zoomImage);
         painter.translate(screenmiddle);
@@ -405,7 +405,7 @@ namespace qmapcontrol
     }
     void LayerManager::removeZoomImage()
     {
-        zoomImage.fill(Qt::white);
+        zoomImage.fill(Qt::transparent);
         forceRedraw();
     }
 
@@ -440,7 +440,7 @@ namespace qmapcontrol
         composedOffscreenImage = QPixmap(offSize);
         composedOffscreenImage2 = QPixmap(offSize);
         zoomImage = QPixmap(newSize);
-        zoomImage.fill(Qt::white);
+        zoomImage.fill(Qt::transparent);
 
         screenmiddle = QPoint(newSize.width()/2, newSize.height()/2);
 

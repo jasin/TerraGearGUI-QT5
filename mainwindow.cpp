@@ -169,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_break = false;
 
     // create MapControl
-    mc = new MapControl(QSize(450, 260));
+    mc = new MapControl(QSize(458, 254));
     mc->showScale(true);
     mapadapter = new OSMMapAdapter();
     mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
@@ -183,6 +183,11 @@ MainWindow::MainWindow(QWidget *parent) :
     coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
     coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
     mc->setViewAndZoomIn(coords);
+
+    if (ui->tabWidget->currentIndex() == 1) {
+        ui->textBrowser->hide();
+        mc->resize(QSize(458,254));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -196,6 +201,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     // hide log on download tab
     if (index == 1) {
         ui->textBrowser->hide();
+        mc->resize(QSize(458,254));
     } else {
         if ( ui->checkBox_showOutput->isChecked() ) {
             ui->textBrowser->show();
@@ -2339,7 +2345,7 @@ void MainWindow::draggedRect(QRectF rect)
 // resize the widget
 void MainWindow::resizeEvent ( QResizeEvent * event )
 {
-    mc->resize(ui->groupBox_5->size());
+    mc->resize(ui->frame->size());
 }
 
 // eof - mainwindow.cpp
