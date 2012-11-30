@@ -2290,9 +2290,13 @@ void MainWindow::addZoomButtons()
             mc, SLOT(buttonToggled(bool)));
     // add zoom buttons to the layout of the MapControl
     QVBoxLayout* innerlayout = new QVBoxLayout;
-    innerlayout->addWidget(zoomin);
-    innerlayout->addWidget(zoomout);
+    QHBoxLayout* innerlayoutH = new QHBoxLayout;
+    innerlayoutH->addWidget(zoomin);
+    innerlayoutH->addWidget(zoomout);
+    innerlayoutH->addStretch(1);
+    innerlayout->addLayout(innerlayoutH);
     innerlayout->addWidget(pan);
+    innerlayout->addStretch(1);
     mc->setLayout(innerlayout);
 }
 
