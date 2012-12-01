@@ -214,14 +214,14 @@ namespace qmapcontrol
          */
         void showScale ( bool show );
 
+        QSize size; // size of the widget
+
     private:
         LayerManager* layermanager;
         QPoint screen_middle; // middle of the widget (half size)
 
         QPoint pre_click_px; // used for scrolling (MouseMode Panning)
         QPoint current_mouse_pos; // used for scrolling and dragging (MouseMode Panning/Dragging)
-
-        QSize size; // size of the widget
 
         bool mousepressed;
         bool mousepressedRight;

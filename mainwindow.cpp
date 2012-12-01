@@ -170,6 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // create MapControl
     mc = new MapControl(QSize(458, 254));
+    mc->setMinimumSize(QSize(458,254));
     mc->showScale(true);
     mapadapter = new OSMMapAdapter();
     mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
@@ -179,15 +180,27 @@ MainWindow::MainWindow(QWidget *parent) :
     addZoomButtons();
     ui->verticalLayout_14->addWidget(mc);
 
+    if (ui->tabWidget->currentIndex() == 1) {
+        ui->textBrowser->hide();
+        mc->resize(QSize(458,254));
+    }
+
     QList<QPointF> coords;
     coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
     coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
     mc->setViewAndZoomIn(coords);
 
-    if (ui->tabWidget->currentIndex() == 1) {
-        ui->textBrowser->hide();
-        mc->resize(QSize(458,254));
-    }
+    // draw saved boundary box
+    QList<Point*> points;
+    points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+    points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
+    points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
+    points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
+    points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+    QPen* linepen = new QPen(Qt::red);
+    linepen->setWidth(2);
+    LineString* ls = new LineString(points, "Busline 54", linepen);
+    mainlayer->addGeometry(ls);
 }
 
 MainWindow::~MainWindow()
@@ -201,7 +214,9 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     // hide log on download tab
     if (index == 1) {
         ui->textBrowser->hide();
-        mc->resize(QSize(458,254));
+        if (mc->size.height() < ui->frame->size().height()) {
+            mc->resize(QSize(458,254));
+        }
     } else {
         if ( ui->checkBox_showOutput->isChecked() ) {
             ui->textBrowser->show();
@@ -241,7 +256,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.9"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.10"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -348,56 +363,59 @@ void MainWindow::on_pushButton_2_clicked()
     }
 #endif
 
-    double eastInt     = m_east.toDouble();
-    double northInt    = m_north.toDouble();
-    double southInt    = m_south.toDouble();
-    double westInt     = m_west.toDouble();
+    double southInt    = ui->lineEdit_8->text().toDouble();
+    double northInt    = ui->lineEdit_7->text().toDouble();
+    double westInt     = ui->lineEdit_6->text().toDouble();
+    double eastInt     = ui->lineEdit_5->text().toDouble();
 
     if ((westInt < eastInt) && (northInt > southInt)) {
+        double squareDegree = abs((eastInt-westInt)*(northInt-southInt));
+        if (squareDegree <= 144) {
+            //== Set server - maybe MAP_SERVER_URL as constant
+            QUrl url("http://mapserver.flightgear.org/dlshp?");
 
-        //== Set server - maybe MAP_SERVER_URL as constant
-        QUrl url("http://mapserver.flightgear.org/dlshp?");
+            //== Set Source Dir
+            QString source = ui->comboBox_3->currentText();
+            QString layer;
+            if (source == "Custom scenery"){
+                layer = "cs";
 
-        //== Set Source Dir
-        QString source = ui->comboBox_3->currentText();
-        QString layer;
-        if (source == "Custom scenery"){
-            layer = "cs";
+            }else if (source == "OpenStreetMap"){
+                layer = "osm";
 
-        }else if (source == "OpenStreetMap"){
-            layer = "osm";
+            }else if (source == "CORINE 2000 (Europe)"){
+                layer = "clc00";
 
-        }else if (source == "CORINE 2000 (Europe)"){
-            layer = "clc00";
+            }else {
+                layer = "clc06";
+            }
 
-        }else {
-            layer = "clc06";
-        }
+            //== add Query vars
+            url.addQueryItem("layer", layer);
+            url.addQueryItem("xmin", m_west);
+            url.addQueryItem("xmax", m_east);
+            url.addQueryItem("ymin", m_south);
+            url.addQueryItem("ymax", m_north);
 
-        //== add Query vars
-        url.addQueryItem("layer", layer);
-        url.addQueryItem("xmin", m_west);
-        url.addQueryItem("xmax", m_east);
-        url.addQueryItem("ymin", m_south);
-        url.addQueryItem("ymax", m_north);
+            //= save output to log
+            outputToLog(url.toString());
 
-        //= save output to log
-        outputToLog(url.toString());
+            // reset progressbar
+            ui->progressBar_5->setMinimum(0);
+            ui->progressBar_5->setMaximum(0);
 
-        // reset progressbar
-        ui->progressBar_5->setMinimum(0);
-        ui->progressBar_5->setMaximum(0);
+            // disable button during download
+            ui->pushButton_2->setEnabled(0);
+            ui->pushButton_2->setText("Connecting to server...");
 
-        // disable button during download
-        ui->pushButton_2->setEnabled(0);
-        ui->pushButton_2->setText("Connecting to server...");
-
-        if ( ! _manager->get(QNetworkRequest(url)) ) {
-            // TODO: Open internal webbrowser
-            // QWebView::webview = new QWebView;
-            // webview.load(url);
-            QMessageBox::critical(this, "URL cannot be opened",
-                                  "The following URL cannot be opened " + url.toString() +".\nCopy the URL to your browser");
+            if ( ! _manager->get(QNetworkRequest(url)) ) {
+                // TODO: Open internal webbrowser
+                // QWebView::webview = new QWebView;
+                // webview.load(url);
+                QMessageBox::critical(this, "URL cannot be opened","The following URL cannot be opened " + url.toString() +".\nCopy the URL to your browser");
+            }
+        } else {
+            QMessageBox::critical(this,"Boundary error","The selected area is too large. The download server does not accept areas larger than 144 square degrees. Your area spans "+QString::number(squareDegree)+" square degrees.");
         }
     }
     else{
