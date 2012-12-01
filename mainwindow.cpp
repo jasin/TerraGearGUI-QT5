@@ -1231,26 +1231,6 @@ void MainWindow::on_pushButton_12_clicked()
         ui->tblShapesAlign->setItem(i, 1, twiCellMater);
     }
     ui->tblShapesAlign->resizeRowsToContents();
-
-    // check for tool existance
-    //TODO this lot sucks to hight heaven and is part of gral/pedro plan to have one master State() instead of lots of bits..
-    QString tgTool = terragearDirectory;
-    tgTool += "/bin/ogr-decode";
-#ifdef Q_OS_WIN
-    tgTool += ".exe";
-#endif
-    QFile f(tgTool);
-    if ( ! f.exists() ) {
-        tgTool = terragearDirectory;
-        tgTool += "/bin/shape-decode";
-#ifdef Q_OS_WIN
-        tgTool += ".exe";
-#endif
-        QFile f2(tgTool);
-        if (f2.exists()) {
-            ui->checkBox_ogr->setCheckState(Qt::Checked);
-        }
-    }
 }
 
 
@@ -1713,10 +1693,6 @@ void MainWindow::on_pushButton_16_clicked()
     // check if terragear tool exists
     QString TGfile = terragearDirectory;
     TGfile += "/bin/ogr-decode";
-    if (ui->checkBox_ogr->isChecked()) {
-        TGfile = terragearDirectory;
-        TGfile += "/bin/shape-decode";
-    }
 #ifdef Q_OS_WIN
     TGfile += ".exe"; // add EXE for windows
 #endif
@@ -1760,52 +1736,27 @@ void MainWindow::on_pushButton_16_clicked()
 
         shapefile = ui->tblShapesAlign->item(i, 1)->text();
 
-        // TODO = We need to build out this path and verify in interface...
-        if (ui->checkBox_ogr->isChecked()) {
-            /* until I can get ogr-decode built ;=() */
-            arguments  = "\""+terragearDirectory;
-            arguments += "/bin/shape-decode\" ";
-            arguments += "--line-width "+lineWidth+" ";
+        arguments   = "\""+terragearDirectory;
+        arguments += "/bin/ogr-decode\" ";
 
-            if (ui->lineEdit_24->text() > 0){
-                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
-            }
-            if (ui->checkBox_2->isChecked() == 1){
-                arguments += "--continue-on-errors ";
-            }
-            if (ui->lineEdit_26->text() > 0){
-                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
-            }
-            // last 3 arguments
-            // shape file, with no extension
-            arguments += "\""+dataDirectory+"/"+material+"/"+material+"\" ";
-            // work directory - where to put the output
-            arguments += "\""+workDirectory+"/"+shapefile+"\" ";
-            // area string
-            arguments += " "+shapefile+" ";
+        arguments += "--line-width "+lineWidth+" ";
 
-        } else {
-            arguments   = "\""+terragearDirectory;
-            arguments += "/bin/ogr-decode\" ";
-
-            arguments += "--line-width "+lineWidth+" ";
-
-            if (ui->lineEdit_24->text() > 0){
-                arguments += "--point-width "+ui->lineEdit_24->text()+" ";
-            }
-            if (ui->checkBox_2->isChecked() == 1){
-                arguments += "--continue-on-errors ";
-            }
-            if (ui->lineEdit_26->text() > 0){
-                arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
-            }
-            if (ui->checkBox_texturedlines->isChecked() == 1){
-                arguments += "--texture-lines ";
-            }
-            arguments += "--area-type "+shapefile+" ";
-            arguments += "\""+workDirectory+"/"+shapefile+"\" ";
-            arguments += "\""+dataDirectory+"/"+material+"\"";
+        if (ui->lineEdit_24->text() > 0){
+            arguments += "--point-width "+ui->lineEdit_24->text()+" ";
         }
+        if (ui->checkBox_2->isChecked() == 1){
+            arguments += "--continue-on-errors ";
+        }
+        if (ui->lineEdit_26->text() > 0){
+            arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+        }
+        if (ui->checkBox_texturedlines->isChecked() == 1){
+            arguments += "--texture-lines ";
+        }
+        arguments += "--area-type "+shapefile+" ";
+        arguments += "\""+workDirectory+"/"+shapefile+"\" ";
+        arguments += "\""+dataDirectory+"/"+material+"\"";
+
         argList += arguments;
         shpList += shapefile;
     }
@@ -1843,7 +1794,7 @@ void MainWindow::on_pushButton_16_clicked()
                 msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setWindowTitle("Process error");
-                msgBox.setText("Failed to decode shapefiles.\nTry using Shape Decode, instead of OGR Decode.");
+                msgBox.setText("Failed to decode shapefiles.");
                 msgBox.setIcon(QMessageBox::Critical);
                 int ret = msgBox.exec();
                 switch (ret) {

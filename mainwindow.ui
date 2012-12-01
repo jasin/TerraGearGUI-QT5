@@ -2600,6 +2600,12 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <weight>50</weight>
@@ -2652,13 +2658,6 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
-             <widget class="QCheckBox" name="checkBox_ogr">
-              <property name="text">
-               <string>Use Shape Decode (instead of OGR Decode)</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_31">
               <property name="enabled">
@@ -2698,23 +2697,29 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </spacer>
             </item>
-            <item row="1" column="3">
+            <item row="0" column="3">
              <widget class="QCheckBox" name="checkBox_texturedlines">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Textured lines (experimental, OGR decode)</string>
+               <string>Textured lines</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
+            <item row="1" column="3">
              <widget class="QCheckBox" name="checkBox_2">
               <property name="enabled">
                <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
@@ -2833,7 +2838,7 @@ and apply material(s)</string>
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Calculated from the coordinates given on the Start tab, where they can be altered.</string>
+                 <string>Calculated from the coordinates given on the Download tab, where they can be altered.</string>
                 </property>
                 <property name="scaledContents">
                  <bool>false</bool>
@@ -3373,7 +3378,6 @@ and apply material(s)</string>
   <tabstop>checkBox_4</tabstop>
   <tabstop>pushButton_15</tabstop>
   <tabstop>listWidget_2</tabstop>
-  <tabstop>checkBox_ogr</tabstop>
   <tabstop>checkBox_igerr</tabstop>
   <tabstop>checkBox_noovr</tabstop>
   <tabstop>checkBox_nodata</tabstop>
