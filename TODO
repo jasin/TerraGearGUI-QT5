@@ -2,3 +2,5 @@ The current todo list contains the following items:
 
 - Add support for custom scenery paths.
 - Improve layout for larger displays (currently optimised for the mimimum window size).
+- Save/load settings, so one can easily work on multiple scenery projects, without having to re-enter all the settings, paths and coordinates.
+- Add a "surprise me" option, where the GUI automatically creates scenery after only selecting a bounding box.

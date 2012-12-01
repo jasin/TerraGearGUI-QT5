@@ -434,6 +434,15 @@ void MainWindow::on_pushButton_3_clicked()
     settings.setValue("path/elevationDir", elevationDirectory); // keep the last directory used
 }
 
+void MainWindow::on_pushButton_4_clicked()
+{
+    QString url = "http://wiki.flightgear.org/TerraGear_GUI";
+    QUrl qu(url);
+    if ( ! QDesktopServices::openUrl(qu) ) {
+        QMessageBox::critical(this,"URL cannot be opened","The following URL cannot be opened "+url+".\nCopy the URL to your browser");
+    }
+}
+
 //################################################################//
 //################################################################//
 //######################      RUN GENAPTS      ###################//
@@ -1774,10 +1783,11 @@ void MainWindow::on_pushButton_16_clicked()
 
         //= Create shell process and start
         QProcess proc;
+        proc.setProcessChannelMode(QProcess::MergedChannels);
         proc.start(arguments, QIODevice::ReadWrite);
 
         //= run command in shell ? ummm>?
-        while(proc.waitForReadyRead()){
+        while(proc.QProcess::waitForFinished(-1)){
             QCoreApplication::processEvents();
         }
         proc.QProcess::waitForFinished(-1);
@@ -2318,3 +2328,4 @@ void MainWindow::resizeEvent ( QResizeEvent * event )
 }
 
 // eof - mainwindow.cpp
+
