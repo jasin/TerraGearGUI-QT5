@@ -472,9 +472,9 @@ void MainWindow::on_pushButton_5_clicked()
 
         // check for dll required to run genapts
         QList<QString> dll;
-        dll << "PocoFoundation" << "PocoNet";
+        //dll << "PocoFoundation" << "PocoNet";
 #ifdef Q_OS_WIN
-        dll << "gdal" << "msvcp71" << "msvcr71";
+        dll << "msvcp71" << "msvcr71";
 #endif
         int miss = 0;
         QString msg = "Unable to locate:\n\n";
@@ -569,38 +569,33 @@ void MainWindow::on_pushButton_5_clicked()
         if (output.contains("Finished cleaning polys")) {
             ui->progressBar_6->setValue(90);
         }
+
+        // obtain data version
+        QRegExp rx("Data version = [0-9]{1,4}");
+        if (output.contains(rx)) {
+            QMessageBox msgBox;
+            int ret = QMessageBox::critical(this, "Wrong airport data version","This .dat file contains airport data in the \""+rx.cap(0).replace("Data version = ", "")+"\" format. Please select the correct format from the dropdown (810 = 810, 850 = 850 and higher).");
+            switch (ret) {
+            case QMessageBox::Ok:
+                return;
+                break;
+            }
+        }
     }
     ui->progressBar_6->setValue(100);
-
     // run genapts command
     proc.QProcess::waitForFinished(-1);
 
     int errCode = proc.exitCode();
     tm = " in "+getElapTimeStg(rt.elapsed());
     msg = proc.readAllStandardOutput()+"\n";
+
     if (errCode) {
         msg += proc.readAllStandardError()+"\n";
     }
     msg += "*PROC_ENDED*"+tm+"\n";
     output += msg;
     outputToLog("PROC_ENDED"+tm);
-
-    // error
-    if (msg.contains("Data version = 850")) {
-        QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.setWindowTitle("Wrong data version");
-        msgBox.setText(QString("This .dat file contains airport data in the 850 format.\nPlease select the correct format from the dropdown."));
-        msgBox.setIcon(QMessageBox::Critical);
-
-        int ret = msgBox.exec();
-        switch (ret) {
-        case QMessageBox::Ok:
-            return;
-            break;
-        }
-    }
 }
 
 //################################################################//
@@ -1243,7 +1238,7 @@ void MainWindow::on_pushButton_12_clicked()
 
 //################################################################//
 //################################################################//
-//##################      RUN FGFS-CONSTRUCT      ################//
+//##################       RUN TG-CONSTRUCT       ################//
 //################################################################//
 //################################################################//
 
@@ -1301,11 +1296,11 @@ void MainWindow::on_pushButton_13_clicked()
     }
 
 #ifdef _NEWBUCKET_HXX   // we have SGBucket capability
-    // construct fgfs-construct commandline,
+    // construct tg-construct commandline,
     // FOR EACH BUCKET SEPARATELY, like master/client do
     // We could concurrently run multiple constructions, but then like server.cxx
     // we should skip every other column, to avoid two clients working on adjacent tiles
-    // but here fgfs-construct is just run with for each 'bucket'
+    // but here tg-construct is just run with for each 'bucket'
     QStringList argList; // build a string list to run
     QStringList pathList; // and the PATH to each bucket
     QString arguments;
@@ -1328,7 +1323,7 @@ void MainWindow::on_pushButton_13_clicked()
 
     // build the general runtime string
     QString runtime = "\""+terragearDirectory;
-    runtime += "/bin/fgfs-construct\" ";
+    runtime += "/bin/tg-construct\" ";
     runtime += "--priorities=\""+terragearDirectory;
     runtime += "/share/TerraGear/default_priorities.txt\" ";
     runtime += "--usgs-map=\""+terragearDirectory;
@@ -1482,7 +1477,7 @@ void MainWindow::on_pushButton_13_clicked()
             break; // all over - user requested a break
         dy++;
         pt.start();
-        // about to RUN fgfs-construct, for each bucket argument
+        // about to RUN tg-construct, for each bucket argument
         arguments = argList[i]; // get command line arguments
         path = pathList[i]; // get the destination path
         // output commandline to log.txt
@@ -1490,21 +1485,23 @@ void MainWindow::on_pushButton_13_clicked()
 
         // and show starting proc
         tm = " rt "+getElapTimeStg(rt.elapsed());
-        // msg.sprintf("%d of %d: fgfs-construct with %d folders - moment...", dy, dx, folderCnt);
-        msg.sprintf("%d of %d: fgfs-construct ", dy, dx);
+        // msg.sprintf("%d of %d: tg-construct with %d folders - moment...", dy, dx, folderCnt);
+        msg.sprintf("%d of %d: tg-construct ", dy, dx);
 
         msg += path;
         msg += tm;
 
-        // start command
         QProcess proc;
         proc.setWorkingDirectory(terragearDirectory);
+        // catch ALL output
+        proc.setProcessChannelMode(QProcess::MergedChannels);
+        // start command
         proc.start(arguments, QIODevice::ReadWrite);
 
-        proc.QProcess::waitForFinished(-1);
+        proc.waitForFinished(-1);
 
         int errCode = proc.exitCode();
-        info = proc.readAllStandardOutput();
+        info = proc.readAll();
         diff_time = pt.elapsed();
         tot_time += diff_time;
         tm = " in "+getElapTimeStg(diff_time);
@@ -1578,24 +1575,20 @@ void MainWindow::on_pushButton_13_clicked()
 
     // scenery has been successfully created, congratulate developer
     if ( info.contains("[Finished successfully]") ) {
-        QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.setWindowTitle("Finished successfully");
-        msgBox.setText(QString("Congratulations, you've successfully built some scenery!"));
+        QMessageBox::information(this, "Finished successfully", "Congratulations, you've successfully built some scenery!");
     }
 
     // ==================================================================
-    msg.sprintf("fgfs-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
+    msg.sprintf("tg-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
     msg += " in "+getElapTimeStg(rt.elapsed());
     ui->textBrowser->append(output); // add it ALL
     sb->setValue(sb->maximum()); // get the info shown
 
 #else // !#ifdef _NEWBUCKET_HXX
 
-    // construct fgfs-construct commandline
+    // construct tg-construct commandline
     QString arguments = "\""+terragearDirectory;
-    arguments += "/bin/fgfs-construct\" ";
+    arguments += "/bin/tg-construct\" ";
     arguments += "--work-dir=\""+workDirectory+"\" ";
     arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
 
@@ -1619,7 +1612,7 @@ void MainWindow::on_pushButton_13_clicked()
     outputToLog(arguments);
 
     // and show starting proc
-    msg.sprintf("Start fgfs-construct with %d folders - moment...", cnt);
+    msg.sprintf("Start tg-construct with %d folders - moment...", cnt);
 
     rt.start();
 
@@ -1642,13 +1635,13 @@ void MainWindow::on_pushButton_13_clicked()
     ui->textBrowser->append(output);
     sb->setValue(sb->maximum()); // get the info shown
     outputToLog("PROC_ENDED"+tm);
-    msg = "fgfs-construct ran for "+tm;
+    msg = "tg-construct ran for "+tm;
 
 #endif // #ifdef _NEWBUCKET_HXX y/n
 
 }
 
-// update terraintypes list for fgfs-construct
+// update terraintypes list for tg-construct
 // *TBD* Should maybe EXCLUDE directory 'Shared'!
 void MainWindow::on_pushButton_15_clicked()
 {
@@ -1787,6 +1780,9 @@ void MainWindow::on_pushButton_16_clicked()
             }
             if (ui->lineEdit_26->text() > 0){
                 arguments += "--max-segment "+ui->lineEdit_26->text()+" ";
+            }
+            if (ui->checkBox_texturedlines->isChecked() == 1){
+                arguments += "--texture-lines ";
             }
             arguments += "--area-type "+shapefile+" ";
             arguments += "\""+workDirectory+"/"+shapefile+"\" ";
@@ -2277,8 +2273,8 @@ void MainWindow::addZoomButtons()
     QPushButton* zoomin = new QPushButton("+");
     QPushButton* zoomout = new QPushButton("-");
     QPushButton* pan = new QPushButton("Select area");
-    zoomin->setMaximumWidth(50);
-    zoomout->setMaximumWidth(50);
+    zoomin->setMaximumWidth(47);
+    zoomout->setMaximumWidth(47);
     pan->setCheckable(true);
     pan->setMaximumWidth(100);
 
