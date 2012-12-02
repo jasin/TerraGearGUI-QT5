@@ -201,6 +201,9 @@ MainWindow::MainWindow(QWidget *parent) :
     linepen->setWidth(2);
     LineString* ls = new LineString(points, "Busline 54", linepen);
     mainlayer->addGeometry(ls);
+
+    // add context menu to table
+    connect(ui->tblShapesAlign, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(displayMenu(QPoint)));
 }
 
 MainWindow::~MainWindow()
@@ -843,8 +846,12 @@ void MainWindow::on_pushButton_9_clicked()
 {
     terragearDirectory = QFileDialog::getExistingDirectory(
                 this,
-                tr("Select TerraGear root, this is the directory in which ogr-decode, genapts etc. live."
+                tr("Select TerraGear root, this is the directory in which bin/ and share/ live."
                    ));
+    if (terragearDirectory.endsWith("bin")) {
+        QMessageBox::information(this,"Directory error","You should select the root directory, in which bin/ and share/ live.\nDo NOT select the bin/ directory.");
+        ui->pushButton_9->click();
+    }
     ui->lineEdit_2->setText(terragearDirectory);
     settings.setValue("paths/terragear", terragearDirectory);
 
@@ -1707,8 +1714,7 @@ void MainWindow::on_pushButton_16_clicked()
 #endif
     QFile f(TGfile);
     if ( ! f.exists() ) {
-        QString msg = "Unable to locate executable at "+TGfile;
-        QMessageBox::critical(this,"File not found", msg);
+        QMessageBox::critical(this,"File not found", "Unable to locate executable at "+TGfile+". Make sure you selected the right TerraGear root directory on the start page.");
         return;
     }
 
@@ -1988,12 +1994,6 @@ void MainWindow::updateElevationRange()
     ui->lineEdit_6->setPalette(q1);
     ui->lineEdit_7->setPalette(q2);
     ui->lineEdit_8->setPalette(q2);
-}
-
-void MainWindow::on_tblShapesAlign_cellDoubleClicked(int row, int column)
-{
-    if (column == 0)
-        ui->tblShapesAlign->removeRow(row);
 }
 
 // populate material list with materials from FG's materials.xml
@@ -2325,6 +2325,18 @@ void MainWindow::draggedRect(QRectF rect)
 void MainWindow::resizeEvent ( QResizeEvent * event )
 {
     mc->resize(ui->frame->size());
+}
+
+void MainWindow::displayMenu(const QPoint &pos)
+{
+    QMenu menu(this);
+    QAction *u = menu.addAction("Remove"); // there can be more than one
+    QAction *a = menu.exec(ui->tblShapesAlign->viewport()->mapToGlobal(pos));
+    if (a == u)
+    {
+        // do what you want or call another function
+        ui->tblShapesAlign->removeRow(ui->tblShapesAlign->currentRow());
+    }
 }
 
 // eof - mainwindow.cpp

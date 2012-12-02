@@ -87,7 +87,7 @@ private slots:
     void on_tabWidget_selected(QString );
     void on_tabWidget_currentChanged(int index);
 
-    void on_tblShapesAlign_cellDoubleClicked(int row, int column);
+    void displayMenu(const QPoint &pos);
 
     void updateAirportRadios();
     void updateCenter();

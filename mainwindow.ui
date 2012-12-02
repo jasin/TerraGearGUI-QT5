@@ -2187,7 +2187,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>Align the shapefiles with the corresponding materials, by selecting materials from the menu below and pressing '+'. Doube clicking a shapefile deletes it; double clicking a material allows you to edit the material.</string>
+            <string>Align the shapefiles with the corresponding materials, by selecting materials from the menu below and pressing '+'. Right click a shapefile to open a menu; double clicking a material allows you to edit the material.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignJustify|Qt::AlignTop</set>
@@ -2199,8 +2199,14 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          </item>
          <item>
           <widget class="QTableWidget" name="tblShapesAlign">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked</set>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
@@ -2208,8 +2214,8 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
            <property name="selectionMode">
             <enum>QAbstractItemView::SingleSelection</enum>
            </property>
-           <property name="showGrid">
-            <bool>false</bool>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
            </property>
            <property name="sortingEnabled">
             <bool>true</bool>
@@ -2601,6 +2607,12 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>32</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>12</pointsize>
@@ -2632,11 +2644,20 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
            <property name="title">
             <string>Extra options (optional)</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_10">
+           <layout class="QGridLayout" name="_2">
+            <property name="topMargin">
+             <number>6</number>
+            </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_30">
               <property name="enabled">
                <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="text">
                <string>Point width</string>
@@ -2665,20 +2686,58 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <item row="0" column="2" rowspan="3">
              <widget class="Line" name="line_8">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+               <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>45</height>
+               </size>
               </property>
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
              </widget>
             </item>
+            <item row="0" column="3">
+             <widget class="QCheckBox" name="checkBox_texturedlines">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Textured lines</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <spacer name="horizontalSpacer_10">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_31">
               <property name="enabled">
                <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="text">
                <string>Max. segment length</string>
@@ -2698,32 +2757,6 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                 <width>100</width>
                 <height>16777215</height>
                </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <spacer name="horizontalSpacer_10">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="3">
-             <widget class="QCheckBox" name="checkBox_texturedlines">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Textured lines</string>
               </property>
              </widget>
             </item>
