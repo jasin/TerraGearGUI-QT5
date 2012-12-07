@@ -314,10 +314,15 @@ namespace qmapcontrol
     }
     void MapControl::buttonToggled(bool active)
     {
-        if (active)
+        QCursor cursor;
+        if (active) {
             setMouseMode(MapControl::Dragging);
-        else
+            cursor.setShape(Qt::CrossCursor);
+        } else {
             setMouseMode(MapControl::Panning);
+            cursor.setShape(Qt::ArrowCursor);
+        }
+        QWidget::setCursor(cursor);
     }
     void MapControl::setZoom(int zoomlevel)
     {
