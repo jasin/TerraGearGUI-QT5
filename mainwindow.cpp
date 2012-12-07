@@ -2302,6 +2302,7 @@ void MainWindow::draggedRect(QRectF rect)
     QPen* linepen = new QPen(Qt::red);
     linepen->setWidth(2);
     LineString* ls = new LineString(points, "Busline 54", linepen);
+    mainlayer->clearGeometries();
     mainlayer->addGeometry(ls);
 
     updateCenter();
