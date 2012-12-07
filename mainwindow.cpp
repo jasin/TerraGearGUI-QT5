@@ -2152,19 +2152,6 @@ void MainWindow::on_checkBox_4_toggled(bool checked)
     settings.setValue("check/ignore_landmass", checked);
 }
 
-void MainWindow::on_checkBox_minmax_clicked()
-{
-    //== This need to be a listener and set settings based on a complete change of state..
-
-    // grey-out boundaries when ignored by genapts
-    // TODO this should be in a button group.. pedro
-    int checked = ui->radioButton->isChecked();
-    ui->label_3->setDisabled(checked);
-    ui->label_20->setDisabled(checked);
-    ui->lineEdit_13->setDisabled(checked);
-    ui->lineEdit_18->setDisabled(checked);
-}
-
 void MainWindow::on_checkBox_nodata_toggled(bool checked)
 {
     settings.setValue("check/no_data", checked);
