@@ -185,22 +185,24 @@ MainWindow::MainWindow(QWidget *parent) :
         mc->resize(QSize(458,254));
     }
 
-    QList<QPointF> coords;
-    coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
-    coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
-    mc->setViewAndZoomIn(coords);
+    if (!m_west.isEmpty()) {
+        QList<QPointF> coords;
+        coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
+        coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
+        mc->setViewAndZoomIn(coords);
 
-    // draw saved boundary box
-    QList<Point*> points;
-    points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
-    points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
-    points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
-    points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
-    points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
-    QPen* linepen = new QPen(Qt::red);
-    linepen->setWidth(2);
-    LineString* ls = new LineString(points, "Busline 54", linepen);
-    mainlayer->addGeometry(ls);
+        // draw saved boundary box
+        QList<Point*> points;
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        QPen* linepen = new QPen(Qt::red);
+        linepen->setWidth(2);
+        LineString* ls = new LineString(points, "Busline 54", linepen);
+        mainlayer->addGeometry(ls);
+    }
 
     // add context menu to table
     connect(ui->tblShapesAlign, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(displayMenu(QPoint)));
@@ -259,7 +261,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.10"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.11"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser

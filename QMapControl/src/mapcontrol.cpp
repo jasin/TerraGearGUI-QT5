@@ -228,13 +228,6 @@ namespace qmapcontrol
                 mousepressed = true;
                 pre_click_px = QPoint(evnt->x(), evnt->y());
             }
-            else if (evnt->button() == 2 && mymousemode != None) // zoom in
-            {
-                zoomIn();
-            } else if  (evnt->button() == 4 && mymousemode != None) // zoom out
-            {
-                zoomOut();
-            }
         }
 
         // emit(mouseEvent(evnt));
