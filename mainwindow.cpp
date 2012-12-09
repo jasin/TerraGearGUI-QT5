@@ -2241,6 +2241,10 @@ void MainWindow::addZoomButtons()
     QPushButton* zoomin = new QPushButton("+");
     QPushButton* zoomout = new QPushButton("-");
     QPushButton* pan = new QPushButton("Select area");
+#define COPY QChar(169)
+    QLabel* copyright = new QLabel(QString("%1 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors").arg(COPY));
+    copyright->setOpenExternalLinks(true);
+    copyright->setStyleSheet("QLabel { background-color: rgba(240,240,240,220);}");
     zoomin->setMaximumWidth(47);
     zoomout->setMaximumWidth(47);
     pan->setCheckable(true);
@@ -2254,14 +2258,21 @@ void MainWindow::addZoomButtons()
             mc, SLOT(buttonToggled(bool)));
     // add zoom buttons to the layout of the MapControl
     QVBoxLayout* innerlayout = new QVBoxLayout;
+    QVBoxLayout* innerlayoutV = new QVBoxLayout;
     QHBoxLayout* innerlayoutH = new QHBoxLayout;
+    QHBoxLayout* outerlayoutH = new QHBoxLayout;
     innerlayoutH->addWidget(zoomin);
     innerlayoutH->addWidget(zoomout);
     innerlayoutH->addStretch(1);
     innerlayout->addLayout(innerlayoutH);
     innerlayout->addWidget(pan);
     innerlayout->addStretch(1);
-    mc->setLayout(innerlayout);
+    outerlayoutH->addLayout(innerlayout);
+    outerlayoutH->addStretch(1);
+    innerlayoutV->addStretch(1);
+    innerlayoutV->addWidget(copyright);
+    outerlayoutH->addLayout(innerlayoutV);
+    mc->setLayout(outerlayoutH);
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
