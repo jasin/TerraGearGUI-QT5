@@ -89,6 +89,7 @@ private slots:
     void displayMenu(const QPoint &pos);
 
     void updateAirportRadios();
+    void updateArea();
     void updateCenter();
     void updateElevationRange();
     void updateMaterials();

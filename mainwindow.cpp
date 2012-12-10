@@ -121,8 +121,6 @@ MainWindow::MainWindow(QWidget *parent) :
     updateAirportRadios(); // hide the non-selected options
 
     // TAB: Construct
-    updateCenter(); // set the center/distance
-
     ui->tblShapesAlign->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblShapesAlign->setHorizontalHeaderLabels(QStringList() << tr("Shapefile") << tr("Material"));
     ui->tblShapesAlign->horizontalHeader()->setResizeMode( QHeaderView::Stretch);
@@ -149,8 +147,7 @@ MainWindow::MainWindow(QWidget *parent) :
         if (airportFile.size())
             ui->lineEdit_20->setText(airportFile);
     }
-    updateElevationRange();
-    updateCenter();
+    updateArea();
 
     // re-apply the check boxes (for construct)
     bool no_over = settings.value("check/no_overwrite").toBool();
@@ -279,34 +276,22 @@ void MainWindow::on_wiki_triggered()
 
 void MainWindow::on_lineEdit_5_editingFinished()
 {
-    m_east = ui->lineEdit_5->text();
-    updateElevationRange();
-    updateCenter();
-    settings.setValue("boundaries/east", m_east);
+    updateArea();
 }
 
 void MainWindow::on_lineEdit_6_editingFinished()
 {
-    m_west = ui->lineEdit_6->text();
-    updateElevationRange();
-    updateCenter();
-    settings.setValue("boundaries/west", m_west);
+    updateArea();
 }
 
 void MainWindow::on_lineEdit_7_editingFinished()
 {
-    m_north = ui->lineEdit_7->text();
-    updateElevationRange();
-    updateCenter();
-    settings.setValue("boundaries/north", m_north);
+    updateArea();
 }
 
 void MainWindow::on_lineEdit_8_editingFinished()
 {
-    m_south = ui->lineEdit_8->text();
-    updateElevationRange();
-    updateCenter();
-    settings.setValue("boundaries/south", m_south);
+    updateArea();
 }
 
 // disable lat/lon boundaries when tile-id is entered
@@ -2277,16 +2262,18 @@ void MainWindow::addZoomButtons()
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
-    int numDegrees = event->delta() / 8;
-    int numSteps = numDegrees / 15;
-    if (event->orientation() == Qt::Vertical) {
-        if (numSteps > 0) {
-            mc->zoomIn();
-        } else {
-            mc->zoomOut();
+    if (ui->tab_download->isActiveWindow()) {
+        int numDegrees = event->delta() / 8;
+        int numSteps = numDegrees / 15;
+        if (event->orientation() == Qt::Vertical) {
+            if (numSteps > 0) {
+                mc->zoomIn();
+            } else {
+                mc->zoomOut();
+            }
         }
+        event->accept();
     }
-    event->accept();
 }
 
 void MainWindow::draggedRect(QRectF rect)
@@ -2306,6 +2293,8 @@ void MainWindow::draggedRect(QRectF rect)
     ui->lineEdit_6->setText(QString::number(lonminpoint));
     ui->lineEdit_5->setText(QString::number(lonmaxpoint));
 
+    updateArea();
+
     QList<Point*> points;
     points.append(new Point(lonminpoint, latminpoint, "1"));
     points.append(new Point(lonminpoint, latmaxpoint, "1"));
@@ -2314,12 +2303,9 @@ void MainWindow::draggedRect(QRectF rect)
     points.append(new Point(lonminpoint, latminpoint, "1"));
     QPen* linepen = new QPen(Qt::red);
     linepen->setWidth(2);
-    LineString* ls = new LineString(points, "Busline 54", linepen);
+    LineString* ls = new LineString(points, "Boundary Area", linepen);
     mainlayer->clearGeometries();
     mainlayer->addGeometry(ls);
-
-    updateCenter();
-    updateElevationRange();
 }
 
 // resize the widget
@@ -2340,5 +2326,20 @@ void MainWindow::displayMenu(const QPoint &pos)
     }
 }
 
-// eof - mainwindow.cpp
+void MainWindow::updateArea()
+{
+    m_north = ui->lineEdit_7->text();
+    m_south = ui->lineEdit_8->text();
+    m_east = ui->lineEdit_5->text();
+    m_west = ui->lineEdit_6->text();
 
+    settings.setValue("boundaries/north", m_north);
+    settings.setValue("boundaries/south", m_south);
+    settings.setValue("boundaries/east", m_east);
+    settings.setValue("boundaries/west", m_west);
+
+    updateElevationRange();
+    updateCenter();
+}
+
+// eof - mainwindow.cpp

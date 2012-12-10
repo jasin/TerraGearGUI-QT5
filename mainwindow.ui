@@ -508,7 +508,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_3">
+       <widget class="QWidget" name="tab_download">
         <attribute name="title">
          <string>Download</string>
         </attribute>
