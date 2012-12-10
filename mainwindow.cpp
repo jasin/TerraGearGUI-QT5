@@ -2262,7 +2262,7 @@ void MainWindow::addZoomButtons()
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
-    if (ui->tab_download->isActiveWindow()) {
+    if (ui->tabWidget->currentIndex() == 1) {
         int numDegrees = event->delta() / 8;
         int numSteps = numDegrees / 15;
         if (event->orientation() == Qt::Vertical) {
