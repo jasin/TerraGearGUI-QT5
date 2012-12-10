@@ -2322,7 +2322,8 @@ void MainWindow::displayMenu(const QPoint &pos)
     if (a == u)
     {
         // do what you want or call another function
-        ui->tblShapesAlign->removeRow(ui->tblShapesAlign->currentRow());
+        while(ui->tblShapesAlign->selectedItems().count() > 0)
+            ui->tblShapesAlign->removeRow(ui->tblShapesAlign->currentRow());
     }
 }
 

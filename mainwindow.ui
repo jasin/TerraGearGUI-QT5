@@ -1970,6 +1970,9 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="currentIndex">
+                 <number>1</number>
+                </property>
                 <item>
                  <property name="text">
                   <string>810</string>
@@ -2212,10 +2215,16 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <bool>true</bool>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
+            <enum>QAbstractItemView::ExtendedSelection</enum>
            </property>
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <property name="showGrid">
+            <bool>true</bool>
+           </property>
+           <property name="gridStyle">
+            <enum>Qt::DotLine</enum>
            </property>
            <property name="sortingEnabled">
             <bool>true</bool>
