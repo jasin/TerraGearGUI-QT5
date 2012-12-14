@@ -3468,12 +3468,12 @@ and apply material(s)</string>
   </action>
   <action name="actionOpen_2">
    <property name="text">
-    <string>Open</string>
+    <string>Open project</string>
    </property>
   </action>
   <action name="actionSave_2">
    <property name="text">
-    <string>Save</string>
+    <string>Save project</string>
    </property>
   </action>
  </widget>
