@@ -58,9 +58,13 @@ private slots:
     void on_lineEdit_18_textEdited(const QString &arg1);
     void on_lineEdit_35_textEdited(const QString &arg1);
 
+    void on_actionOpen_2_triggered();
     void on_actionQuit_triggered();
+    void on_actionSave_2_triggered();
     void on_about_triggered();
     void on_wiki_triggered();
+
+    void loadSettings();
 
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();

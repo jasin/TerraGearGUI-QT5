@@ -137,14 +137,16 @@ namespace qmapcontrol
 
     void LayerManager::setViewAndZoomIn(const QList<QPointF> coordinates)
     {
+        setMiddle(coordinates);
+        while (!containsAll(coordinates))
+        {
+            zoomOut();
+        }
         while (containsAll(coordinates))
         {
-            setMiddle(coordinates);
             zoomIn();
         }
-
-
-        if (!containsAll(coordinates))
+        while (!containsAll(coordinates))
         {
             zoomOut();
         }

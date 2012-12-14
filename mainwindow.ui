@@ -1295,22 +1295,13 @@
            </item>
            <item row="1" column="0">
             <widget class="QFrame" name="frame">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>10</height>
-              </size>
-             </property>
              <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
+              <enum>QFrame::StyledPanel</enum>
              </property>
              <property name="frameShadow">
-              <enum>QFrame::Plain</enum>
+              <enum>QFrame::Raised</enum>
              </property>
-             <property name="lineWidth">
-              <number>0</number>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <layout class="QHBoxLayout" name="horizontalLayout_21">
               <property name="spacing">
                <number>0</number>
               </property>
@@ -1318,7 +1309,7 @@
                <number>0</number>
               </property>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_14">
+               <layout class="QVBoxLayout" name="mapLayout">
                 <property name="spacing">
                  <number>0</number>
                 </property>
@@ -3364,7 +3355,11 @@ and apply material(s)</string>
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionOpen_2"/>
+    <addaction name="actionSave_2"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
@@ -3412,6 +3407,16 @@ and apply material(s)</string>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionOpen_2">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave_2">
+   <property name="text">
+    <string>Save</string>
    </property>
   </action>
  </widget>

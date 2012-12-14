@@ -64,9 +64,9 @@ QString elevationDirectory;
 QString selectedMaterials;
 QString output = "";
 
-QString fgRoot;
+QString flightgearDirectory;
 QString terragearDirectory;
-QString projDirectory;
+QString projectDirectory;
 
 QString dataDirectory;
 QString outpDirectory;
@@ -94,28 +94,22 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle( tr("TerraGear GUI") );
 
     elevList = "";
+
+    // create MapControl
+    mc = new MapControl(QSize(458, 254));
+    mc->setMinimumSize(QSize(458,254));
+    mc->showScale(true);
+    mapadapter = new OSMMapAdapter();
+    mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
+    mc->addLayer(mainlayer);
+    connect(mc, SIGNAL(boxDragged(QRectF)),
+            this, SLOT(draggedRect(QRectF)));
+    addZoomButtons();
+    mc->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->mapLayout-> addWidget(mc);
+
     // restore variables from previous session
-    terragearDirectory  = settings.value("paths/terragear").toString();
-    projDirectory       = settings.value("paths/project").toString();
-    fgRoot              = settings.value("paths/fg-root").toString();
-    elevationDirectory  = settings.value("path/elevationDir").toString();
-    airportFile         = settings.value("path/airportFile").toString();
-
-    ui->lineEdit_2->setText(terragearDirectory);
-    ui->lineEdit_4->setText(projDirectory);
-    ui->lineEdit_22->setText(fgRoot);
-    ui->lineEdit_11->setText(elevationDirectory);
-
-    m_north = settings.value("boundaries/north").toString();
-    m_south = settings.value("boundaries/south").toString();
-    m_west  = settings.value("boundaries/west").toString();
-    m_east  = settings.value("boundaries/east").toString();
-
-    // TAB: Start
-    ui->lineEdit_8->setText(m_south);
-    ui->lineEdit_7->setText(m_north);
-    ui->lineEdit_6->setText(m_west);
-    ui->lineEdit_5->setText(m_east);
+    loadSettings();
 
     // TAB: Airports
     updateAirportRadios(); // hide the non-selected options
@@ -128,26 +122,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tblShapesAlign->verticalHeader()->hide();
 
     // create sub-directory variables
-    dataDirectory = projDirectory+"/data";
-    outpDirectory = projDirectory+"/output";
-    workDirectory = projDirectory+"/work";
+    dataDirectory = projectDirectory+"/data";
+    outpDirectory = projectDirectory+"/output";
+    workDirectory = projectDirectory+"/work";
 
     // run functions on startup
-    if (fgRoot != 0) {
+    if (flightgearDirectory != 0) {
         updateMaterials();
         if (airportFile.size() == 0) {
             // try to find apt.dat.gz file
-            QString apfile = fgRoot+"/Airports/apt.dat.gz";
+            QString apfile = flightgearDirectory+"/Airports/apt.dat.gz";
             QFile apf(apfile);
             if (apf.exists()) {
                 airportFile = apfile;
-                settings.setValue("path/airportFile", airportFile); // keep the airport file found
+                settings.setValue("paths/airportFile", airportFile); // keep the airport file found
             }
         }
         if (airportFile.size())
             ui->lineEdit_20->setText(airportFile);
     }
-    updateArea();
 
     // re-apply the check boxes (for construct)
     bool no_over = settings.value("check/no_overwrite").toBool();
@@ -165,40 +158,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_break = false;
 
-    // create MapControl
-    mc = new MapControl(QSize(458, 254));
-    mc->setMinimumSize(QSize(458,254));
-    mc->showScale(true);
-    mapadapter = new OSMMapAdapter();
-    mainlayer = new MapLayer("OpenStreetMap-Layer", mapadapter);
-    mc->addLayer(mainlayer);
-    connect(mc, SIGNAL(boxDragged(QRectF)),
-            this, SLOT(draggedRect(QRectF)));
-    addZoomButtons();
-    ui->verticalLayout_14->addWidget(mc);
-
     if (ui->tabWidget->currentIndex() == 1) {
         ui->textBrowser->hide();
         mc->resize(QSize(458,254));
-    }
-
-    if (!m_west.isEmpty()) {
-        QList<QPointF> coords;
-        coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
-        coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
-        mc->setViewAndZoomIn(coords);
-
-        // draw saved boundary box
-        QList<Point*> points;
-        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
-        points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
-        points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
-        points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
-        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
-        QPen* linepen = new QPen(Qt::red);
-        linepen->setWidth(2);
-        LineString* ls = new LineString(points, "Busline 54", linepen);
-        mainlayer->addGeometry(ls);
     }
 
     // add context menu to table
@@ -216,9 +178,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     // hide log on download tab
     if (index == 1) {
         ui->textBrowser->hide();
-        if (mc->size.height() < ui->frame->size().height()) {
-            mc->resize(QSize(458,254));
-        }
+        mc->resize(ui->frame->size());
     } else {
         if ( ui->checkBox_showOutput->isChecked() ) {
             ui->textBrowser->show();
@@ -248,6 +208,87 @@ void MainWindow::on_tabWidget_selected(QString )
 //################################################################//
 //################################################################//
 
+//== Open
+
+void MainWindow::on_actionOpen_2_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Load project settings"), projectDirectory,
+                                                    tr("TerraGear project (*.xml)"));
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+
+    QXmlStreamReader xml(&file);
+    QString sub = "path";
+
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement()) {
+            xml.readNext();
+        } else if (xml.isStartElement()) {
+            QString variable = xml.name().toString();
+            if (sub == "path" and xml.name().toString() == "boundaries")
+                sub = "boundaries";
+            if (sub == "boundaries" and xml.name().toString() == "check")
+                sub = "check";
+            xml.readNext();
+            settings.setValue(sub+"/"+variable, xml.text().toString());
+            qDebug() << settings.value(sub+"/"+variable);
+        }
+    }
+    if (xml.hasError())
+    {
+        qDebug() << xml.error();
+    }
+    file.close();
+
+    loadSettings();
+}
+
+//== Save
+void MainWindow::on_actionSave_2_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Save project settings"), projectDirectory,
+                                                    tr("TerraGear project (*.xml)"));
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                                     file.errorString());
+            return;
+        }        
+        QXmlStreamWriter xmlWriter(&file);
+        xmlWriter.setAutoFormatting(true);
+        xmlWriter.writeStartDocument();
+        xmlWriter.writeStartElement("settings");
+            xmlWriter.writeStartElement("paths");
+                xmlWriter.writeTextElement("project", settings.value("/paths/project").toString() );
+                xmlWriter.writeTextElement("terragear", settings.value("/paths/terragear").toString() );
+                xmlWriter.writeTextElement("flightgear", settings.value("/paths/flightgear").toString() );
+                xmlWriter.writeTextElement("elevationdir", settings.value("/paths/elevationDir").toString() );
+                xmlWriter.writeTextElement("airportfile", settings.value("/paths/airportFile").toString() );
+            xmlWriter.writeEndElement();
+            xmlWriter.writeStartElement("boundaries");
+                xmlWriter.writeTextElement("north", settings.value("/boundaries/north").toString() );
+                xmlWriter.writeTextElement("south", settings.value("/boundaries/south").toString() );
+                xmlWriter.writeTextElement("east", settings.value("/boundaries/east").toString() );
+                xmlWriter.writeTextElement("west", settings.value("/boundaries/west").toString() );
+            xmlWriter.writeEndElement();
+            xmlWriter.writeStartElement("check");
+                xmlWriter.writeTextElement("no_overwrite", settings.value("/check/no_overwrite").toString() );
+                xmlWriter.writeTextElement("ignore_landmass", settings.value("/check/ignore_landmass").toString() );
+                xmlWriter.writeTextElement("no_data", settings.value("/check/no_data").toString() );
+                xmlWriter.writeTextElement("ign_errors", settings.value("/check/ign_errors").toString() );
+            xmlWriter.writeEndElement();
+        xmlWriter.writeEndElement();
+        xmlWriter.writeEndDocument();
+        file.close();
+    }
+}
+
 //== Close Window
 void MainWindow::on_actionQuit_triggered()
 {
@@ -258,7 +299,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.11"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.12"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -333,7 +374,7 @@ void MainWindow::on_pushButton_clicked()
 {
     airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), airportFile, tr("Airport files (*.dat *.dat.gz)"));
     ui->lineEdit_20->setText(airportFile);
-    settings.setValue("path/airportFile", airportFile); // keep the last airport file used
+    settings.setValue("paths/airportFile", airportFile); // keep the last airport file used
 }
 
 //################################################################//
@@ -421,7 +462,7 @@ void MainWindow::on_pushButton_3_clicked()
 {
     elevationDirectory = QFileDialog::getExistingDirectory(this,tr("Select the elevation directory, this is the directory in which the .hgt files live."),elevationDirectory);
     ui->lineEdit_11->setText(elevationDirectory);
-    settings.setValue("path/elevationDir", elevationDirectory); // keep the last directory used
+    settings.setValue("paths/elevationDir", elevationDirectory); // keep the last directory used
 }
 
 void MainWindow::on_pushButton_4_clicked()
@@ -804,26 +845,26 @@ void MainWindow::progressBar_5(qint64 bytesReceived, qint64 bytesTotal)
 
 void MainWindow::on_pushButton_7_clicked()
 {
-    projDirectory = QFileDialog::getExistingDirectory(this,
+    projectDirectory = QFileDialog::getExistingDirectory(this,
                                                       tr("Select the project's location, everything that is used and created during the scenery generating process is stored in this location."));
-    ui->lineEdit_4->setText(projDirectory);
-    settings.setValue("paths/project", projDirectory);
+    ui->lineEdit_4->setText(projectDirectory);
+    settings.setValue("paths/project", projectDirectory);
 
     // set project's directories
-    dataDirectory = projDirectory+"/data";
-    outpDirectory = projDirectory+"/output";
-    workDirectory = projDirectory+"/work";
+    dataDirectory = projectDirectory+"/data";
+    outpDirectory = projectDirectory+"/output";
+    workDirectory = projectDirectory+"/work";
 }
 
 //== Select FlightGear root
 // TODO consolidate per platform settings.. eg fgx::settings
 void MainWindow::on_pushButton_8_clicked()
 {
-    fgRoot = QFileDialog::getExistingDirectory(this,
+    flightgearDirectory = QFileDialog::getExistingDirectory(this,
                                                tr("Select the FlightGear root (data directory). This is optional; it is only used to retrieve an up-to-date list of available materials. You can use the GUI without setting the FG root."
                                                   ));
-    ui->lineEdit_22->setText(fgRoot);
-    settings.setValue("paths/fg-root", fgRoot);
+    ui->lineEdit_22->setText(flightgearDirectory);
+    settings.setValue("paths/flightgear", flightgearDirectory);
 
     updateMaterials();
 }
@@ -1986,10 +2027,10 @@ void MainWindow::updateElevationRange()
 // populate material list with materials from FG's materials.xml
 void MainWindow::updateMaterials()
 {
-    QFile materialfile(fgRoot+"/Materials/default/materials.xml");
+    QFile materialfile(flightgearDirectory+"/Materials/default/materials.xml");
     if (materialfile.exists() == false) {
         // For FlightGear version before 2.8.0
-        materialfile.setFileName(fgRoot+"/materials.xml");
+        materialfile.setFileName(flightgearDirectory+"/materials.xml");
     }
     if (materialfile.exists() == true) {
 
@@ -2067,7 +2108,7 @@ void MainWindow::updateMaterials()
             materialList.sort();
             ui->comboBox_2->clear();
             for (int i = 0; i < materialList.size(); i++) {
-                ui->comboBox_2->addItem(QIcon(fgRoot+"/Textures/"+map.value(materialList[i])),materialList[i]);
+                ui->comboBox_2->addItem(QIcon(flightgearDirectory+"/Textures/"+map.value(materialList[i])),materialList[i]);
             }
         }
     }
@@ -2109,7 +2150,7 @@ void MainWindow::outputToLog(QString s)
         QDateTime datetime  = QDateTime::currentDateTime();
         QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
 
-        QFile data(projDirectory+"/log.txt");
+        QFile data(projectDirectory+"/log.txt");
         if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream out(&data);
             out << endl;
@@ -2122,7 +2163,7 @@ void MainWindow::outputToLog(QString s)
 
 void MainWindow::outTemp(QString s)
 {
-    QFile data(projDirectory+"/templog.txt");
+    QFile data(projectDirectory+"/templog.txt");
     if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
@@ -2334,6 +2375,25 @@ void MainWindow::updateArea()
     m_east = ui->lineEdit_5->text();
     m_west = ui->lineEdit_6->text();
 
+    if (!m_west.isEmpty()) {
+        QList<QPointF> coord;
+        coord.append(QPointF(m_west.toFloat(), m_north.toFloat()));
+        coord.append(QPointF(m_east.toFloat(), m_south.toFloat()));
+        mc->setViewAndZoomIn(coord);
+
+        QList<Point*> points;
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        QPen* linepen = new QPen(Qt::red);
+        linepen->setWidth(2);
+        LineString* ls = new LineString(points, "Area Boundary", linepen);
+        mainlayer->clearGeometries();
+        mainlayer->addGeometry(ls);
+    }
+
     settings.setValue("boundaries/north", m_north);
     settings.setValue("boundaries/south", m_south);
     settings.setValue("boundaries/east", m_east);
@@ -2341,6 +2401,59 @@ void MainWindow::updateArea()
 
     updateElevationRange();
     updateCenter();
+}
+
+void MainWindow::loadSettings()
+{
+    projectDirectory = settings.value("paths/project").toString();
+    terragearDirectory = settings.value("paths/terragear").toString();
+    flightgearDirectory = settings.value("paths/flightgear").toString();
+    elevationDirectory = settings.value("paths/elevationdir").toString();
+    airportFile = settings.value("paths/airportfile").toString();
+
+    // set project's directories
+    dataDirectory = projectDirectory+"/data";
+    outpDirectory = projectDirectory+"/output";
+    workDirectory = projectDirectory+"/work";
+
+    ui->lineEdit_4->setText(projectDirectory);
+    ui->lineEdit_2->setText(terragearDirectory);
+    ui->lineEdit_22->setText(flightgearDirectory);
+    ui->lineEdit_11->setText(elevationDirectory);
+    ui->lineEdit_20->setText(airportFile);
+
+    m_north = settings.value("boundaries/north").toString();
+    m_south = settings.value("boundaries/south").toString();
+    m_west  = settings.value("boundaries/west").toString();
+    m_east  = settings.value("boundaries/east").toString();
+
+    ui->lineEdit_8->setText(m_south);
+    ui->lineEdit_7->setText(m_north);
+    ui->lineEdit_6->setText(m_west);
+    ui->lineEdit_5->setText(m_east);
+
+    updateElevationRange();
+    updateCenter();
+
+    if (!m_west.isEmpty()) {
+        QList<QPointF> coords;
+        coords.append(QPointF(m_west.toFloat(), m_north.toFloat()));
+        coords.append(QPointF(m_east.toFloat(), m_south.toFloat()));
+        mc->setViewAndZoomIn(coords);
+
+        // draw saved boundary box
+        QList<Point*> points;
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_north.toFloat(), "1"));
+        points.append(new Point(m_east.toFloat(), m_south.toFloat(), "1"));
+        points.append(new Point(m_west.toFloat(), m_south.toFloat(), "1"));
+        QPen* linepen = new QPen(Qt::red);
+        linepen->setWidth(2);
+        LineString* ls = new LineString(points, "Area Boundary", linepen);
+        mainlayer->clearGeometries();
+        mainlayer->addGeometry(ls);
+    }
 }
 
 // eof - mainwindow.cpp
