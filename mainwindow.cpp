@@ -2228,36 +2228,24 @@ void MainWindow::on_radioButton_4_clicked()
 void MainWindow::updateAirportRadios()
 {
     if ( ui->radioButton->isChecked() ) {
-        ui->label_3->hide();
-        ui->label_4->show();
-        ui->label_20->hide();
-        ui->lineEdit_13->hide();
-        ui->lineEdit_18->hide();
-        ui->lineEdit_19->show();
+        ui->frameSingleAirport->hide();
+        ui->frameSingleTile->hide();
+        ui->frameAllAirports->show();
     }
     if ( ui->radioButton_2->isChecked() ) {
-        ui->label_3->show();
-        ui->label_4->hide();
-        ui->label_20->hide();
-        ui->lineEdit_13->hide();
-        ui->lineEdit_18->show();
-        ui->lineEdit_19->hide();
+        ui->frameSingleAirport->show();
+        ui->frameSingleTile->hide();
+        ui->frameAllAirports->hide();
     }
     if ( ui->radioButton_3->isChecked() ) {
-        ui->label_3->hide();
-        ui->label_4->hide();
-        ui->label_20->hide();
-        ui->lineEdit_13->hide();
-        ui->lineEdit_18->hide();
-        ui->lineEdit_19->hide();
+        ui->frameSingleAirport->hide();
+        ui->frameSingleTile->hide();
+        ui->frameAllAirports->hide();
     }
     if ( ui->radioButton_4->isChecked() ) {
-        ui->label_3->hide();
-        ui->label_4->hide();
-        ui->label_20->show();
-        ui->lineEdit_13->show();
-        ui->lineEdit_18->hide();
-        ui->lineEdit_19->hide();
+        ui->frameSingleAirport->hide();
+        ui->frameSingleTile->show();
+        ui->frameAllAirports->hide();
     }
 }
 
@@ -2372,8 +2360,8 @@ void MainWindow::updateArea()
 {
     m_north = ui->lineEdit_7->text();
     m_south = ui->lineEdit_8->text();
-    m_east = ui->lineEdit_5->text();
-    m_west = ui->lineEdit_6->text();
+    m_east  = ui->lineEdit_5->text();
+    m_west  = ui->lineEdit_6->text();
 
     if (!m_west.isEmpty()) {
         QList<QPointF> coord;
