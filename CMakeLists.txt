@@ -28,7 +28,6 @@ SET(terrageargui_SOURCES
         QMapControl/src/osmmapadapter.cpp
         QMapControl/src/maplayer.cpp
         QMapControl/src/geometrylayer.cpp
-        QMapControl/src/emptymapadapter.cpp
         QMapControl/src/wmsmapadapter.cpp
         )
 SET(terrageargui_HEADERS
@@ -47,7 +46,6 @@ SET(terrageargui_HEADERS
         QMapControl/src/osmmapadapter.h
         QMapControl/src/maplayer.h
         QMapControl/src/geometrylayer.h
-        QMapControl/src/emptymapadapter.h
         )
 SET(terrageargui_FORMS
         mainwindow.ui
