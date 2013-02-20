@@ -44,6 +44,7 @@ private:
     void wheelEvent(QWheelEvent *event);
 
 private slots:
+    void on_checkBox_toggled(bool checked);
     void on_checkBox_4_toggled(bool checked);
     void on_checkBox_showOutput_clicked();
 

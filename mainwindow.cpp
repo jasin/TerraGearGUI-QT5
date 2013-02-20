@@ -362,6 +362,12 @@ void MainWindow::on_lineEdit_35_textEdited(const QString &arg1)
     ui->label_70->setDisabled(empty);
 }
 
+// disable number of threads when all threads are selected
+void MainWindow::on_checkBox_toggled(bool checked)
+{
+    ui->lineEdit_9->setDisabled(checked);
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     airportFile = QFileDialog::getOpenFileName(this,tr("Open airport file"), airportFile, tr("Airport files (*.dat *.dat.gz)"));
@@ -1006,6 +1012,12 @@ void MainWindow::on_pushButton_11_clicked()
     if (maxerror.size() > 0){
         argumentsTerrafit += "--maxerror "+maxerror+" ";
     }
+    QString threads = ui->lineEdit_9->text();
+    if (ui->checkBox->isChecked()) {
+        argumentsTerrafit += "--threads ";
+    } else if (threads.toInt() > 0) {
+         argumentsTerrafit += "--threads="+threads+" ";
+    }
 
     argumentsTerrafit +="\""+workDirectory+"/SRTM-"+elevationRes+"\"";
 
@@ -1283,6 +1295,7 @@ void MainWindow::on_pushButton_13_clicked()
     QScrollBar *sb = ui->textBrowser->verticalScrollBar();
     QString lat = ui->label_67->text();
     QString lon = ui->label_68->text();
+    QString threads = ui->lineEdit_9->text();
     QString x = ui->label_70->text();
     QString y = ui->label_69->text();
     QString selectedMaterials;
@@ -1361,6 +1374,11 @@ void MainWindow::on_pushButton_13_clicked()
                               "There is no explicit landmass shapefile loaded. Landmass is generally NOT required to generate scenery. Please enable the 'ignore landmass' option and retry if you don't know what it does."
                               );
         return;
+    }
+    if (ui->checkBox->isChecked()) {
+        runtime += "--threads ";
+    } else if (threads.toInt() > 0) {
+        runtime += "--threads="+threads+" ";
     }
 
     index = ui->lineEdit_35->text();
