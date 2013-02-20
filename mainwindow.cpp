@@ -143,14 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     // re-apply the check boxes (for construct)
-    bool no_over = settings.value("check/no_overwrite").toBool();
-    ui->checkBox_noovr->setCheckState(no_over ? Qt::Checked : Qt::Unchecked);
     bool ign_lm = settings.value("check/ignore_landmass").toBool();
     ui->checkBox_4->setCheckState(ign_lm ? Qt::Checked : Qt::Unchecked);
-    bool no_data = settings.value("check/no_data").toBool();
-    ui->checkBox_nodata->setCheckState(no_data ? Qt::Checked : Qt::Unchecked);
-    bool ign_err = settings.value("check/ign_errors").toBool();
-    ui->checkBox_igerr->setCheckState(ign_err ? Qt::Checked : Qt::Unchecked);
 
     // Network manager
     _manager = new QNetworkAccessManager(this);
@@ -278,10 +272,8 @@ void MainWindow::on_actionSave_2_triggered()
                 xmlWriter.writeTextElement("west", settings.value("/boundaries/west").toString() );
             xmlWriter.writeEndElement();
             xmlWriter.writeStartElement("check");
-                xmlWriter.writeTextElement("no_overwrite", settings.value("/check/no_overwrite").toString() );
                 xmlWriter.writeTextElement("ignore_landmass", settings.value("/check/ignore_landmass").toString() );
                 xmlWriter.writeTextElement("no_data", settings.value("/check/no_data").toString() );
-                xmlWriter.writeTextElement("ign_errors", settings.value("/check/ign_errors").toString() );
             xmlWriter.writeEndElement();
         xmlWriter.writeEndElement();
         xmlWriter.writeEndDocument();
@@ -299,7 +291,7 @@ void MainWindow::on_actionQuit_triggered()
 //== About dialog
 void MainWindow::on_about_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.12"),tr("©2010-2012 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.13"),tr("©2010-2013 Gijs de Rooy for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
@@ -1286,6 +1278,7 @@ void MainWindow::on_pushButton_12_clicked()
 
 void MainWindow::on_pushButton_13_clicked()
 {
+    ui->pushButton_13->setEnabled(false);
 
     QScrollBar *sb = ui->textBrowser->verticalScrollBar();
     QString lat = ui->label_67->text();
@@ -1296,7 +1289,6 @@ void MainWindow::on_pushButton_13_clicked()
     QString msg;
     QByteArray data;
 
-    bool brk = false;
     int folderCnt = ui->listWidget_2->count();
     if (folderCnt == 0) {
         QMessageBox::critical(  this,
@@ -1322,7 +1314,7 @@ void MainWindow::on_pushButton_13_clicked()
         return;
     }
     // reset progress bar
-    ui->progressBar->setValue(0);
+    ui->progressBar->setValue(10);
 
     QFile prioritiesFile(terragearDirectory + "/share/TerraGear/default_priorities.txt");
     if ( ! prioritiesFile.exists() ) {
@@ -1337,14 +1329,7 @@ void MainWindow::on_pushButton_13_clicked()
         return;
     }
 
-#ifdef _NEWBUCKET_HXX   // we have SGBucket capability
     // construct tg-construct commandline,
-    // FOR EACH BUCKET SEPARATELY, like master/client do
-    // We could concurrently run multiple constructions, but then like server.cxx
-    // we should skip every other column, to avoid two clients working on adjacent tiles
-    // but here tg-construct is just run with for each 'bucket'
-    QStringList argList; // build a string list to run
-    QStringList pathList; // and the PATH to each bucket
     QString arguments;
     QString index;
     QString path;
@@ -1353,15 +1338,7 @@ void MainWindow::on_pushButton_13_clicked()
     QString tm;
     QString em;
     QString info;
-    bool no_overwrite = ui->checkBox_noovr->isChecked();
-    bool skip_error = ui->checkBox_igerr->isChecked();
-    bool skip_nodata = ui->checkBox_nodata->isChecked();
-    long ind;
-    int dx, dy, i, j;
-    int gotcnt = 0;
-    bool add_it = true; // ADD all buckets, unless there is a reason not to
-    SGBucket b_cur;
-    rt.start();
+    int dx, dy;
 
     // build the general runtime string
     QString runtime = "\""+terragearDirectory;
@@ -1385,31 +1362,13 @@ void MainWindow::on_pushButton_13_clicked()
                               );
         return;
     }
-    gotcnt = 0;
-    if (ui->lineEdit_35->text() > 0) {
-        // just ONE to do - DO IT
-        index = ui->lineEdit_35->text();
-        ind = index.toLong();
-        SGBucket b(ind);
-        path.sprintf("%s", b.gen_base_path().c_str());
-        path += "/"+index;
-        arguments = runtime; // common runtime and params
+
+    index = ui->lineEdit_35->text();
+    arguments = runtime;
+
+    if (index > 0) {
         arguments += "--tile-id="+index+" ";
-        arguments += selectedMaterials;
-        if (no_overwrite) {
-            msg = outpDirectory+"/Terrain/"+path+".btg.gz";
-            QFile f(msg);
-            if ( f.exists() ) {
-                add_it = false;
-            }
-        }
-        if (add_it) {
-            argList << arguments; // set the ONE argument
-            pathList << path;
-        }
-        gotcnt++;
     } else {
-        // break the set into buckets
         double dlon = lon.toDouble();
         double dlat = lat.toDouble();
         double xdist = x.toDouble();
@@ -1417,201 +1376,53 @@ void MainWindow::on_pushButton_13_clicked()
 
         double min_x = dlon - xdist;
         double min_y = dlat - ydist;
-        SGBucket b_min( min_x, min_y );
-        SGBucket b_max( dlon + xdist, dlat + ydist );
-        if (b_min == b_max) {
-            // just ONE bucket
-            index.sprintf("%ld", b_min.gen_index());
-            path.sprintf("%s", b_min.gen_base_path().c_str());
-            path += "/"+index;
-            arguments = runtime; // common runtime and params
-            arguments += "--tile-id="+index+" ";
-            arguments += selectedMaterials;
-            if (no_overwrite) {
-                msg = outpDirectory+"/Terrain/"+path+".btg.gz";
-                QFile f(msg);
-                if ( f.exists() ) {
-                    add_it = false;
-                }
-            }
-            if (add_it && skip_nodata) {
-                if ( !countDataFound(path,selectedMaterials,workDirectory))
-                    add_it = false;
-            }
-            if (add_it) {
-                argList << arguments; // set the ONE argument
-                pathList << path;
-            }
-            gotcnt++;
-        } else {
-            // a range of buckets
-            sgBucketDiff(b_min, b_max, &dx, &dy);
-            for ( j = 0; j <= dy; j++ ) {
-                for ( i = 0; i <= dx; i++ ) {
-                    add_it = true; // initially ADD ALL buckets, for this INDEX
-                    b_cur = sgBucketOffset(min_x, min_y, i, j);
-                    index.sprintf("%ld", b_cur.gen_index());
-                    path.sprintf("%s", b_cur.gen_base_path().c_str());
-                    path += "/"+index;
-                    arguments = runtime;
-                    arguments += "--tile-id="+index+" ";
-                    arguments += selectedMaterials;
-                    if (no_overwrite) {
-                        msg = outpDirectory+"/Terrain/"+path+".btg.gz";
-                        QFile f(msg);
-                        if ( f.exists() ) {
-                            add_it = false; // KILLLED BY NO OVERWRITE RULE
-                        }
-                    }
-                    if (add_it && skip_nodata) {
-                        if ( !countDataFound(path,selectedMaterials,workDirectory))
-                            add_it = false; // KILLED BY NO ARRAY FILES FOUND - build with what??
-                    }
-                    if (add_it) {
-                        argList << arguments; // set the EACH argument
-                        pathList << path;
-                    }
-                    gotcnt++; // count the max. possible total for range
-                }
-            }
-        }
+        double max_x = dlon + xdist;
+        double max_y = dlat + ydist;
+
+        arguments += "--min-lat="+ QString::number(min_y) +" --max-lat="+QString::number(max_y)+" --min-lon="+QString::number(min_x)+" --max-lon="+QString::number(max_x)+" ";
     }
-    ind = argList.size();
-    if (ind != pathList.size()) {
-        QMessageBox::critical(this,"INTERNAL ERROR","Lists are NOT equal in length!");
-        return;
-    }
-    if (ind == 0) {
-        msg.sprintf("With the current min/max, and options, have %d buckets to process, but perhpas no overwrite, and/or skip no data are checked, so nothing to do!", gotcnt);
-        QMessageBox::information(this,"NO BUCKETS TO PROCESS",msg);
-        return;
-    }
+    arguments += selectedMaterials;
 
-    // we are on our way. to construct <index>.btg.gz file(s),
-    // plus the associated <index>.stg to load these items in FG
-    int setup_ms = rt.restart(); // restart timer
+    outTemp(arguments+"\n"); // output commandline to log.txt
+    outputToLog(arguments);
 
-    // add a complete set of arguments to a templog.txt
-    dy = 0;
-    tm = "Setup: "+getElapTimeStg(setup_ms);
-    outTemp(tm+"\n");
-    for (i = 0; i < argList.size(); i++) {
-        dy++;
-        arguments = argList[i]; // get command line arguments
-        path = pathList[i]; // get the destination path
-        // output commandline to log.txt
-        outTemp(arguments+"\n");
-        msg.sprintf("%d: ", dy);
-        msg += outpDirectory+"/Terrain/"+path+".btg.gz\n";
-        outTemp(msg);
-    }
+    QProcess proc;
+    proc.setWorkingDirectory(terragearDirectory);
+    proc.setProcessChannelMode(QProcess::MergedChannels);
+    proc.start(arguments, QIODevice::ReadWrite);
 
-    dx = argList.size();
-    dy = 0;
-    uint diff_time;
-    uint tot_time;
+    proc.waitForFinished(-1);
 
-    tot_time = 0; // start accumulating the total time (in ms)
-    // this is the section that should be run on a thread
-    // ==================================================
-    for (i = 0; i < argList.size(); i++) {
-        if (brk || m_break)
-            break; // all over - user requested a break
-        dy++;
-        pt.start();
-        // about to RUN tg-construct, for each bucket argument
-        arguments = argList[i]; // get command line arguments
-        path = pathList[i]; // get the destination path
-        // output commandline to log.txt
-        outputToLog(arguments);
+    info = proc.readAll();
 
-        // and show starting proc
-        tm = " rt "+getElapTimeStg(rt.elapsed());
-        // msg.sprintf("%d of %d: tg-construct with %d folders - moment...", dy, dx, folderCnt);
-        msg.sprintf("%d of %d: tg-construct ", dy, dx);
+    outTemp(info+"\n");
+    outTemp(arguments+"\n");
+    output += info+"\n"; // add to full output
+    output += arguments+"\n";
 
-        msg += path;
-        msg += tm;
+    ui->textBrowser->append(info); // only the last
+    sb->setValue(sb->maximum());
 
-        QProcess proc;
-        proc.setWorkingDirectory(terragearDirectory);
-        // catch ALL output
-        proc.setProcessChannelMode(QProcess::MergedChannels);
-        // start command
-        proc.start(arguments, QIODevice::ReadWrite);
+    if (info.contains("No area named ")) {
 
-        proc.waitForFinished(-1);
+        // find material name
+        QStringList unknownArea1 = info.split("No area named ");
+        QString unknownMaterial = unknownArea1[1];
 
-        int errCode = proc.exitCode();
-        info = proc.readAll();
-        diff_time = pt.elapsed();
-        tot_time += diff_time;
-        tm = " in "+getElapTimeStg(diff_time);
-        arguments = "\n*PROC_ENDED* "+tm+"\n";
-        em = "";
-        if (errCode) {
-            em.sprintf("ERROR CODE %d",errCode);
-            info += proc.readAllStandardError();
-            arguments = "\n*PROC_ENDED* with "+em+"\n";
-        }
-
-        outTemp(info+"\n");
-        outTemp(arguments+"\n");
-        output += info+"\n"; // add to full output
-        output += arguments+"\n";
-
-        // adjust progress bar
-        ui->progressBar->setMaximum(dx);
-        ui->progressBar->setValue(dy);
-
-        ui->textBrowser->append(info); // only the last
-        sb->setValue(sb->maximum());
-
-        msg = "PROC_ENDED "+tm+", total "+getElapTimeStg(rt.elapsed())+" "+path;
-        outputToLog(msg);
-        outTemp(msg+"\n");
-
-        if (info.contains("unknown area = '")) {
-
-            // find material name
-            QStringList unknownArea1 = info.split("unknown area = '");
-            QStringList unknownArea2 = unknownArea1[1].split("'");
-            QString unknownMaterial = unknownArea2[0];
-
-            QMessageBox msgBox;
-            msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
-            msgBox.setDefaultButton(QMessageBox::Abort);
-            msgBox.setWindowTitle("Unknown area");
-            msgBox.setText(QString("Material '%1' is not listed in default_priorities.txt.")
-                           .arg(unknownMaterial));
-            msgBox.setIcon(QMessageBox::Critical);
-            int ret = msgBox.exec();
-            switch (ret) {
-            case QMessageBox::Ignore:
-                break;
-            case QMessageBox::Abort:
-                return;
-                break;
-            }
-        }
-        // if the string end is [Finished successfully], then all is well
-        else if ( ! info.contains("[Finished successfully]") ) {
-            if (em == "ERROR CODE -1"){
-                msg = "FGFS Construct failed to ouput [Finished successfully].\n";
-            }
-            else {
-                msg = "FGFS Construct error: ";
-                msg += em+"\n";
-            }
-            msg += "Tile: "+path+"\n\n";
-            msg += "This usually indicates some error in processing, eg. a too complex scenery.\n";
-            outTemp(msg);
-            if (!skip_error) {
-                msg += "Click OK to continue contruction.";
-                if ( !getYesNo("Process warning",msg) ) {
-                    break;
-                }
-            }
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
+        msgBox.setDefaultButton(QMessageBox::Abort);
+        msgBox.setWindowTitle("Unknown area");
+        msgBox.setText(QString("Material '%1' is not listed in default_priorities.txt.")
+                       .arg(unknownMaterial));
+        msgBox.setIcon(QMessageBox::Critical);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Ignore:
+            break;
+        case QMessageBox::Abort:
+            return;
+            break;
         }
     }
 
@@ -1620,67 +1431,10 @@ void MainWindow::on_pushButton_13_clicked()
         QMessageBox::information(this, "Finished successfully", "Congratulations, you've successfully built some scenery!");
     }
 
-    // ==================================================================
-    msg.sprintf("tg-construct did %d buckets (%d/%d)", i, argList.count(), gotcnt);
-    msg += " in "+getElapTimeStg(rt.elapsed());
     ui->textBrowser->append(output); // add it ALL
+    ui->pushButton_13->setEnabled(true);
+    ui->progressBar->setValue(100);
     sb->setValue(sb->maximum()); // get the info shown
-
-#else // !#ifdef _NEWBUCKET_HXX
-
-    // construct tg-construct commandline
-    QString arguments = "\""+terragearDirectory;
-    arguments += "/bin/tg-construct\" ";
-    arguments += "--work-dir=\""+workDirectory+"\" ";
-    arguments += "--output-dir=\""+outpDirectory+"/Terrain\" ";
-
-    if (ui->lineEdit_35->text() > 0) {
-        arguments += "--tile-id="+ui->lineEdit_35->text();
-    } else {
-        // if a tile ID, no need for these...
-        arguments += "--lon="+lon+" --lat="+lat+" ";
-        arguments += "--xdist="+x+" --ydist="+y+" ";
-    }
-
-    if (ui->checkBox_3->isChecked()){
-        arguments += "--useUKgrid ";
-    }
-    if (ui->checkBox_4->isChecked()){
-        arguments += "--ignore-landmass ";
-    }
-    arguments += selectedMaterials;
-
-    // output commandline to log.txt
-    outputToLog(arguments);
-
-    // and show starting proc
-    msg.sprintf("Start tg-construct with %d folders - moment...", cnt);
-
-    rt.start();
-
-    // start command
-    QProcess proc;
-    proc.setWorkingDirectory(terragearDirectory);
-    proc.start(arguments, QIODevice::ReadWrite);
-
-    proc.QProcess::waitForFinished(-1);
-    int errCode = proc.exitCode();
-    output += proc.readAllStandardOutput();
-
-    tm = " in "+getElapTimeStg(rt.elapsed())
-            arguments = "\n*PROC_ENDED*"+tm+"\n";
-    if (errCode) {
-        output += proc.readAllStandardError();
-        arguments.sprintf("\nPROC_ENDED with ERROR CODE %d!\n",errCode);
-    }
-    output += arguments;
-    ui->textBrowser->append(output);
-    sb->setValue(sb->maximum()); // get the info shown
-    outputToLog("PROC_ENDED"+tm);
-    msg = "tg-construct ran for "+tm;
-
-#endif // #ifdef _NEWBUCKET_HXX y/n
-
 }
 
 // update terraintypes list for tg-construct
@@ -2170,24 +1924,9 @@ void MainWindow::outTemp(QString s)
     }
 }
 
-void MainWindow::on_checkBox_noovr_toggled(bool checked)
-{
-    settings.setValue("check/no_overwrite", checked);
-}
-
 void MainWindow::on_checkBox_4_toggled(bool checked)
 {
     settings.setValue("check/ignore_landmass", checked);
-}
-
-void MainWindow::on_checkBox_nodata_toggled(bool checked)
-{
-    settings.setValue("check/no_data", checked);
-}
-
-void MainWindow::on_checkBox_igerr_toggled(bool checked)
-{
-    settings.setValue("check/ign_errors", checked);
 }
 
 // show/hide output field

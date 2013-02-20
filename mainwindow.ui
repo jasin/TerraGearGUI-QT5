@@ -3061,27 +3061,6 @@ and apply material(s)</string>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_noovr">
-                  <property name="text">
-                   <string>Do not overwrite existing</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_nodata">
-                  <property name="text">
-                   <string>Skip if no data</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBox_igerr">
-                  <property name="text">
-                   <string>Ignore errors</string>
-                  </property>
-                 </widget>
-                </item>
                </layout>
               </item>
               <item>
@@ -3499,9 +3478,6 @@ and apply material(s)</string>
   <tabstop>checkBox_4</tabstop>
   <tabstop>pushButton_15</tabstop>
   <tabstop>listWidget_2</tabstop>
-  <tabstop>checkBox_igerr</tabstop>
-  <tabstop>checkBox_noovr</tabstop>
-  <tabstop>checkBox_nodata</tabstop>
  </tabstops>
  <resources/>
  <connections/>

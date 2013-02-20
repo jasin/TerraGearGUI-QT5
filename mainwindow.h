@@ -45,9 +45,6 @@ private:
 
 private slots:
     void on_checkBox_4_toggled(bool checked);
-    void on_checkBox_igerr_toggled(bool checked);
-    void on_checkBox_nodata_toggled(bool checked);
-    void on_checkBox_noovr_toggled(bool checked);
     void on_checkBox_showOutput_clicked();
 
     void on_lineEdit_5_editingFinished();
