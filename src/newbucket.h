@@ -1,5 +1,3 @@
-
-
 #ifndef NEWBUCKET_H
 #define NEWBUCKET_H
 

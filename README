@@ -14,3 +14,34 @@ With the help of:
 - Kai Winter (QMapControl)
 
 Manual is available online at http://wiki.flightgear.org/TerraGear_GUI
+
+==========================================
+=====  HOWTO: COMPILE TERRAGEAR GUI ======
+==========================================
+
+ I) Simple method : (depreciated for committers)
+
+  cmake .
+  make
+
+  Now the binary is available in your current directory
+  You can execute TerraGear GUI with : 
+
+  ./terrageargui
+
+
+
+ II) Advanced method :
+
+  mkdir build
+  mkdir bin
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=../ ../
+  make
+  make install
+  
+  Now the binary is available in /bin from your current directory, and build file are in /build
+  You can execute TerraGear GUI with :
+
+  cd bin/
+  ./terrageargui

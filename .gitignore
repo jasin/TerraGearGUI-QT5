@@ -1,7 +1,13 @@
 Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
 TerraGUI
 *.o
 moc_*.*
 ui_*.*
 *.pro.user
+build/
+bin/
 

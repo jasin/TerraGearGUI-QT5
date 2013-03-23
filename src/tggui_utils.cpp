@@ -23,6 +23,7 @@
    */
 
 #include "tggui_utils.h"
+#include "newbucket.h"
 
 /*
     Utility function that recursivily searches for files.

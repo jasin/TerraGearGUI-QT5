@@ -13,6 +13,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>505</width>
@@ -111,7 +117,7 @@
        <property name="tabsClosable">
         <bool>false</bool>
        </property>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="startTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -120,7 +126,7 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_13">
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="welcomeGui">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -132,7 +138,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_16">
             <item>
-             <widget class="QLabel" name="label_22">
+             <widget class="QLabel" name="welcomeGuiText">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                 <horstretch>0</horstretch>
@@ -154,9 +160,9 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_20">
+             <layout class="QHBoxLayout" name="layout_1">
               <item>
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="viewOnlineManualButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -174,7 +180,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_2">
+          <widget class="QGroupBox" name="directorySettings">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -210,7 +216,7 @@
              <number>9</number>
             </property>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_23">
+             <widget class="QLabel" name="directorySettingsText">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                 <horstretch>0</horstretch>
@@ -226,9 +232,9 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_8">
+             <layout class="QGridLayout" name="layout_0">
               <item row="0" column="0">
-               <widget class="QLabel" name="label_14">
+               <widget class="QLabel" name="projectDirectoryLabel">
                 <property name="font">
                  <font>
                   <family>Lucida Sans</family>
@@ -241,7 +247,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEdit_4">
+               <widget class="QLineEdit" name="projectDirectoryField">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -266,7 +272,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QPushButton" name="pushButton_7">
+               <widget class="QPushButton" name="projectDirectoryButton">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -291,7 +297,7 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_8">
+               <widget class="QLabel" name="terragearRootLabel">
                 <property name="font">
                  <font>
                   <family>Lucida Sans</family>
@@ -304,7 +310,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_2">
+               <widget class="QLineEdit" name="terragearRootField">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -329,7 +335,7 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="pushButton_9">
+               <widget class="QPushButton" name="terragearRootButton">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -354,7 +360,7 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_27">
+               <widget class="QLabel" name="flightgearRootLabel">
                 <property name="font">
                  <font>
                   <family>Lucida Sans</family>
@@ -367,7 +373,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_22">
+               <widget class="QLineEdit" name="flightgearRootField">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -392,7 +398,7 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QPushButton" name="pushButton_8">
+               <widget class="QPushButton" name="flightgearRootButton">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -422,7 +428,7 @@
           </widget>
          </item>
          <item row="4" column="0">
-          <spacer name="verticalSpacer_2">
+          <spacer name="spacer_0">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -435,7 +441,7 @@
           </spacer>
          </item>
          <item row="5" column="0">
-          <widget class="QGroupBox" name="groupBox_8">
+          <widget class="QGroupBox" name="guiSettings">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -454,9 +460,9 @@
            <property name="title">
             <string>GUI settings</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="checkBox_log">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QCheckBox" name="createLogFileCB">
               <property name="font">
                <font>
                 <family>Lucida Sans</family>
@@ -471,8 +477,8 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QCheckBox" name="checkBox_showOutput">
+            <item>
+             <widget class="QCheckBox" name="showOutputOnScreenCB">
               <property name="text">
                <string>Show output on screen</string>
               </property>
@@ -481,8 +487,8 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer_13">
+            <item>
+             <spacer name="spacer_1">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -502,29 +508,9 @@
            <property name="title">
             <string>Global TerraGear settings</string>
            </property>
-           <layout class="QFormLayout" name="formLayout_2">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>Threads</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_9">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QCheckBox" name="checkBox">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="allThreadsCB">
               <property name="text">
                <string>Use all available threads</string>
               </property>
@@ -538,13 +524,13 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_download">
+       <widget class="QWidget" name="downloadTab">
         <attribute name="title">
          <string>Download</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_4">
+          <layout class="QGridLayout" name="layout_2">
            <item row="0" column="0">
             <widget class="QGroupBox" name="groupBox">
              <property name="sizePolicy">
@@ -612,22 +598,22 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                 <layout class="QVBoxLayout" name="shapefilesLayout">
                   <property name="bottomMargin">
                    <number>0</number>
                   </property>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_13">
+                   <layout class="QHBoxLayout" name="minMaxLayout">
                     <property name="rightMargin">
                      <number>5</number>
                     </property>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                     <layout class="QVBoxLayout" name="latLonLayout">
                       <property name="topMargin">
                        <number>23</number>
                       </property>
                       <item>
-                       <widget class="QLabel" name="label_9">
+                       <widget class="QLabel" name="latLabel">
                         <property name="maximumSize">
                          <size>
                           <width>55</width>
@@ -649,7 +635,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_7">
+                       <widget class="QLabel" name="lonLabel">
                         <property name="maximumSize">
                          <size>
                           <width>55</width>
@@ -673,9 +659,9 @@
                      </layout>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_20">
+                     <layout class="QVBoxLayout" name="minLayout">
                       <item>
-                       <widget class="QLabel" name="label_10">
+                       <widget class="QLabel" name="minLabel">
                         <property name="font">
                          <font>
                           <family>Lucida Sans</family>
@@ -691,7 +677,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEdit_8">
+                       <widget class="QLineEdit" name="minLatField">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
@@ -722,7 +708,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEdit_6">
+                       <widget class="QLineEdit" name="minLonField">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
@@ -758,12 +744,12 @@
                      </layout>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_21">
+                     <layout class="QVBoxLayout" name="maxLayout">
                       <property name="rightMargin">
                        <number>5</number>
                       </property>
                       <item>
-                       <widget class="QLabel" name="label_11">
+                       <widget class="QLabel" name="maxLabel">
                         <property name="font">
                          <font>
                           <family>Lucida Sans</family>
@@ -779,7 +765,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEdit_7">
+                       <widget class="QLineEdit" name="maxLatField">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
@@ -807,7 +793,7 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEdit_5">
+                       <widget class="QLineEdit" name="maxLonField">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
@@ -840,7 +826,7 @@
                      </layout>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_5">
+                     <spacer name="spacer_3">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -855,12 +841,12 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_11">
+                   <layout class="QHBoxLayout" name="shapefilesSourceLayout">
                     <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
-                     <widget class="QLabel" name="label_21">
+                     <widget class="QLabel" name="shapefilesSourceLabel">
                       <property name="minimumSize">
                        <size>
                         <width>58</width>
@@ -891,7 +877,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_3">
+                     <widget class="QComboBox" name="shapefilesSourceSelect">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -936,7 +922,7 @@
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_3">
+                     <spacer name="spacer_4">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -954,12 +940,18 @@
                    </layout>
                   </item>
                   <item>
-                   <widget class="QProgressBar" name="progressBar_5">
+                   <widget class="QProgressBar" name="downloadShapefilesProgressBar">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>300</width>
+                      <height>16777215</height>
+                     </size>
                     </property>
                     <property name="value">
                      <number>0</number>
@@ -967,7 +959,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_2">
+                   <widget class="QPushButton" name="downloadShapefilesButton">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -982,7 +974,7 @@
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>350</width>
+                      <width>300</width>
                       <height>23</height>
                      </size>
                     </property>
@@ -1003,14 +995,14 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="Line" name="line">
+                 <widget class="Line" name="line0">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_13">
+                 <layout class="QVBoxLayout" name="elevationLayout">
                   <property name="sizeConstraint">
                    <enum>QLayout::SetNoConstraint</enum>
                   </property>
@@ -1018,7 +1010,7 @@
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QLabel" name="label_12">
+                   <widget class="QLabel" name="elevationLayoutText">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                       <horstretch>0</horstretch>
@@ -1037,25 +1029,31 @@
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <layout class="QHBoxLayout" name="downloadRangeLayout">
                     <property name="spacing">
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QLabel" name="label_50">
+                     <widget class="QLabel" name="minDownloadRangeLabel">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
                       <property name="minimumSize">
                        <size>
-                        <width>0</width>
+                        <width>75</width>
                         <height>23</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>75</width>
+                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="font">
@@ -1117,20 +1115,26 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_51">
+                     <widget class="QLabel" name="maxDownloadRangeLabel">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
                       <property name="minimumSize">
                        <size>
-                        <width>0</width>
+                        <width>75</width>
                         <height>23</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>250</width>
+                        <height>16777215</height>
                        </size>
                       </property>
                       <property name="font">
@@ -1163,12 +1167,12 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_19">
+                   <layout class="QHBoxLayout" name="elevationSourceLayout">
                     <property name="spacing">
                      <number>6</number>
                     </property>
                     <item>
-                     <widget class="QLabel" name="label_6">
+                     <widget class="QLabel" name="elevationSourceLabel">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                         <horstretch>0</horstretch>
@@ -1181,7 +1185,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_5">
+                     <widget class="QComboBox" name="elevationSourceSelect">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -1220,17 +1224,36 @@
                       </item>
                      </widget>
                     </item>
+                    <item>
+                     <spacer name="horizontalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QProgressBar" name="progressBar_4">
+                   <widget class="QProgressBar" name="downloadElevationProgressBar">
+                    <property name="maximumSize">
+                     <size>
+                      <width>300</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
                     <property name="value">
                      <number>0</number>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_6">
+                   <widget class="QPushButton" name="downloadElevationButton">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -1245,7 +1268,7 @@
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>16777215</width>
+                      <width>300</width>
                       <height>23</height>
                      </size>
                     </property>
@@ -1263,7 +1286,7 @@
                  </layout>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer_9">
+                 <spacer name="spacer_2">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -1278,7 +1301,7 @@
                </layout>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_5">
+               <widget class="QLabel" name="downloadTabText">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                   <horstretch>0</horstretch>
@@ -1355,7 +1378,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_2">
+       <widget class="QWidget" name="elevationTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1370,7 +1393,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QLabel" name="label_13">
+             <widget class="QLabel" name="elevationTabText">
               <property name="text">
                <string>Select the directory where the .hgt.zip files are located, that you downloaded on the Start tab. Unzip those files before clicking the &quot;Convert elevation data&quot;!!!</string>
               </property>
@@ -1388,7 +1411,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_15">
               <item>
-               <widget class="QLabel" name="label_16">
+               <widget class="QLabel" name="elevationDirectoryLabel">
                 <property name="text">
                  <string>HGT files directory</string>
                 </property>
@@ -1398,14 +1421,14 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_11">
+               <widget class="QLineEdit" name="elevationDirectoryField">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="elevationDirectoryButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>30</horstretch>
@@ -1434,7 +1457,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QLabel" name="label_19">
+               <widget class="QLabel" name="ResolutionLabel">
                 <property name="minimumSize">
                  <size>
                   <width>103</width>
@@ -1456,7 +1479,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox">
+               <widget class="QComboBox" name="resolutionSelect">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1482,14 +1505,14 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_17">
+               <widget class="QLabel" name="arcSecLabel">
                 <property name="text">
                  <string>arc seconds</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_2">
+               <spacer name="spacer_6">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -1515,14 +1538,14 @@
             <item>
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="0" column="0">
-               <widget class="QLabel" name="label_35">
+               <widget class="QLabel" name="minNodesLabel">
                 <property name="text">
                  <string>Min. nodes</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="minNodesField">
                 <property name="maximumSize">
                  <size>
                   <width>100</width>
@@ -1535,14 +1558,14 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_29">
+               <widget class="QLabel" name="maxNodesLabel">
                 <property name="text">
                  <string>Max. nodes</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_3">
+               <widget class="QLineEdit" name="maxNodesField">
                 <property name="maximumSize">
                  <size>
                   <width>100</width>
@@ -1555,14 +1578,14 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_36">
+               <widget class="QLabel" name="maxErrorLabel">
                 <property name="text">
                  <string>Max. error</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_23">
+               <widget class="QLineEdit" name="maxErrorField">
                 <property name="maximumSize">
                  <size>
                   <width>100</width>
@@ -1575,7 +1598,7 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QLabel" name="label_37">
+               <widget class="QLabel" name="metersLabel">
                 <property name="text">
                  <string>meters</string>
                 </property>
@@ -1591,7 +1614,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_38">
+             <widget class="QLabel" name="extraOptionsText">
               <property name="text">
                <string>Increasing the maxnodes value and/or decreasing maxerror will produce a better surface approximation.
 
@@ -1607,19 +1630,6 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                <number>0</number>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -1640,7 +1650,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QPushButton" name="pushButton_11">
+            <widget class="QPushButton" name="convertElevationButton">
              <property name="minimumSize">
               <size>
                <width>200</width>
@@ -1659,7 +1669,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="progressBar_3">
+            <widget class="QProgressBar" name="convertElevationProgressBar">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1696,7 +1706,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_1">
+       <widget class="QWidget" name="airportsTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1719,14 +1729,14 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <item row="1" column="0" colspan="5">
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="aptFileLabel">
                 <property name="text">
                  <string>apt.dat file</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_20">
+               <widget class="QLineEdit" name="aptFileField">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -1736,7 +1746,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="aptFileButton">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -1756,8 +1766,8 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="12" column="0" colspan="4">
-             <widget class="QRadioButton" name="radioButton">
+            <item row="13" column="0" colspan="4">
+             <widget class="QRadioButton" name="allAirportsInFileRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1773,7 +1783,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QRadioButton" name="radioButton_3">
+             <widget class="QRadioButton" name="allAirportInAreaRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1792,7 +1802,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="singleAirportRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1807,8 +1817,8 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="9" column="0">
-             <widget class="QRadioButton" name="radioButton_4">
+            <item row="10" column="0">
+             <widget class="QRadioButton" name="allAirportsInTileRadio">
               <property name="text">
                <string>All airports on a single tile</string>
               </property>
@@ -1818,7 +1828,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="0" column="0" colspan="3">
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="airportsTabText">
               <property name="text">
                <string>You can use custom .dat files, generated with TaxiDraw(810) or WorldEditor (850), or the global one provided with FlightGear (Airports/apt.dat.gz, 810).</string>
               </property>
@@ -1833,14 +1843,14 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <item row="2" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QLabel" name="label_18">
+               <widget class="QLabel" name="aptFormatLabel">
                 <property name="text">
                  <string>apt.dat format</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox_4">
+               <widget class="QComboBox" name="aptFormatSelect">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -1863,7 +1873,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_14">
+               <spacer name="spacer_7">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -1890,7 +1900,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
+            <item row="8" column="0">
              <widget class="QFrame" name="frameSingleAirport">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -1917,7 +1927,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   <number>50</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="label_3">
+                  <widget class="QLabel" name="airportIcaoLabel">
                    <property name="text">
                     <string>Airport ICAO</string>
                    </property>
@@ -1927,7 +1937,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_18">
+                  <widget class="QLineEdit" name="airportIcaoField">
                    <property name="maximumSize">
                     <size>
                      <width>50</width>
@@ -1940,7 +1950,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_8">
+                  <spacer name="spacer_9">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -1957,7 +1967,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </layout>
              </widget>
             </item>
-            <item row="11" column="0">
+            <item row="12" column="0">
              <widget class="QFrame" name="frameSingleTile">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -1981,7 +1991,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   <number>50</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="label_20">
+                  <widget class="QLabel" name="tileIdLabel">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -1994,7 +2004,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_13">
+                  <widget class="QLineEdit" name="tileIdField">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -2007,7 +2017,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_12">
+                  <spacer name="spacer_10">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -2024,7 +2034,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </layout>
              </widget>
             </item>
-            <item row="14" column="0">
+            <item row="15" column="0">
              <widget class="QFrame" name="frameAllAirports">
               <property name="lineWidth">
                <number>0</number>
@@ -2045,7 +2055,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   <number>50</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="label_4">
+                  <widget class="QLabel" name="startFromLabel">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -2055,7 +2065,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_19">
+                  <widget class="QLineEdit" name="startFromField">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -2071,7 +2081,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
                   </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_11">
+                  <spacer name="spacer_8">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -2097,15 +2107,8 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <string>Extra options (optional)</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
-            <item row="0" column="5" rowspan="3">
-             <widget class="Line" name="line_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="6">
-             <widget class="QLabel" name="label_25">
+             <widget class="QLabel" name="chukIdLabel">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -2118,7 +2121,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="7">
-             <widget class="QLineEdit" name="lineEdit_17">
+             <widget class="QLineEdit" name="chunkIdField">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -2131,7 +2134,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="8">
-             <spacer name="horizontalSpacer_6">
+             <spacer name="spacer_11">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -2144,7 +2147,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </spacer>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_26">
+             <widget class="QLabel" name="maxRwySlopeLabel">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2157,7 +2160,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLabel" name="label_28">
+             <widget class="QLabel" name="degreesLabel">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2170,7 +2173,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_21">
+             <widget class="QLineEdit" name="maxRwySlopeField">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2185,11 +2188,18 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </widget>
             </item>
+            <item row="1" column="5" rowspan="3">
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_5">
+          <spacer name="spacer_12">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -2204,7 +2214,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_18">
            <item>
-            <widget class="QPushButton" name="pushButton_5">
+            <widget class="QPushButton" name="generateAirportsButton">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -2227,7 +2237,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </size>
              </property>
              <property name="text">
-              <string>Generate airport</string>
+              <string>Generate airports</string>
              </property>
              <property name="flat">
               <bool>false</bool>
@@ -2235,7 +2245,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="progressBar_6">
+            <widget class="QProgressBar" name="generateAirportsProgressBar">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -2251,7 +2261,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_4">
+       <widget class="QWidget" name="materialsTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2260,7 +2270,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
-          <widget class="QLabel" name="label_32">
+          <widget class="QLabel" name="materialsTabText">
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
@@ -2276,7 +2286,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
           </widget>
          </item>
          <item>
-          <widget class="QTableWidget" name="tblShapesAlign">
+          <widget class="QTableWidget" name="shapefilesTable">
            <property name="contextMenuPolicy">
             <enum>Qt::CustomContextMenu</enum>
            </property>
@@ -2324,14 +2334,14 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-            <widget class="QPushButton" name="pushButton_12">
+            <widget class="QPushButton" name="retrieveShapefilesButton">
              <property name="text">
               <string>Retrieve shapefiles</string>
              </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer">
+            <spacer name="spacer_13">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -2344,7 +2354,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="label_46">
+            <widget class="QLabel" name="materialTypeLabel">
              <property name="text">
               <string>Material:</string>
              </property>
@@ -2354,7 +2364,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_2">
+            <widget class="QComboBox" name="materialTypeSelect">
              <property name="acceptDrops">
               <bool>false</bool>
              </property>
@@ -2687,7 +2697,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_17">
+            <widget class="QPushButton" name="addMaterialButton">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -2733,7 +2743,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              <number>6</number>
             </property>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_30">
+             <widget class="QLabel" name="pointWidthLabel">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2752,7 +2762,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_24">
+             <widget class="QLineEdit" name="pointWidthField">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2787,7 +2797,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="0" column="3">
-             <widget class="QCheckBox" name="checkBox_texturedlines">
+             <widget class="QCheckBox" name="texturedLinesCB">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                 <horstretch>0</horstretch>
@@ -2800,7 +2810,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="0" column="4">
-             <spacer name="horizontalSpacer_10">
+             <spacer name="spacer_14">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -2813,7 +2823,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </spacer>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_31">
+             <widget class="QLabel" name="maxSegLengthLabel">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2832,7 +2842,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_26">
+             <widget class="QLineEdit" name="maxSegLengthField">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2845,7 +2855,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              </widget>
             </item>
             <item row="1" column="3">
-             <widget class="QCheckBox" name="checkBox_2">
+             <widget class="QCheckBox" name="ignoreErrorsCB">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -2872,7 +2882,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
-            <widget class="QPushButton" name="pushButton_16">
+            <widget class="QPushButton" name="decodeShapefilesButton">
              <property name="minimumSize">
               <size>
                <width>200</width>
@@ -2895,7 +2905,7 @@ and apply material(s)</string>
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="progressBar_2">
+            <widget class="QProgressBar" name="decodeShapefilesProgressBar">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -2932,7 +2942,7 @@ and apply material(s)</string>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_5">
+       <widget class="QWidget" name="constructTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2945,7 +2955,209 @@ and apply material(s)</string>
            <property name="sizeConstraint">
             <enum>QLayout::SetNoConstraint</enum>
            </property>
-           <item row="0" column="1" rowspan="2">
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="groupBox_11">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>480</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Center and radius</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QLabel" name="centerRadiusText">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Calculated from the coordinates given on the Download tab, where they can be altered.</string>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignJustify|Qt::AlignTop</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_16">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetNoConstraint</enum>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="centerLatLabel">
+                  <property name="text">
+                   <string>Latitude</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLabel" name="centerLatField">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="radiusYLabel">
+                  <property name="text">
+                   <string>Y radius</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="centerLonField">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLabel" name="radiusYField">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLabel" name="radiusXField">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLabel" name="centerLonLabel">
+                  <property name="text">
+                   <string>Longitude</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QLabel" name="radiusXLabel">
+                  <property name="text">
+                   <string>X radius</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1" rowspan="3">
             <widget class="QGroupBox" name="groupBox_7">
              <property name="sizePolicy">
               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
@@ -2957,7 +3169,7 @@ and apply material(s)</string>
               <bool>false</bool>
              </property>
              <property name="title">
-              <string>Terraintypes</string>
+              <string>Terrain types</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -2989,7 +3201,7 @@ and apply material(s)</string>
                </widget>
               </item>
               <item>
-               <widget class="QListWidget" name="listWidget_2">
+               <widget class="QListWidget" name="terrainTypesList">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -3002,213 +3214,11 @@ and apply material(s)</string>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_15">
+               <widget class="QPushButton" name="updateTerrainTypeButton">
                 <property name="text">
                  <string>Update list</string>
                 </property>
                </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox_11">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>480</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="title">
-              <string>Center and radii</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QLabel" name="label_43">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Calculated from the coordinates given on the Download tab, where they can be altered.</string>
-                </property>
-                <property name="scaledContents">
-                 <bool>false</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignJustify|Qt::AlignTop</set>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QGridLayout" name="gridLayout_16">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetNoConstraint</enum>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_39">
-                  <property name="text">
-                   <string>Latitude</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLabel" name="label_67">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Box</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_42">
-                  <property name="text">
-                   <string>Y radius</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QLabel" name="label_68">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Box</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="label_69">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Box</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLabel" name="label_70">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Box</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="3">
-                 <widget class="QLabel" name="label_40">
-                  <property name="text">
-                   <string>Longitude</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QLabel" name="label_41">
-                  <property name="text">
-                   <string>X radius</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </item>
              </layout>
             </widget>
@@ -3226,12 +3236,9 @@ and apply material(s)</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
-               <layout class="QFormLayout" name="formLayout">
-                <property name="fieldGrowthPolicy">
-                 <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_44">
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <widget class="QLabel" name="constructTileIdLabel">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -3243,8 +3250,8 @@ and apply material(s)</string>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="lineEdit_35">
+                <item>
+                 <widget class="QLineEdit" name="constructTileIdField">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -3256,12 +3263,25 @@ and apply material(s)</string>
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <spacer name="spacer_15">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout">
                 <item>
-                 <widget class="QCheckBox" name="checkBox_3">
+                 <widget class="QCheckBox" name="useUkGridCB">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -3277,7 +3297,7 @@ and apply material(s)</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_4">
+                 <widget class="QCheckBox" name="ignoreLandmassCB">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -3315,7 +3335,7 @@ and apply material(s)</string>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QPushButton" name="pushButton_13">
+            <widget class="QPushButton" name="generateSceneryButton">
              <property name="minimumSize">
               <size>
                <width>200</width>
@@ -3334,7 +3354,7 @@ and apply material(s)</string>
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="progressBar">
+            <widget class="QProgressBar" name="generateSceneryProgressBar">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -3377,7 +3397,7 @@ and apply material(s)</string>
         <bool>true</bool>
        </property>
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -3412,18 +3432,18 @@ and apply material(s)</string>
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="wiki"/>
+    <addaction name="wikiAction"/>
     <addaction name="separator"/>
-    <addaction name="about"/>
+    <addaction name="aboutAction"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_2"/>
-    <addaction name="actionSave_2"/>
+    <addaction name="openProjectAction"/>
+    <addaction name="saveProjectAction"/>
     <addaction name="separator"/>
-    <addaction name="actionQuit"/>
+    <addaction name="quitAction"/>
     <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
@@ -3449,17 +3469,17 @@ and apply material(s)</string>
     <string>FGFS Construct</string>
    </property>
   </action>
-  <action name="wiki">
+  <action name="wikiAction">
    <property name="text">
     <string>Wiki</string>
    </property>
   </action>
-  <action name="about">
+  <action name="aboutAction">
    <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="quitAction">
    <property name="text">
     <string>Quit</string>
    </property>
@@ -3474,12 +3494,12 @@ and apply material(s)</string>
     <string>Open</string>
    </property>
   </action>
-  <action name="actionOpen_2">
+  <action name="openProjectAction">
    <property name="text">
     <string>Open project</string>
    </property>
   </action>
-  <action name="actionSave_2">
+  <action name="saveProjectAction">
    <property name="text">
     <string>Save project</string>
    </property>
@@ -3487,26 +3507,26 @@ and apply material(s)</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>checkBox_log</tabstop>
+  <tabstop>createLogFileCB</tabstop>
   <tabstop>textBrowser</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>lineEdit_3</tabstop>
-  <tabstop>lineEdit_23</tabstop>
-  <tabstop>lineEdit_17</tabstop>
-  <tabstop>pushButton</tabstop>
-  <tabstop>lineEdit_20</tabstop>
-  <tabstop>lineEdit_24</tabstop>
-  <tabstop>lineEdit_26</tabstop>
-  <tabstop>pushButton_12</tabstop>
-  <tabstop>pushButton_16</tabstop>
-  <tabstop>comboBox_2</tabstop>
-  <tabstop>pushButton_17</tabstop>
-  <tabstop>tblShapesAlign</tabstop>
-  <tabstop>checkBox_3</tabstop>
-  <tabstop>checkBox_4</tabstop>
-  <tabstop>pushButton_15</tabstop>
-  <tabstop>listWidget_2</tabstop>
+  <tabstop>minNodesField</tabstop>
+  <tabstop>maxNodesField</tabstop>
+  <tabstop>maxErrorField</tabstop>
+  <tabstop>chunkIdField</tabstop>
+  <tabstop>aptFileButton</tabstop>
+  <tabstop>aptFileField</tabstop>
+  <tabstop>pointWidthField</tabstop>
+  <tabstop>maxSegLengthField</tabstop>
+  <tabstop>retrieveShapefilesButton</tabstop>
+  <tabstop>decodeShapefilesButton</tabstop>
+  <tabstop>materialTypeSelect</tabstop>
+  <tabstop>addMaterialButton</tabstop>
+  <tabstop>shapefilesTable</tabstop>
+  <tabstop>useUkGridCB</tabstop>
+  <tabstop>ignoreLandmassCB</tabstop>
+  <tabstop>updateTerrainTypeButton</tabstop>
+  <tabstop>terrainTypesList</tabstop>
  </tabstops>
  <resources/>
  <connections/>
