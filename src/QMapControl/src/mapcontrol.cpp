@@ -185,21 +185,6 @@ namespace qmapcontrol
         painter.drawLine(screen_middle.x()-10, screen_middle.y(),
                          screen_middle.x()+10, screen_middle.y()); // -
 
-        // int cross_x = int(layermanager->getMapmiddle_px().x())%256;
-        // int cross_y = int(layermanager->getMapmiddle_px().y())%256;
-        // painter.drawLine(screen_middle.x()-cross_x+cross_x, screen_middle.y()-cross_y+0,
-        //   screen_middle.x()-cross_x+cross_x, screen_middle.y()-cross_y+256); // |
-        // painter.drawLine(screen_middle.x()-cross_x+0, screen_middle.y()-cross_y+cross_y,
-        //   screen_middle.x()-cross_x+256, screen_middle.y()-cross_y+cross_y); // -
-
-        painter.drawRect(0,0, size.width(), size.height());
-        /*
-        // rotating
-          painter.setMatrix(painter.matrix().inverted());
-        //qt = painter.transform();
-           qm = painter.combinedMatrix();
-        */
-
         if (mousepressed && mymousemode == Dragging)
         {
             QRect rect = QRect(pre_click_px, current_mouse_pos);
