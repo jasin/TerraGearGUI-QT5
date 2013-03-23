@@ -141,12 +141,16 @@ void MainWindow::on_downloadElevationButton_clicked()
         urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM1/";
     } else if (sourceElev == "usgs.gov (SRTM-3)"){
         urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/";
+
     } else {
         urlElev = "http://downloads.fgx.ch/geodata/data/srtm/";
     }
 
-    for (int lat = latMin; lat < latMax; lat++) {
-        for (int lon = lonMin; lon < lonMax; lon++) {
+    for (double lat = latMin; lat < latMax; lat++) {
+        if (lonMin < 0 and lonMin > -1) {
+            lonMin = -1;
+        }
+        for (double lon = lonMin; lon < lonMax; lon++) {
             QString tile = "";
             if (lat < 0) {
                 tile += "S";

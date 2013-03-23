@@ -5,4 +5,3 @@ The current todo list contains the following items, in random order:
 - Add a "surprise me" option, where the GUI automatically creates scenery after only selecting a bounding box.
 - Improve performance of QMapControl.
 - Cleanup code.
-- Split mainwindow.cpp into multiple files.
