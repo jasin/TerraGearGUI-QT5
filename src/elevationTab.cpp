@@ -103,14 +103,12 @@ void MainWindow::on_convertElevationButton_clicked()
         cnt.sprintf("%d", (i + 1));
         tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
 
-        // adjust progress bar
-        ui->convertElevationProgressBar->setMaximum(tot.toInt()*2);
-        ui->convertElevationProgressBar->setValue(cnt.toInt());
-
         QProcess proc;
         proc.setWorkingDirectory(terragearDirectory);
         proc.setProcessChannelMode(QProcess::MergedChannels);
         proc.start(arguments, QIODevice::ReadWrite);
+
+        ui->convertElevationProgressBar->setValue( (50/argList.size())*i );  // hgtchop make progress btw 0% -> 50%
 
         // run hgtchop command
         while(proc.waitForReadyRead()){
@@ -127,6 +125,21 @@ void MainWindow::on_convertElevationButton_clicked()
 
     //++ We need event listeners and Ques instead.. maybe sa
     pt.start();
+
+
+    int numberOfArr = 0;
+
+    QDirIterator it( workDirectory+"/SRTM-3", QDirIterator::Subdirectories );
+    while( it.hasNext() ) {
+        it.next();
+        if( !it.fileInfo().isDir() ) {
+            QString filename = it.fileName();
+            if( filename.endsWith(".arr.gz") ) {
+                numberOfArr += 1;
+            }
+        }
+    }
+
 
     // generate and run terrafit command
     arguments = "\""+terragearDirectory;
@@ -159,26 +172,25 @@ void MainWindow::on_convertElevationButton_clicked()
     proc.setProcessChannelMode(QProcess::MergedChannels);
     proc.start(arguments, QIODevice::ReadWrite);
 
+    int z = 0;
+
     while(proc.waitForReadyRead()){
         QCoreApplication::processEvents();
 
         QString info( proc.readAll() );
         GUILog( info, "terrafit" );
+        if ( info.contains( ".arr.gz" ) ) {
+            ui->convertElevationProgressBar->setValue( 50 + (( (double) 50 / numberOfArr ) * z ) ); // terrafit make progress btw 50% -> 100%
+            z += 1;
+        }
     }
     proc.QProcess::waitForFinished(-1);
+
+    ui->convertElevationProgressBar->setValue( 100 );
 
     tm = " in "+getElapTimeStg(pt.elapsed());
     outputToLog("PROC_ENDED"+tm);
 
-    if (list.size() > 0) {
-        tm = " "+getElapTimeStg(rt.elapsed()); // get elapsed time string
-        cnt.sprintf("%d", list.size());
-        outputToLog("Done "+cnt+" files in "+tm);
-
-        // adjust progress bar
-        ui->convertElevationProgressBar->setMaximum(tot.toInt()*2);
-        ui->convertElevationProgressBar->setValue(tot.toInt()+cnt.toInt());
-    }
 }
 
 // update elevation download range
