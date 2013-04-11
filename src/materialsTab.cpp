@@ -131,6 +131,10 @@ void MainWindow::on_decodeShapefilesButton_clicked()
 
         // save commandline to log
         outputToLog(arguments);
+        GUILog( arguments + "\n", "ogr-decode" );
+        GUILog( arguments + "\n", "default" );
+        ui->textBrowser->append( arguments );
+        sb->setValue(sb->maximum());
 
         //= Create shell process and start
         QProcess proc;
@@ -140,12 +144,18 @@ void MainWindow::on_decodeShapefilesButton_clicked()
         //= run command in shell ? ummm>?
         while(proc.QProcess::waitForFinished(-1)){
             QCoreApplication::processEvents();
+
+            QString info( proc.readAll() );
+            GUILog( info, "ogr-decode" );
         }
         proc.QProcess::waitForFinished(-1);
+
+        tm = " in " + getElapTimeStg(pt.elapsed());
+
+////////////// IS FOLLOWING CODE STILL USED ??? ///////////////////
         int errCode = proc.exitCode();
         info = proc.readAllStandardOutput();
-        tm = " in " + getElapTimeStg(pt.elapsed());
-        arguments = "\n*PROC_ENDED*"+tm+"\n";
+
         if (errCode) {
             info += proc.readAllStandardError();
             arguments.sprintf("\n*PROC_ENDED* with ERROR CODE %d!\n",errCode);
@@ -167,15 +177,10 @@ void MainWindow::on_decodeShapefilesButton_clicked()
                 }
             }
         }
-        output += arguments + "\n" + info + "\n";
-        outTemp(arguments + "\n" + info + "\n");
-
-        ui->textBrowser->append(info);
-        sb->setValue(sb->maximum());
+//////////////////////////////////////////////////////////////////////
 
         msg = "PROC_ENDED" + tm;
         outputToLog(msg);
-        outTemp( msg + "\n" );
 
         // adjust progress bar
         ui->decodeShapefilesProgressBar->setMaximum( argList.size() - 1 );
@@ -184,8 +189,7 @@ void MainWindow::on_decodeShapefilesButton_clicked()
 
     msg.sprintf("Done %d files", argList.size());
     msg += " in " + getElapTimeStg(rt.elapsed());
-    ui->textBrowser->append(output);
-    sb->setValue(sb->maximum()); // get the info shown
+
 }
 
 // add material

@@ -75,6 +75,7 @@ void MainWindow::on_downloadShapefilesButton_clicked()
 
             //= save output to log
             outputToLog(url.toString());
+            GUILog( url.toString() + "\n", "download" );
 
             // reset progressbar
             ui->downloadShapefilesProgressBar->setMinimum(0);
@@ -97,6 +98,7 @@ void MainWindow::on_downloadShapefilesButton_clicked()
     else{
         QString msg = tr("Minimum longitude and/or latitude is not less than maximum.\nCorrect the coordinates, and try again.");
         outputToLog(msg);
+        GUILog( msg + "\n", "download" );
         QMessageBox::critical(this,tr("Boundary error"),msg);
     }
 
@@ -179,6 +181,7 @@ void MainWindow::on_downloadElevationButton_clicked()
                 QUrl url(urlElev+folders.at(i)+"/"+tile+".hgt.zip");
                 QNetworkReply *reply = _manager->get(QNetworkRequest(url));
                 if (reply->error()) {
+                    GUILog( url.toString() + "\n", "download" );
                     succes = 1;
                 }
                 i++;

@@ -39,7 +39,8 @@ void MainWindow::on_generateAirportsButton_clicked()
     // construct genapts commandline
     QString airportId   = ui->airportIcaoField->text();
     QString startAptId  = ui->startFromField->text();
-    QString tileId  = ui->tileIdField->text();
+    QString tileId      = ui->tileIdField->text();
+    QScrollBar *sb      = ui->textBrowser->verticalScrollBar();
 
     QString minLat  = m_south;
     QString maxLat  = m_north;
@@ -146,43 +147,44 @@ void MainWindow::on_generateAirportsButton_clicked()
 
     // save output to log
     outputToLog(arguments);
+    GUILog( arguments + "\n", "genapt" );
+    GUILog( arguments + "\n", "default" );
+    ui->textBrowser->append( arguments );
+    sb->setValue(sb->maximum());
 
     QByteArray data;
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels);
-    proc.start(arguments, QIODevice::ReadWrite);
-
-    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
+    proc.start(arguments, QIODevice::ReadWrite);     // run genapts command
 
     // reset progress bar
     ui->generateAirportsProgressBar->setValue(0);
 
     while(proc.waitForReadyRead()){
         QCoreApplication::processEvents();
-        data.append(proc.readAll());
-        ui->textBrowser->append(data.data()); // Output the data
-        sb->setValue(sb->maximum()); // scroll down
 
-        QString output = data;
-        if (output.contains("Finished building Linear Features")) {
+        QString info( proc.readAll() );
+        GUILog( info, "genapt" );
+
+        if (info.contains("Finished building Linear Features")) {
             ui->generateAirportsProgressBar->setValue(50);
         }
-        if (output.contains("Finished building runways")) {
+        if (info.contains("Finished building runways")) {
             ui->generateAirportsProgressBar->setValue(60);
         }
-        if (output.contains("Finished collecting nodes")) {
+        if (info.contains("Finished collecting nodes")) {
             ui->generateAirportsProgressBar->setValue(70);
         }
-        if (output.contains("Finished adding intermediate nodes")) {
+        if (info.contains("Finished adding intermediate nodes")) {
             ui->generateAirportsProgressBar->setValue(80);
         }
-        if (output.contains("Finished cleaning polys")) {
+        if (info.contains("Finished cleaning polys")) {
             ui->generateAirportsProgressBar->setValue(90);
         }
 
         // obtain data version
         QRegExp rx("Data version = [0-9]{1,4}");
-        if (output.contains(rx)) {
+        if (info.contains(rx)) {
             QMessageBox msgBox;
             int ret = QMessageBox::critical(this, "Wrong airport data version","This .dat file contains airport data in the \""+rx.cap(0).replace("Data version = ", "")+"\" format. Please select the correct format from the dropdown (810 = 810, 850 = 850 and higher).");
             switch (ret) {
@@ -192,12 +194,15 @@ void MainWindow::on_generateAirportsButton_clicked()
             }
         }
     }
-    ui->generateAirportsProgressBar->setValue(100);
-    // run genapts command
     proc.QProcess::waitForFinished(-1);
 
-    int errCode = proc.exitCode();
+    ui->generateAirportsProgressBar->setValue(100);
     tm = " in "+getElapTimeStg(rt.elapsed());
+
+
+///////////////////////  IS FOLLOWING CODE STILL USED ? /////////////////////////
+    int errCode = proc.exitCode();
+
     msg = proc.readAllStandardOutput()+"\n";
 
     if (errCode) {
@@ -205,6 +210,8 @@ void MainWindow::on_generateAirportsButton_clicked()
     }
     msg += "*PROC_ENDED*"+tm+"\n";
     output += msg;
+//////////////////////////////////////////////////////////////////////////////////
+
     outputToLog("PROC_ENDED"+tm);
 }
 

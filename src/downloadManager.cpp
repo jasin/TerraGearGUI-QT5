@@ -34,8 +34,10 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
     QUrl url = reply->url();
 
     if (reply->error()) {
+      if ( !url.toString().contains("hgt.zip") ) {
         ui->textBrowser->append("Download of " + QString(url.toEncoded().constData()) + " failed: " + QString(reply->errorString()));
         sb->setValue(sb->maximum()); // get the info shown
+      }
 
         QString fileUrl = url.toEncoded().constData();
     } else {
@@ -53,6 +55,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             // obtain elevation files
             dir.mkpath(dataDirectory+"/SRTM-3/");
             file.setFileName(dataDirectory+"/SRTM-3/"+fileName);
+            GUILog( url.toString() + "\n", "download" );
         }
 
         if (file.open(QIODevice::WriteOnly)) {
@@ -86,7 +89,8 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
 #ifdef Q_OS_UNIX
             arguments += "unzip -o "+dataDirectory+"/"+fileName+" -d "+dataDirectory;
 #endif
-            ui->textBrowser->append(arguments);
+            //ui->textBrowser->append(arguments);
+            GUILog( arguments + "\n", "download" );
             QProcess proc;
             proc.start(arguments, QIODevice::ReadWrite);
             proc.waitForReadyRead();

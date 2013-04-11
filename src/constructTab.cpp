@@ -38,7 +38,12 @@ void MainWindow::on_generateSceneryButton_clicked()
     QString y = ui->radiusYField->text();
     QString selectedMaterials;
     QString msg;
-    QByteArray data;
+    bool unknownTotalTiles = true;
+    double tileProgress = 0;
+    double writeProgress = 0;
+    double totalTiles = 0;
+    double tileNumber = 0;
+    QRegExp exp("([0-9]*) of ([0-9]*)");
 
     int folderCnt = ui->terrainTypesList->count();
     if (folderCnt == 0) {
@@ -64,8 +69,6 @@ void MainWindow::on_generateSceneryButton_clicked()
                               );
         return;
     }
-    // reset progress bar
-    ui->generateSceneryProgressBar->setValue(10);
 
     QFile prioritiesFile(terragearDirectory + "/share/TerraGear/default_priorities.txt");
     if ( ! prioritiesFile.exists() ) {
@@ -138,7 +141,10 @@ void MainWindow::on_generateSceneryButton_clicked()
     }
     arguments += selectedMaterials;
 
-    outTemp(arguments+"\n"); // output commandline to log.txt
+    GUILog( arguments + "\n", "default" ); // output commandline to log.txt
+    GUILog( arguments + "\n", "tg-construct" );
+    ui->textBrowser->append( arguments );
+    sb->setValue(sb->maximum());
     outputToLog(arguments);
 
     QProcess proc;
@@ -151,59 +157,36 @@ void MainWindow::on_generateSceneryButton_clicked()
 
     while(proc.waitForReadyRead()){
         QCoreApplication::processEvents();
-        data.append(proc.readAll());
-        ui->textBrowser->append(data.data()); // Output the data
-        sb->setValue(sb->maximum()); // scroll down
-    }
 
-    proc.waitForFinished(-1);
+        QString info( proc.readAll() );
+        GUILog( info, "tg-construct" );
 
-    info = proc.readAll();
+        //ui->textBrowser->append( info );  // If we want see console output in the 
+        //sb->setValue(sb->maximum());      // textBrowser, we just need to uncomment these 2 lines
 
-    outTemp(info+"\n");
-    outTemp(arguments+"\n");
-    output += info+"\n"; // add to full output
-    output += arguments+"\n";
-
-    ui->textBrowser->append(info); // only the last
-    sb->setValue(sb->maximum());
-
-    if (info.contains("No area named")) {
-
-        // find material name
-        QStringList unknownArea1 = info.split("No area named ");
-        QString unknownMaterial = unknownArea1[1];
-
-        QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
-        msgBox.setDefaultButton(QMessageBox::Abort);
-        msgBox.setWindowTitle("Unknown area");
-        msgBox.setText(QString("Material '%1' is not listed in default_priorities.txt.")
-                        .arg(unknownMaterial));
-        msgBox.setIcon(QMessageBox::Critical);
-        int ret = msgBox.exec();
-        switch (ret) {
-        case QMessageBox::Ignore:
-             break;
-        case QMessageBox::Abort:
-            return;
-            break;
+        if ( info.contains( exp ) ) {
+            if ( unknownTotalTiles ) {
+                totalTiles = exp.cap(2).toDouble();
+                ui->generateSceneryProgressBar->setMaximum( totalTiles*3 ); // x3 because tg-construct use 3 passes
+                unknownTotalTiles = false;
+            }
+            tileProgress += 1;
+            ui->generateSceneryProgressBar->setValue(tileProgress);
         }
     }
+    proc.waitForFinished(-1);
 
     // scenery has been successfully created, congratulate developer
     if ( info.contains("[Finished successfully]") ) {
         QMessageBox::information(this, "Finished successfully", "Congratulations, you've successfully built some scenery!");
     }
 
-    ui->textBrowser->append(output); // add it ALL
     ui->generateSceneryButton->setEnabled(true);
-    ui->generateSceneryProgressBar->setValue(100);
-    sb->setValue(sb->maximum()); // get the info shown
+    ui->generateSceneryProgressBar->setMaximum( 100 );
+    ui->generateSceneryProgressBar->setValue( 100 );
 }
 
 // update terraintypes list for tg-construct
-// *TBD* Should maybe EXCLUDE directory 'Shared'!
 void MainWindow::on_updateTerrainTypeButton_clicked()
 {
     int j = 0;

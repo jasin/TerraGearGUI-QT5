@@ -224,13 +224,77 @@ void MainWindow::outputToLog(QString s)
     }
 }
 
-void MainWindow::outTemp(QString s)
+void MainWindow::GUILog(QString s, QString tools = "default")
 {
-    QFile data(projectDirectory+"/templog.txt");
-    if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+
+  if ( ui->createLogFileCB->isChecked() ) {
+
+    if ( tools == "download" ) {
+      QFile data(projectDirectory+"/download.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+      }
     }
+
+    else if ( tools == "hgtchop" ) {
+      QFile data(projectDirectory+"/hgtchop.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+      }
+    }
+
+    else if ( tools == "terrafit" ) {
+      QFile data(projectDirectory+"/terrafit.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+      }
+    }
+
+    else if ( tools == "genapt" ) {
+      QFile data(projectDirectory+"/genapt.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+      }
+    }
+
+    else if ( tools == "ogr-decode" ) {
+      QFile data(projectDirectory+"/ogr-decode.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+      }
+    }
+
+    else if ( tools == "tg-construct" ) {
+      QFile data(projectDirectory+"/tg-construct.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << s;
+      }
+    }
+
+    else if ( tools == "default" ) {
+      QDateTime datetime  = QDateTime::currentDateTime();
+      QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
+
+      QFile data(projectDirectory+"/default.log");
+      if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream out(&data);
+        out << endl;
+        out << sDateTime;
+        out << "  -  ";
+        out << s;
+      }
+    }
+
+    else {
+      qDebug() << "GUILog : " << s;
+    }
+  }
 }
 
 // resize the widget

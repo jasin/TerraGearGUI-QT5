@@ -95,6 +95,10 @@ void MainWindow::on_convertElevationButton_clicked()
         elevationFile = filList[i];
 
         outputToLog(arguments);
+        GUILog( arguments + "\n", "hgtchop" );
+        GUILog( arguments + "\n", "default" );
+        ui->textBrowser->append( arguments );
+        sb->setValue(sb->maximum());
 
         cnt.sprintf("%d", (i + 1));
         tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
@@ -104,63 +108,66 @@ void MainWindow::on_convertElevationButton_clicked()
         ui->convertElevationProgressBar->setValue(cnt.toInt());
 
         QProcess proc;
+        proc.setWorkingDirectory(terragearDirectory);
+        proc.setProcessChannelMode(QProcess::MergedChannels);
         proc.start(arguments, QIODevice::ReadWrite);
 
         // run hgtchop command
         while(proc.waitForReadyRead()){
             QCoreApplication::processEvents();
-            data.append(proc.readAll());
-            ui->textBrowser->append(data.data()); // Output the data
-            sb->setValue(sb->maximum()); // scroll down
+
+            QString info( proc.readAll() );
+            GUILog( info, "hgtchop" );
         }
         proc.QProcess::waitForFinished(-1);
 
-        output += proc.readAllStandardOutput()+"\n*PROC_ENDED*\n";
-        //        ui->textBrowser->append(output);
-        outputToLog("PROC_ENDED");
-
         tm = " in "+getElapTimeStg(pt.elapsed());
-        output += proc.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
-        ui->textBrowser->append(output);
-        sb->setValue(sb->maximum()); // get the info shown
         outputToLog("PROC_ENDED"+tm);
-        // save output to log - all is now saved at application end
     }
 
     //++ We need event listeners and Ques instead.. maybe sa
     pt.start();
 
     // generate and run terrafit command
-    QString argumentsTerrafit = "\""+terragearDirectory;
-    argumentsTerrafit += "/bin/terrafit\" ";
+    arguments = "\""+terragearDirectory;
+    arguments += "/bin/terrafit\" ";
     if (minnode.size() > 0){
-        argumentsTerrafit += "--minnodes "+minnode+" ";
+        arguments += "--minnodes "+minnode+" ";
     }
     if (maxnode.size() > 0){
-        argumentsTerrafit += "--maxnodes "+maxnode+" ";
+        arguments += "--maxnodes "+maxnode+" ";
     }
     if (maxerror.size() > 0){
-        argumentsTerrafit += "--maxerror "+maxerror+" ";
+        arguments += "--maxerror "+maxerror+" ";
     }
 //    NOT YET IMPLEMENTED IN TERRAFIT
 //    if (ui->allThreadsCB->isChecked()) {
-//        argumentsTerrafit += "--threads ";
+//        arguments += "--threads ";
 //    }
     
 
-    argumentsTerrafit +="\""+workDirectory+"/SRTM-"+elevationRes+"\"";
+    arguments +="\""+workDirectory+"/SRTM-"+elevationRes+"\"";
 
-    outputToLog(argumentsTerrafit);
-    QProcess procTerrafit;
-    procTerrafit.start(argumentsTerrafit, QIODevice::ReadWrite);
-    procTerrafit.waitForReadyRead();
-    procTerrafit.QProcess::waitForFinished(-1);
+    outputToLog(arguments);
+    GUILog( arguments + "\n", "terrafit" );
+    GUILog( arguments + "\n", "default" );
+    ui->textBrowser->append( arguments );
+    sb->setValue(sb->maximum());
+
+    QProcess proc;
+    proc.setWorkingDirectory(terragearDirectory);
+    proc.setProcessChannelMode(QProcess::MergedChannels);
+    proc.start(arguments, QIODevice::ReadWrite);
+
+    while(proc.waitForReadyRead()){
+        QCoreApplication::processEvents();
+
+        QString info( proc.readAll() );
+        GUILog( info, "terrafit" );
+    }
+    proc.QProcess::waitForFinished(-1);
 
     tm = " in "+getElapTimeStg(pt.elapsed());
-    output += procTerrafit.readAllStandardOutput()+"\n*PROC_ENDED*"+tm+"\n";
-
-    ui->textBrowser->append(output);
-    sb->setValue(sb->maximum()); // get the info shown
     outputToLog("PROC_ENDED"+tm);
 
     if (list.size() > 0) {
