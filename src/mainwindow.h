@@ -95,8 +95,8 @@ private slots:
     void updateElevationRange();
     void updateMaterials();
 
-    void outputToLog(QString s);
-    void GUILog(QString s, QString tools); /* write to projDirectory+"/templog.txt" *TBD* should restart on app start */
+    // tools: download, hgtchop, terrafit, genapt, ogr-decode, tg-construct, default
+    void GUILog(QString s, QString tools);
 
     void downloadFinished(QNetworkReply *reply);
     void downloadShapefilesProgressBar(qint64 bytesReceived, qint64 bytesTotal);

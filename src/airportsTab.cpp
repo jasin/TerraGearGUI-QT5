@@ -48,7 +48,6 @@ void MainWindow::on_generateAirportsButton_clicked()
     QString maxLon  = m_east;
     QString maxSlope  = ui->maxRwySlopeField->text();
     QTime rt;
-    QString tm;
     QString msg;
 
     // Check if executable can be located
@@ -146,7 +145,6 @@ void MainWindow::on_generateAirportsButton_clicked()
     }
 
     // save output to log
-    outputToLog(arguments);
     GUILog( arguments + "\n", "genapt" );
     GUILog( arguments + "\n", "default" );
     ui->textBrowser->append( arguments );
@@ -197,22 +195,8 @@ void MainWindow::on_generateAirportsButton_clicked()
     proc.QProcess::waitForFinished(-1);
 
     ui->generateAirportsProgressBar->setValue(100);
-    tm = " in "+getElapTimeStg(rt.elapsed());
+    GUILog( "ENDED in " + getElapTimeStg(rt.elapsed()) + " secondes\n", "default");
 
-
-///////////////////////  IS FOLLOWING CODE STILL USED ? /////////////////////////
-    int errCode = proc.exitCode();
-
-    msg = proc.readAllStandardOutput()+"\n";
-
-    if (errCode) {
-        msg += proc.readAllStandardError()+"\n";
-    }
-    msg += "*PROC_ENDED*"+tm+"\n";
-    output += msg;
-//////////////////////////////////////////////////////////////////////////////////
-
-    outputToLog("PROC_ENDED"+tm);
 }
 
 

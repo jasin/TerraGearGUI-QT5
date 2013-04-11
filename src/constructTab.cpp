@@ -145,7 +145,6 @@ void MainWindow::on_generateSceneryButton_clicked()
     GUILog( arguments + "\n", "tg-construct" );
     ui->textBrowser->append( arguments );
     sb->setValue(sb->maximum());
-    outputToLog(arguments);
 
     QProcess proc;
     proc.setWorkingDirectory(terragearDirectory);

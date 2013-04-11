@@ -32,22 +32,20 @@ void MainWindow::on_decodeShapefilesButton_clicked()
 {
 
     QScrollBar *sb = ui->textBrowser->verticalScrollBar();
-    QTime rt;
-    QTime pt;
-    QString tm;
-    int i;
-    QString msg;
     QStringList argList;
     QStringList shpList;
     QString arguments;
-    QString info;
     QString shapefile;
     QByteArray data;
+    QString info;
+    QString msg;
+    QTime pt;
+    int i;
+
 
     // reset progress bar
     ui->decodeShapefilesProgressBar->setValue(0);
 
-    rt.start();
     // check if terragear tool exists
     QString TGfile = terragearDirectory;
     TGfile += "/bin/ogr-decode";
@@ -130,7 +128,6 @@ void MainWindow::on_decodeShapefilesButton_clicked()
         shapefile = shpList[i];
 
         // save commandline to log
-        outputToLog(arguments);
         GUILog( arguments + "\n", "ogr-decode" );
         GUILog( arguments + "\n", "default" );
         ui->textBrowser->append( arguments );
@@ -142,7 +139,7 @@ void MainWindow::on_decodeShapefilesButton_clicked()
         proc.start(arguments, QIODevice::ReadWrite);
 
         //= run command in shell ? ummm>?
-        while(proc.QProcess::waitForFinished(-1)){
+        while(proc.waitForReadyRead()){
             QCoreApplication::processEvents();
 
             QString info( proc.readAll() );
@@ -150,46 +147,12 @@ void MainWindow::on_decodeShapefilesButton_clicked()
         }
         proc.QProcess::waitForFinished(-1);
 
-        tm = " in " + getElapTimeStg(pt.elapsed());
-
-////////////// IS FOLLOWING CODE STILL USED ??? ///////////////////
-        int errCode = proc.exitCode();
-        info = proc.readAllStandardOutput();
-
-        if (errCode) {
-            info += proc.readAllStandardError();
-            arguments.sprintf("\n*PROC_ENDED* with ERROR CODE %d!\n",errCode);
-
-            if ( errCode == -1073741515) {
-                QMessageBox msgBox;
-                msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ignore);
-                msgBox.setDefaultButton(QMessageBox::Abort);
-                msgBox.setWindowTitle("Process error");
-                msgBox.setText("Failed to decode shapefiles.");
-                msgBox.setIcon(QMessageBox::Critical);
-                int ret = msgBox.exec();
-                switch (ret) {
-                case QMessageBox::Ignore:
-                    break;
-                case QMessageBox::Abort:
-                    return;
-                    break;
-                }
-            }
-        }
-//////////////////////////////////////////////////////////////////////
-
-        msg = "PROC_ENDED" + tm;
-        outputToLog(msg);
+        GUILog( "ENDED in " + getElapTimeStg(pt.elapsed()) + " secondes \n", "default");
 
         // adjust progress bar
         ui->decodeShapefilesProgressBar->setMaximum( argList.size() - 1 );
         ui->decodeShapefilesProgressBar->setValue(i);
     }
-
-    msg.sprintf("Done %d files", argList.size());
-    msg += " in " + getElapTimeStg(rt.elapsed());
-
 }
 
 // add material

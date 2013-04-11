@@ -199,9 +199,9 @@ int util_verifySRTMfiles(QString minLat, QString maxLat,
     }
     // show what was found
     //index.sprintf("Found %d arr/fit files in the 'work' directory.", files.count());
-    //outputToLog(index);
+    //GUILog(index, "default");
     //index.sprintf("Of the desired %d bucket indexes, found elevations (arr/fit) for %d tiles.", indexList_needed.size(), result);
-    //outputToLog(index);
+    //GUILog(index, "default");
 #endif // #ifdef _NEWBUCKET_HXX   // we have SGBucket capability
 
     return result; // If 0, oops, NO ELEVATION directory located in work, or no matching indexes

@@ -208,23 +208,6 @@ void MainWindow::on_tabWidget_selected(QString )
     show();
 }
 
-void MainWindow::outputToLog(QString s)
-{
-    if ( ui->createLogFileCB->isChecked() ) {
-        QDateTime datetime  = QDateTime::currentDateTime();
-        QString sDateTime   = datetime.toString("yyyy/MM/dd HH:mm:ss");
-
-        QFile data(projectDirectory+"/log.txt");
-        if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream out(&data);
-            out << endl;
-            out << sDateTime;
-            out << "  -  ";
-            out << s;
-        }
-    }
-}
-
 void MainWindow::GUILog(QString s, QString tools = "default")
 {
 

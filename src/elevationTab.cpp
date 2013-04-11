@@ -31,28 +31,11 @@
 void MainWindow::on_convertElevationButton_clicked()
 {
 
-    QScrollBar *sb = ui->textBrowser->verticalScrollBar();
-
-    QDir dir(elevationDirectory);
-    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
-    QStringList filters;
-    filters << "*.hgt" << "*.hgt.zip";
-    dir.setNameFilters(filters);
-
-    //= Crash out if no files
-    QFileInfoList list = dir.entryInfoList();
-
-    if (list.size() == 0) {
-        QMessageBox::critical(this,
-                              "No elevation data",
-                              "There are no elevation files in " + elevationDirectory + ". You can download elevation data on the Start tab."
-                              );
-        return;
-    }
-
-    QString minnode     = ui->minNodesField->text();
-    QString maxnode     = ui->maxNodesField->text();
-    QString maxerror    = ui->maxErrorField->text();
+    QScrollBar *sb       = ui->textBrowser->verticalScrollBar();
+    QString elevationRes = ui->resolutionSelect->currentText();
+    QString minnode      = ui->minNodesField->text();
+    QString maxnode      = ui->maxNodesField->text();
+    QString maxerror     = ui->maxErrorField->text();
 
     QString tot;
     QString cnt;
@@ -66,25 +49,24 @@ void MainWindow::on_convertElevationButton_clicked()
     QByteArray data;
     int i;
 
+
     // reset progress bar
     ui->convertElevationProgressBar->setValue(0);
 
-    rt.start(); // start total running time
-    tot.sprintf("%d", list.size());
+    QDirIterator dir( elevationDirectory );
+    while( dir.hasNext() ) {
+        dir.next();
+        if( !dir.fileInfo().isDir() ) {
+            QString filename = dir.fileName();
+            if( filename.endsWith(".hgt") || filename.endsWith(".hgt.zip") )
+                argList += "\""+terragearDirectory+"/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+filename+"\" \""+workDirectory+"/SRTM-"+elevationRes+"\"";
+        }
+    }
 
-    QString elevationRes = ui->resolutionSelect->currentText();
-
-    // build set of arguments
-    for (i = 0; i < list.size(); ++i)
-    {
-        QFileInfo fileInfo = list.at(i);
-        elevationFile        = QString("%1").arg(fileInfo.fileName());
-        arguments            = "\""+terragearDirectory;
-        arguments += "/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+elevationFile+"\" \""+workDirectory+"/SRTM-"+elevationRes+"\"";
-        // store runtime argument, and file name
-        // could add a check that it is a HGT file...
-        argList += arguments;
-        filList += elevationFile;
+    if( argList.size() == 0 ) {
+        QMessageBox::critical(this, "No elevation data",
+                              "There are no elevation files in " + elevationDirectory + ". You can download elevation data on the Start tab." );
+        return;
     }
 
     // process set of arguments
@@ -92,16 +74,11 @@ void MainWindow::on_convertElevationButton_clicked()
     {
         pt.start();
         arguments = argList[i];
-        elevationFile = filList[i];
 
-        outputToLog(arguments);
         GUILog( arguments + "\n", "hgtchop" );
         GUILog( arguments + "\n", "default" );
         ui->textBrowser->append( arguments );
         sb->setValue(sb->maximum());
-
-        cnt.sprintf("%d", (i + 1));
-        tm = " (elap "+getElapTimeStg(rt.elapsed())+")";
 
         QProcess proc;
         proc.setWorkingDirectory(terragearDirectory);
@@ -119,14 +96,10 @@ void MainWindow::on_convertElevationButton_clicked()
         }
         proc.QProcess::waitForFinished(-1);
 
-        tm = " in "+getElapTimeStg(pt.elapsed());
-        outputToLog("PROC_ENDED"+tm);
+        GUILog( "ENDED in " + getElapTimeStg(pt.elapsed()) + " secondes\n", "default");
     }
 
-    //++ We need event listeners and Ques instead.. maybe sa
-    pt.start();
-
-
+    // count the number of .arr.gz files
     int numberOfArr = 0;
 
     QDirIterator it( workDirectory+"/SRTM-3", QDirIterator::Subdirectories );
@@ -140,10 +113,13 @@ void MainWindow::on_convertElevationButton_clicked()
         }
     }
 
+    // start the timer
+    pt.start();
 
     // generate and run terrafit command
     arguments = "\""+terragearDirectory;
     arguments += "/bin/terrafit\" ";
+
     if (minnode.size() > 0){
         arguments += "--minnodes "+minnode+" ";
     }
@@ -161,7 +137,6 @@ void MainWindow::on_convertElevationButton_clicked()
 
     arguments +="\""+workDirectory+"/SRTM-"+elevationRes+"\"";
 
-    outputToLog(arguments);
     GUILog( arguments + "\n", "terrafit" );
     GUILog( arguments + "\n", "default" );
     ui->textBrowser->append( arguments );
@@ -188,9 +163,7 @@ void MainWindow::on_convertElevationButton_clicked()
 
     ui->convertElevationProgressBar->setValue( 100 );
 
-    tm = " in "+getElapTimeStg(pt.elapsed());
-    outputToLog("PROC_ENDED"+tm);
-
+    GUILog( "ENDED in " + getElapTimeStg(pt.elapsed()) + " secondes\n", "default");
 }
 
 // update elevation download range
@@ -294,7 +267,7 @@ void MainWindow::updateElevationRange()
                     elevList += east;
                 }
             }
-            // outputToLog(elevList); /* provide a 'helpful' list of SRTM files */
+            // GUILog(elevList); /* provide a 'helpful' list of SRTM files */
         }
 
         // enable download buttons
