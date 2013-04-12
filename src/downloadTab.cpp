@@ -186,6 +186,139 @@ void MainWindow::on_downloadElevationButton_clicked()
     }
 }
 
+// update elevation download range
+void MainWindow::updateElevationRange()
+{
+    QString east;
+    QString north;
+    QString south;
+    QString west;
+
+    double eastDbl     = ui->maxLonField->text().toDouble();
+    double northDbl    = ui->maxLatField->text().toDouble();
+    double southDbl    = ui->minLatField->text().toDouble();
+    double westDbl     = ui->minLonField->text().toDouble();
+
+    // initialize text colors
+    QPalette q1;
+    QPalette q2;
+    q1.setColor(QPalette::Text, Qt::black);
+    q2.setColor(QPalette::Text, Qt::black);
+
+    QString prevmin = minElev;
+    QString prevmax = maxElev;
+
+    // CAN we invalidate boundaries here... first..
+
+    // sorry mate, your outa bounds..
+
+    // check if boundaries are valid
+    if (westDbl < eastDbl and northDbl > southDbl){
+
+        // clear the strings
+        minElev = "";
+        maxElev = "";
+
+        // use absolute degrees for elevation ranges
+        east.sprintf("%03d", abs(eastDbl));
+        north.sprintf("%02d", abs(northDbl));
+        south.sprintf("%02d", abs(southDbl));
+        west.sprintf("%03d", abs(westDbl));
+
+        // max north
+        if (northDbl >= 0){
+            maxElev += "N";
+        }
+        if (northDbl < 0) {
+            maxElev += "S";
+        }
+        maxElev += north;
+
+        // max south
+        if (southDbl >= 0){
+            minElev += "N";
+        }
+        if (southDbl < 0) {
+            minElev += "S";
+        }
+        minElev += south;
+
+        // max east
+        if (eastDbl >= 0){
+            maxElev += "E";
+        }
+        if (eastDbl < 0) {
+            maxElev += "W";
+        }
+        maxElev += east;
+
+        //max west
+        if (westDbl >= 0){
+            minElev += "E";
+        }
+        if (westDbl < 0) {
+            minElev += "W";
+        }
+        minElev += west;
+
+        // output elevation range chosen in left
+        ui->minDownloadRangeLabel->setText(minElev);
+        ui->maxDownloadRangeLabel->setText(maxElev);
+
+        if ((prevmin != minElev) || (prevmax != maxElev)) {
+            elevList = ""; // restart SRTM elevation
+            // build a HELPFUL SRTM list to add to the LOG, if enabled (or not)
+            for (double ew = westDbl; ew <= eastDbl; ew += 1.0) {
+                for (double ns = southDbl; ns <= northDbl; ns += 1.0) {
+                    east.sprintf("%03d", abs(ew));
+                    north.sprintf("%02d", abs(ns));
+                    if (elevList.size()) elevList += ";"; // add separator
+                    if (ns < 0) {
+                        elevList += "S";
+                    } else {
+                        elevList += "N";
+                    }
+                    elevList += north;
+                    if (ew < 0) {
+                        elevList += "W";
+                    } else {
+                        elevList += "E";
+                    }
+                    elevList += east;
+                }
+            }
+            //GUILog( elevList, "download" ); /* provide a 'helpful' list of SRTM files */
+        }
+
+        // enable download buttons
+        ui->downloadShapefilesButton->setEnabled(1);
+        ui->downloadElevationButton->setEnabled(1);
+    }
+
+    // if boundaries are not valid: do not display elevation range and set text color to red
+    else{
+        ui->minDownloadRangeLabel->setText("");
+        ui->maxDownloadRangeLabel->setText("");
+
+        if (westDbl == eastDbl or westDbl > eastDbl){
+            q1.setColor(QPalette::Text, Qt::red);
+        }
+        if (northDbl == southDbl or southDbl > northDbl){
+            q2.setColor(QPalette::Text, Qt::red);
+        }
+
+        // disable download buttons
+        ui->downloadShapefilesButton->setDisabled(1);
+        ui->downloadElevationButton->setDisabled(1);
+    }
+
+    // change text color in the boundary fields
+    // TODO - change into a widget set said pedro..
+    ui->maxLonField->setPalette(q1);
+    ui->minLonField->setPalette(q1);
+    ui->maxLatField->setPalette(q2);
+    ui->minLatField->setPalette(q2);
+}
 
 void MainWindow::addZoomButtons()
 {

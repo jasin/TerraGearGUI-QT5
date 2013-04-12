@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
+#include <QFileInfo>
 #include <QFileDialog>
 #include <QtGlobal>
 #include <QIcon>
@@ -104,8 +105,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle( tr("TerraGear GUI") );
-
-    elevList = "";
 
     // create MapControl
     mc = new MapControl(QSize(458, 254));
@@ -218,6 +217,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -226,6 +226,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -234,6 +235,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -242,6 +244,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -250,6 +253,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -258,6 +262,7 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
         out << s;
+        out << endl;
       }
     }
 
@@ -268,10 +273,10 @@ void MainWindow::GUILog(QString s, QString tools = "default")
       QFile data(projectDirectory+"/default.log");
       if (data.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
         QTextStream out(&data);
-        out << endl;
         out << sDateTime;
         out << "  -  ";
         out << s;
+        out << endl;
       }
     }
 
