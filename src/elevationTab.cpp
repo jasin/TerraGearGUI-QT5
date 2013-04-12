@@ -52,6 +52,7 @@ void MainWindow::on_convertElevationButton_clicked()
 
     // reset progress bar
     ui->convertElevationProgressBar->setValue(0);
+    ui->convertElevationButton->setDisabled(1);
 
     QDirIterator dir( elevationDirectory );
     while( dir.hasNext() ) {
@@ -162,6 +163,7 @@ void MainWindow::on_convertElevationButton_clicked()
     proc.QProcess::waitForFinished(-1);
 
     ui->convertElevationProgressBar->setValue( 100 );
+    ui->convertElevationButton->setEnabled(1);
 
     GUILog( "ENDED in " + getElapTimeStg(pt.elapsed()) + " secondes\n", "default");
 }
