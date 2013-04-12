@@ -68,6 +68,7 @@ void MainWindow::on_convertElevationButton_clicked()
     if( argList.size() == 0 ) {
         QMessageBox::critical(this, "No elevation data",
                               "There are no elevation files in " + elevationDirectory + ". You can download elevation data on the Start tab." );
+        ui->convertElevationButton->setEnabled(1);
         return;
     }
 
