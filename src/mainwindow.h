@@ -91,6 +91,7 @@ private slots:
 
     void updateAirportRadios();
     void updateArea();
+    void switchPoint( double& a, double& b );
     void updateCenter();
     void updateElevationRange();
     void updateMaterials();

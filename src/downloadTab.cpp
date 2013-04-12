@@ -388,6 +388,9 @@ void MainWindow::draggedRect(QRectF rect)
     double lonminpoint = rect.left();
     double lonmaxpoint = rect.right();
 
+    if ( latminpoint > latmaxpoint ) switchPoint( latminpoint, latmaxpoint );
+    if ( lonminpoint > lonmaxpoint ) switchPoint( lonminpoint, lonmaxpoint );
+
     ui->minLatField->setText(QString::number(latminpoint));
     ui->maxLatField->setText(QString::number(latmaxpoint));
     ui->minLonField->setText(QString::number(lonminpoint));
@@ -442,6 +445,13 @@ void MainWindow::updateArea()
 
     updateElevationRange();
     updateCenter();
+}
+
+void MainWindow::switchPoint(double& a, double& b)
+{
+    double temporaire(a); //On sauvegarde la valeur de 'a'
+    a = b;                //On remplace la valeur de 'a' par celle de 'b'
+    b = temporaire;       //Et on utilise la valeur sauvegardée pour mettre l'ancienne valeur de 'a' dans 'b'
 }
 
 void MainWindow::on_maxLonField_editingFinished()
