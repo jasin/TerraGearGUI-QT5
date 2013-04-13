@@ -105,7 +105,9 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
             // re-enable download button
             ui->downloadShapefilesButton->setText("Download shapefiles");
             ui->downloadShapefilesButton->setEnabled(1);
-        } else if (!fileName.contains("dlc")){
+        }
+
+        if (fileName.contains(".hgt.zip")){
             // adjust progress bar
             ui->downloadElevationProgressBar->setValue(ui->downloadElevationProgressBar->value()+1);
         }
