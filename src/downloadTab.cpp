@@ -449,9 +449,9 @@ void MainWindow::updateArea()
 
 void MainWindow::switchPoint(double& a, double& b)
 {
-    double temporaire(a); //On sauvegarde la valeur de 'a'
-    a = b;                //On remplace la valeur de 'a' par celle de 'b'
-    b = temporaire;       //Et on utilise la valeur sauvegardée pour mettre l'ancienne valeur de 'a' dans 'b'
+    double temp(a); //Save the value to 'a'
+    a = b;          //Replace the value of 'a' with that of 'b'
+    b = temp;       //Place the temporary value of the original 'a' in 'b'
 }
 
 void MainWindow::on_maxLonField_editingFinished()
