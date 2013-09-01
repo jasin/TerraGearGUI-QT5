@@ -2326,6 +2326,11 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
              <string>Line width</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>SQL query</string>
+            </property>
+           </column>
           </widget>
          </item>
          <item>

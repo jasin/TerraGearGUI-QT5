@@ -96,6 +96,9 @@ void MainWindow::on_decodeShapefilesButton_clicked()
 
         arguments += "--line-width "+lineWidth+" ";
 
+        if (ui->shapefilesTable->item(i, 3) != 0){
+            arguments += "--where \""+ui->shapefilesTable->item(i, 3)->text()+"\" ";
+        }
         if (ui->pointWidthField->text() > 0){
             arguments += "--point-width "+ui->pointWidthField->text()+" ";
         }
