@@ -51,6 +51,7 @@ void MainWindow::on_generateSceneryButton_clicked()
                                 "No terraintypes",
                                 "There are no terraintypes listed. Use [Update list] to populate it, then select those desired."
                                 );
+        ui->generateSceneryButton->setEnabled(true);
         return;
     }
 
@@ -67,6 +68,7 @@ void MainWindow::on_generateSceneryButton_clicked()
                               "No terraintype selected",
                               "It appears you have not selected any of the terraintypes! Select all types that you would like to include in the scenery."
                               );
+        ui->generateSceneryButton->setEnabled(true);
         return;
     }
 
@@ -74,12 +76,14 @@ void MainWindow::on_generateSceneryButton_clicked()
     if ( ! prioritiesFile.exists() ) {
         QString msg = "Unable to locate default_priorities at\n" + terragearDirectory + "/share/TerraGear/default_priorities.txt";
         QMessageBox::critical(this,"File not found", msg);
+        ui->generateSceneryButton->setEnabled(true);
         return;
     }
     QFile usgmapFile(terragearDirectory + "/share/TerraGear/usgsmap.txt");
     if ( ! usgmapFile.exists() ) {
         QString msg = "Unable to locate usgsmap at\n" + terragearDirectory + "/share/TerraGear/usgsmap.txt";
         QMessageBox::critical(this,"File not found", msg);
+        ui->generateSceneryButton->setEnabled(true);
         return;
     }
 
@@ -111,8 +115,9 @@ void MainWindow::on_generateSceneryButton_clicked()
         // Check if this option is valid: "Default" material must be present
         QMessageBox::critical(this,
                               "No landmass found",
-                              "There is no explicit landmass shapefile loaded. Landmass is generally NOT required to generate scenery. Please enable the 'ignore landmass' option and retry if you don't know what it does."
+                              "Landmass is generally not required to generate scenery. Please enable the 'ignore landmass' option and retry if you don't know what it does.\n\nIf you do want to use an explicit landmass layer; map it to the 'Default' material."
                               );
+        ui->generateSceneryButton->setEnabled(true);
         return;
     }
 

@@ -299,9 +299,14 @@ void MainWindow::displayMenu(const QPoint &pos)
     QAction *a = menu.exec(ui->shapefilesTable->viewport()->mapToGlobal(pos));
     if (a == u)
     {
-        // do what you want or call another function
-        while(ui->shapefilesTable->selectedItems().count() > 0)
-            ui->shapefilesTable->removeRow(ui->shapefilesTable->currentRow());
+        ui->shapefilesTable->setUpdatesEnabled(false);
+        QModelIndexList indexes = ui->shapefilesTable->selectionModel()->selectedRows();
+        qSort(indexes.begin(), indexes.end());
+        qDebug() << indexes.count();
+        for(int i = indexes.count() - 1; i > -1; --i)
+            ui->shapefilesTable->removeRow(indexes.at(i).row());
+
+        ui->shapefilesTable->setUpdatesEnabled(true);
     }
 }
 
