@@ -59,7 +59,7 @@ void MainWindow::on_convertElevationButton_clicked()
         dir.next();
         if( !dir.fileInfo().isDir() ) {
             QFileInfo file = dir.filePath();
-            if ( ( file.completeSuffix() == "hgt.zip" || file.completeSuffix() == "hgt" ) && elevList.contains( file.baseName() ) ) {
+            if ( file.completeSuffix() == "hgt.zip" || file.completeSuffix() == "hgt" ) {
                 argList += "\""+terragearDirectory+"/bin/hgtchop\" "+elevationRes+" \""+elevationDirectory+"/"+file.fileName()+"\" \""+workDirectory+"/SRTM-"+elevationRes+"\"";
             }
         }

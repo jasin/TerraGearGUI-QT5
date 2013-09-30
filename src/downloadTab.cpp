@@ -144,11 +144,16 @@ void MainWindow::on_downloadElevationButton_clicked()
         urlElev = "http://downloads.fgx.ch/geodata/data/srtm/";
     }
 
-    for (double lat = latMin; lat < latMax; lat++) {
-        if (lonMin < 0 and lonMin > -1) {
-            lonMin = -1;
-        }
-        for (double lon = lonMin; lon < lonMax; lon++) {
+    if (lonMin < 0)
+        lonMin = lonMin - 1;
+    if (lonMax < 0)
+        lonMax = lonMax - 1;
+    if (latMin < 0)
+        latMin = latMin - 1;
+    if (latMax < 0)
+        latMax = latMax - 1;
+    for (int lat=static_cast<int>(latMin); lat<=static_cast<int>(latMax); lat++) {
+        for (int lon=static_cast<int>(lonMin); lon<=static_cast<int>(lonMax); lon++) {
             QString tile = "";
             if (lat < 0) {
                 tile += "S";
@@ -173,7 +178,7 @@ void MainWindow::on_downloadElevationButton_clicked()
             }
             int i = 0;
             bool succes = 0;
-            while (!succes and i < 5) {
+            while (!succes and i < 6) {
                 QUrl url(urlElev+folders.at(i)+"/"+tile+".hgt.zip");
                 QNetworkReply *reply = _manager->get(QNetworkRequest(url));
                 if (reply->error()) {
@@ -219,19 +224,15 @@ void MainWindow::updateElevationRange()
         minElev = "";
         maxElev = "";
 
-        // use absolute degrees for elevation ranges
-        east.sprintf("%03d", abs(eastDbl));
-        north.sprintf("%02d", abs(northDbl));
-        south.sprintf("%02d", abs(southDbl));
-        west.sprintf("%03d", abs(westDbl));
-
         // max north
         if (northDbl >= 0){
             maxElev += "N";
         }
         if (northDbl < 0) {
             maxElev += "S";
+            northDbl = northDbl-1;
         }
+        north.sprintf("%02d", abs(northDbl));
         maxElev += north;
 
         // max south
@@ -240,7 +241,9 @@ void MainWindow::updateElevationRange()
         }
         if (southDbl < 0) {
             minElev += "S";
+            southDbl = southDbl-1;
         }
+        south.sprintf("%02d", abs(southDbl));
         minElev += south;
 
         // max east
@@ -249,7 +252,9 @@ void MainWindow::updateElevationRange()
         }
         if (eastDbl < 0) {
             maxElev += "W";
+            eastDbl = eastDbl-1;
         }
+        east.sprintf("%03d", abs(eastDbl));
         maxElev += east;
 
         //max west
@@ -258,7 +263,9 @@ void MainWindow::updateElevationRange()
         }
         if (westDbl < 0) {
             minElev += "W";
+            westDbl = westDbl-1;
         }
+        west.sprintf("%03d", abs(westDbl));
         minElev += west;
 
         // output elevation range chosen in left
