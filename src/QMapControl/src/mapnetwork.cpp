@@ -49,7 +49,7 @@ namespace qmapcontrol
 
         http->setHost(host);
         QHttpRequestHeader header("GET", url);
-        header.setValue("User-Agent", "Mozilla");
+        header.setValue("User-Agent", "TerraGearGUI");
         header.setValue("Host", host);
         int getId = http->request(header);
 
