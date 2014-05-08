@@ -193,11 +193,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         }
     }
     // add shapefiles to list, if empty
-    if (index == 4 and ui->shapefilesTable->rowCount() == 0) {
+    if (index == 4 && ui->shapefilesTable->rowCount() == 0) {
         ui->retrieveShapefilesButton->click();
     }
     // add terraintypes to list, if empty
-    if (index == 5 and ui->terrainTypesList->count() == 0) {
+    if (index == 5 && ui->terrainTypesList->count() == 0) {
         ui->updateTerrainTypeButton->click();
     }
 }

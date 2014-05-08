@@ -41,9 +41,9 @@ void MainWindow::on_openProjectAction_triggered()
             xml.readNext();
         } else if (xml.isStartElement()) {
             QString variable = xml.name().toString();
-            if (sub == "path" and xml.name().toString() == "boundaries")
+            if (sub == "path" && xml.name().toString() == "boundaries")
                 sub = "boundaries";
-            if (sub == "boundaries" and xml.name().toString() == "check")
+            if (sub == "boundaries" && xml.name().toString() == "check")
                 sub = "check";
             xml.readNext();
             settings.setValue(sub+"/"+variable, xml.text().toString());

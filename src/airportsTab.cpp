@@ -124,15 +124,15 @@ void MainWindow::on_generateAirportsButton_clicked()
         }
     }
     // single airport
-    if (airportId.size() > 0 and ui->singleAirportRadio->isChecked()){
+    if (airportId.size() > 0 && ui->singleAirportRadio->isChecked()){
         arguments += "--airport="+airportId+" ";
     }
     // all airports on a single tile
-    if (tileId.size() > 0 and ui->allAirportsInTileRadio->isChecked()){
+    if (tileId.size() > 0 && ui->allAirportsInTileRadio->isChecked()){
         arguments += "--tile="+tileId+" ";
     }
     // all airports in file (optionally starting with...)
-    if (startAptId.size() > 0 and ui->allAirportsInFileRadio->isChecked()) {
+    if (startAptId.size() > 0 && ui->allAirportsInFileRadio->isChecked()) {
         arguments += "--start-id="+startAptId+" ";
     }
 

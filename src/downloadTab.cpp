@@ -178,7 +178,7 @@ void MainWindow::on_downloadElevationButton_clicked()
             }
             int i = 0;
             bool succes = 0;
-            while (!succes and i < 6) {
+            while (!succes && i < 6) {
                 QUrl url(urlElev+folders.at(i)+"/"+tile+".hgt.zip");
                 QNetworkReply *reply = _manager->get(QNetworkRequest(url));
                 if (reply->error()) {
@@ -218,7 +218,7 @@ void MainWindow::updateElevationRange()
     // sorry mate, your outa bounds..
 
     // check if boundaries are valid
-    if (westDbl < eastDbl and northDbl > southDbl){
+    if (westDbl < eastDbl && northDbl > southDbl){
 
         // clear the strings
         minElev = "";
@@ -307,10 +307,10 @@ void MainWindow::updateElevationRange()
         ui->minDownloadRangeLabel->setText("");
         ui->maxDownloadRangeLabel->setText("");
 
-        if (westDbl == eastDbl or westDbl > eastDbl){
+        if (westDbl == eastDbl || westDbl > eastDbl){
             q1.setColor(QPalette::Text, Qt::red);
         }
-        if (northDbl == southDbl or southDbl > northDbl){
+        if (northDbl == southDbl || southDbl > northDbl){
             q2.setColor(QPalette::Text, Qt::red);
         }
 

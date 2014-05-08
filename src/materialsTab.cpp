@@ -208,22 +208,22 @@ void MainWindow::updateMaterials()
                     texture.remove(r1);
                     material.remove(r1);
                     material.remove(QRegExp("</name>"));
-                    if (!material.startsWith("Bidirectional") and
-                            !material.startsWith("BlackSign") and
-                            !material.startsWith("dirt_rwy") and
-                            !material.startsWith("grass_rwy") and
-                            !material.startsWith("FramedSign") and
-                            !material.startsWith("lakebed_taxiway") and
-                            !material.startsWith("lf_") and
-                            !material.startsWith("pa_") and
-                            !material.startsWith("pc_") and
-                            !material.startsWith("RedSign") and
-                            !material.startsWith("RunwaySign") and
-                            !material.startsWith("RUNWAY_") and
-                            !material.startsWith("RWY_") and
-                            !material.startsWith("SpecialSign") and
-                            !material.startsWith("Unidirectional") and
-                            !material.startsWith("YellowSign") and
+                    if (!material.startsWith("Bidirectional") &&
+                            !material.startsWith("BlackSign") &&
+                            !material.startsWith("dirt_rwy") &&
+                            !material.startsWith("grass_rwy") &&
+                            !material.startsWith("FramedSign") &&
+                            !material.startsWith("lakebed_taxiway") &&
+                            !material.startsWith("lf_") &&
+                            !material.startsWith("pa_") &&
+                            !material.startsWith("pc_") &&
+                            !material.startsWith("RedSign") &&
+                            !material.startsWith("RunwaySign") &&
+                            !material.startsWith("RUNWAY_") &&
+                            !material.startsWith("RWY_") &&
+                            !material.startsWith("SpecialSign") &&
+                            !material.startsWith("Unidirectional") &&
+                            !material.startsWith("YellowSign") &&
                             materialList.indexOf(material, 0) == -1) {
                         materialList.append(material);
                         numTexture++;
@@ -297,9 +297,9 @@ void MainWindow::on_retrieveShapefilesButton_clicked()
 
         // move only shapefiles
         //TODO have shapefile detector ..GBH
-        if (fInfo.suffix() == "dbf" or
-                fInfo.suffix() == "prj" or
-                fInfo.suffix() == "shp" or
+        if (fInfo.suffix() == "dbf" ||
+                fInfo.suffix() == "prj" ||
+                fInfo.suffix() == "shp" ||
                 fInfo.suffix() == "shx"
                 ){
             fFileName1.chop(4);     // remove fileformat from name
