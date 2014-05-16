@@ -74,6 +74,8 @@ void MainWindow::on_generateAirportsButton_clicked()
     rt.start();
     // proceed to do airport generation
     arguments   =  "\"" + genapts;
+
+#if 0
     if (ui->aptFormatSelect->currentText() == "850") {
 
         // check for dll required to run genapts
@@ -96,6 +98,7 @@ void MainWindow::on_generateAirportsButton_clicked()
             return;
         }
     }
+#endif
 
     if ( !util_verifySRTMfiles( minLat, maxLat,
                                 minLon, maxLon,
