@@ -64,6 +64,7 @@
 QString airportFile;
 QString elevationDirectory;
 QString selectedMaterials;
+QString altDefPropsFile;
 QString output = "";
 
 QString flightgearDirectory;

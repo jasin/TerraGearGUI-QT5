@@ -78,6 +78,7 @@ private slots:
     void on_updateTerrainTypeButton_clicked();
     void on_decodeShapefilesButton_clicked();
     void on_addMaterialButton_clicked();
+    void on_altDefaultPropertiesButton_clicked();
 
     void on_allAirportsInFileRadio_clicked();
     void on_singleAirportRadio_clicked();

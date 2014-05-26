@@ -105,6 +105,9 @@ void MainWindow::on_decodeShapefilesButton_clicked()
         if (ui->ignoreErrorsCB->isChecked() == 1){
             arguments += "--continue-on-errors ";
         }
+        if (ui->debugCB->isChecked() == 1){
+            arguments += "--debug ";
+        }
         if (ui->maxSegLengthField->text() > 0){
             arguments += "--max-segment "+ui->maxSegLengthField->text()+" ";
         }

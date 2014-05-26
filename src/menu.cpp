@@ -81,6 +81,7 @@ void MainWindow::on_saveProjectAction_triggered()
             xmlWriter.writeStartElement("paths");
                 xmlWriter.writeTextElement("project", settings.value("/paths/project").toString() );
                 xmlWriter.writeTextElement("terragear", settings.value("/paths/terragear").toString() );
+                xmlWriter.writeTextElement("altdefpropsfile", settings.value("/paths/altdefpropsfile").toString() );
                 xmlWriter.writeTextElement("flightgear", settings.value("/paths/flightgear").toString() );
                 xmlWriter.writeTextElement("elevationdir", settings.value("/paths/elevationDir").toString() );
                 xmlWriter.writeTextElement("airportfile", settings.value("/paths/airportFile").toString() );
@@ -129,6 +130,7 @@ void MainWindow::loadSettings()
 {
     projectDirectory = settings.value("paths/project").toString();
     terragearDirectory = settings.value("paths/terragear").toString();
+    altDefPropsFile = settings.value("paths/altdefpropsfile").toString();
     flightgearDirectory = settings.value("paths/flightgear").toString();
     elevationDirectory = settings.value("paths/elevationdir").toString();
     airportFile = settings.value("paths/airportfile").toString();
@@ -140,6 +142,7 @@ void MainWindow::loadSettings()
 
     ui->projectDirectoryField->setText(projectDirectory);
     ui->terragearRootField->setText(terragearDirectory);
+    ui->altDefaultPropertiesField->setText(altDefPropsFile);
     ui->flightgearRootField->setText(flightgearDirectory);
     ui->elevationDirectoryField->setText(elevationDirectory);
     ui->aptFileField->setText(airportFile);

@@ -71,13 +71,22 @@ void MainWindow::on_generateSceneryButton_clicked()
         ui->generateSceneryButton->setEnabled(true);
         return;
     }
-
-    QFile prioritiesFile(terragearDirectory + "/share/TerraGear/default_priorities.txt");
-    if ( ! prioritiesFile.exists() ) {
-        QString msg = "Unable to locate default_priorities at\n" + terragearDirectory + "/share/TerraGear/default_priorities.txt";
-        QMessageBox::critical(this,"File not found", msg);
-        ui->generateSceneryButton->setEnabled(true);
-        return;
+    if (altDefPropsFile != "") {
+        QFile prioritiesFile(altDefPropsFile);
+        if ( ! prioritiesFile.exists() ) {
+            QString msg = "Unable to locate default_priorities at\n" + altDefPropsFile;
+            QMessageBox::critical(this,"File not found", msg);
+            ui->generateSceneryButton->setEnabled(true);
+            return;
+        }
+    } else {
+        QFile prioritiesFile(terragearDirectory + "/share/TerraGear/default_priorities.txt");
+        if ( ! prioritiesFile.exists() ) {
+            QString msg = "Unable to locate default_priorities at\n" + terragearDirectory + "/share/TerraGear/default_priorities.txt";
+            QMessageBox::critical(this,"File not found", msg);
+            ui->generateSceneryButton->setEnabled(true);
+            return;
+        }
     }
     QFile usgmapFile(terragearDirectory + "/share/TerraGear/usgsmap.txt");
     if ( ! usgmapFile.exists() ) {
@@ -100,8 +109,15 @@ void MainWindow::on_generateSceneryButton_clicked()
     // build the general runtime string
     QString runtime = "\""+terragearDirectory;
     runtime += "/bin/tg-construct\" ";
-    runtime += "--priorities=\""+terragearDirectory;
-    runtime += "/share/TerraGear/default_priorities.txt\" ";
+
+    if (altDefPropsFile != "") {
+        runtime += "--priorities=\""+altDefPropsFile;
+        runtime += "\" ";
+    } else {
+        runtime += "--priorities=\""+terragearDirectory;
+        runtime += "/share/TerraGear/default_priorities.txt\" ";
+    }
+
     runtime += "--usgs-map=\""+terragearDirectory;
     runtime += "/share/TerraGear/usgsmap.txt\" ";
     runtime += "--work-dir=\""+workDirectory+"\" ";
@@ -188,6 +204,17 @@ void MainWindow::on_generateSceneryButton_clicked()
     ui->generateSceneryButton->setEnabled(true);
     ui->generateSceneryProgressBar->setMaximum( 100 );
     ui->generateSceneryProgressBar->setValue( 100 );
+}
+
+// select Alt default_properties.txt file
+void MainWindow::on_altDefaultPropertiesButton_clicked()
+{
+    altDefPropsFile = QFileDialog::getOpenFileName(
+		this,
+		tr("Select Alternate Default_Priorities file, only if you want to use an alternate Default_Priorities.txt"),
+		altDefPropsFile, tr("Def_Property files (*.txt)"));
+    ui->altDefaultPropertiesField->setText(altDefPropsFile);
+    settings.setValue("paths/altdefpropsfile", altDefPropsFile);
 }
 
 // update terraintypes list for tg-construct
