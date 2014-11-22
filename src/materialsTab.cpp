@@ -180,6 +180,7 @@ void MainWindow::on_addMaterialButton_clicked()
 
 
 // populate material list with materials from FG's materials.xml
+// broken since the split of materials.xml with v3.2
 void MainWindow::updateMaterials()
 {
     QFile materialfile(flightgearDirectory+"/Materials/default/materials.xml");
@@ -255,6 +256,10 @@ void MainWindow::updateMaterials()
                 }
             }
             materialfile.close();
+\
+            // Fall back to default if we cannot read anything from materials.xml
+            if ( materialList.size() == 0)
+                return;
 
             QMap<QString, QString> map;
             for (int i = 0; i < materialList.size(); i++) {
