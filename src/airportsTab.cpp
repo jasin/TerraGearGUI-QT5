@@ -51,10 +51,7 @@ void MainWindow::on_generateAirportsButton_clicked()
     QString msg;
 
     // Check if executable can be located
-    QString genapts = terragearDirectory+"/bin/genapts";
-    if (ui->aptFormatSelect->currentText() == "850") {
-        genapts += "850";
-    }
+    QString genapts = terragearDirectory+"/bin/genapts850";
 #ifdef Q_OS_WIN
     genapts += ".exe"; // add EXE for windows
 #endif
@@ -74,31 +71,6 @@ void MainWindow::on_generateAirportsButton_clicked()
     rt.start();
     // proceed to do airport generation
     arguments   =  "\"" + genapts;
-
-#if 0
-    if (ui->aptFormatSelect->currentText() == "850") {
-
-        // check for dll required to run genapts
-        QList<QString> dll;
-        //dll << "PocoFoundation" << "PocoNet";
-#ifdef Q_OS_WIN
-        dll << "msvcp71" << "msvcr71";
-#endif
-        int miss = 0;
-        QString msg = "Unable to locate:\n\n";
-        foreach(QString str, dll) {
-            QLibrary lib(str); // QLibrary will try the platform's library suffix
-            if (!lib.load()) {
-                msg += lib.errorString()+"\n";
-                miss++;
-            }
-        }
-        if (miss > 0) {
-            QMessageBox::critical(this,"File(s) not found", msg);
-            return;
-        }
-    }
-#endif
 
     if ( !util_verifySRTMfiles( minLat, maxLat,
                                 minLon, maxLon,
@@ -181,18 +153,6 @@ void MainWindow::on_generateAirportsButton_clicked()
         }
         if (info.contains("Finished cleaning polys")) {
             ui->generateAirportsProgressBar->setValue(90);
-        }
-
-        // obtain data version
-        QRegExp rx("Data version = [0-9]{1,4}");
-        if (info.contains(rx)) {
-            QMessageBox msgBox;
-            int ret = QMessageBox::critical(this, "Wrong airport data version","This .dat file contains airport data in the \""+rx.cap(0).replace("Data version = ", "")+"\" format. Please select the correct format from the dropdown (810 = 810, 850 = 850 and higher).");
-            switch (ret) {
-            case QMessageBox::Ok:
-                return;
-                break;
-            }
         }
     }
     proc.QProcess::waitForFinished(-1);

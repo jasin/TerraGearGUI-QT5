@@ -427,20 +427,7 @@
            </layout>
           </widget>
          </item>
-         <item row="3" column="0">
-          <spacer name="spacer_0">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="5" column="0">
+         <item row="6" column="0">
           <widget class="QGroupBox" name="guiSettings">
            <property name="enabled">
             <bool>true</bool>
@@ -503,7 +490,7 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="0" rowspan="2">
+         <item row="4" column="0">
           <widget class="QGroupBox" name="groupBox_13">
            <property name="title">
             <string>Global TerraGear settings</string>
@@ -521,6 +508,19 @@
             </item>
            </layout>
           </widget>
+         </item>
+         <item row="5" column="0">
+          <spacer name="spacer_0">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -1763,7 +1763,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </item>
              </layout>
             </item>
-            <item row="13" column="0" colspan="4">
+            <item row="12" column="0" colspan="4">
              <widget class="QRadioButton" name="allAirportsInFileRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1779,7 +1779,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="3" column="0">
              <widget class="QRadioButton" name="allAirportInAreaRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1798,7 +1798,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="4" column="0">
              <widget class="QRadioButton" name="singleAirportRadio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1814,7 +1814,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </attribute>
              </widget>
             </item>
-            <item row="10" column="0">
+            <item row="9" column="0">
              <widget class="QRadioButton" name="allAirportsInTileRadio">
               <property name="text">
                <string>All airports on a single tile</string>
@@ -1827,7 +1827,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
             <item row="0" column="0" colspan="3">
              <widget class="QLabel" name="airportsTabText">
               <property name="text">
-               <string>You can use custom .dat files, generated with TaxiDraw(810) or WorldEditor (850), or the global one provided with FlightGear (Airports/apt.dat.gz, 810).</string>
+               <string>You can use custom .dat files, generated with WorldEditor or the global one provided with FlightGear (Airports/apt.dat.gz).</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignJustify|Qt::AlignTop</set>
@@ -1837,54 +1837,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_17">
-              <item>
-               <widget class="QLabel" name="aptFormatLabel">
-                <property name="text">
-                 <string>apt.dat format</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="aptFormatSelect">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="currentIndex">
-                 <number>1</number>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>810</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>850</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <spacer name="spacer_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item row="3" column="0" colspan="2">
+            <item row="2" column="0" colspan="2">
              <widget class="Line" name="line_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1897,7 +1850,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </property>
              </widget>
             </item>
-            <item row="8" column="0">
+            <item row="7" column="0">
              <widget class="QFrame" name="frameSingleAirport">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -1964,7 +1917,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </layout>
              </widget>
             </item>
-            <item row="12" column="0">
+            <item row="11" column="0">
              <widget class="QFrame" name="frameSingleTile">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -2031,7 +1984,7 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               </layout>
              </widget>
             </item>
-            <item row="15" column="0">
+            <item row="14" column="0">
              <widget class="QFrame" name="frameAllAirports">
               <property name="lineWidth">
                <number>0</number>
@@ -2367,6 +2320,18 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
            </item>
            <item>
             <widget class="QComboBox" name="materialTypeSelect">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>23</height>
+              </size>
+             </property>
              <property name="acceptDrops">
               <bool>false</bool>
              </property>
@@ -2704,10 +2669,16 @@ However, it will take longer, and increase the 'fit' file size, and ultimately c
               <bool>true</bool>
              </property>
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                <horstretch>0</horstretch>
-               <verstretch>32</verstretch>
+               <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>23</width>
+               <height>23</height>
+              </size>
              </property>
              <property name="font">
               <font>
@@ -3351,7 +3322,7 @@ and apply material(s)</string>
                 </property>
                </spacer>
               </item>
-              <item row="1" column="0">
+              <item>
                <widget class="QLabel" name="altDefaultPropertiesLabel">
                 <property name="font">
                  <font>
@@ -3364,7 +3335,7 @@ and apply material(s)</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item>
                <widget class="QLineEdit" name="altDefaultPropertiesField">
                 <property name="enabled">
                  <bool>false</bool>
@@ -3389,7 +3360,7 @@ and apply material(s)</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item>
                <widget class="QPushButton" name="altDefaultPropertiesButton">
                 <property name="minimumSize">
                  <size>
