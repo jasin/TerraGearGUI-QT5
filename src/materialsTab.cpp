@@ -256,7 +256,7 @@ void MainWindow::updateMaterials()
                 }
             }
             materialfile.close();
-\
+
             // Fall back to default if we cannot read anything from materials.xml
             if ( materialList.size() == 0)
                 return;
