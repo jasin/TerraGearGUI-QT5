@@ -1205,13 +1205,8 @@
                        </size>
                       </property>
                       <property name="currentIndex">
-                       <number>2</number>
+                       <number>1</number>
                       </property>
-                      <item>
-                       <property name="text">
-                        <string>fgx.ch (SRTM-3)</string>
-                       </property>
-                      </item>
                       <item>
                        <property name="text">
                         <string>usgs.gov (SRTM-1)</string>

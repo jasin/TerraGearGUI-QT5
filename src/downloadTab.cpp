@@ -140,8 +140,6 @@ void MainWindow::on_downloadElevationButton_clicked()
     } else if (sourceElev == "usgs.gov (SRTM-3)"){
         urlElev = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/";
 
-    } else {
-        urlElev = "http://downloads.fgx.ch/geodata/data/srtm/";
     }
 
     if (lonMin < 0)
