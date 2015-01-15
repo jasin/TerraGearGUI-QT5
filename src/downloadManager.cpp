@@ -46,6 +46,7 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
         if (fileName.isEmpty()) fileName = "download";
 
         QDir dir(dataDirectory);
+        dir.mkpath(dataDirectory);
         QFile file(dataDirectory+"/"+fileName);
 
         if (fileName.contains("dl")) {
