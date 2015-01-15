@@ -112,7 +112,7 @@ void MainWindow::on_quitAction_triggered()
 //== About dialog
 void MainWindow::on_aboutAction_triggered()
 {
-    QMessageBox::information(this, tr("TerraGUI v0.9.18"),tr("©2010-2014 Gijs de Rooy et al. for FlightGear\nGNU General Public License version 2"));
+    QMessageBox::information(this, tr("TerraGUI v0.9.19"),tr("©2010-2015 Gijs de Rooy et al. for FlightGear\nGNU General Public License version 2"));
 }
 
 //= Show wiki article in a browser
