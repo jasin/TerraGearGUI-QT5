@@ -60,10 +60,10 @@ void MainWindow::on_downloadShapefilesButton_clicked()
                 layer = "osm";
 
             }else if (source == "CORINE 2000 (Europe)"){
-                layer = "clc00";
+                layer = "clc00v16";
 
             }else {
-                layer = "clc06";
+                layer = "clc06v16";
             }
 
             //== add Query vars
