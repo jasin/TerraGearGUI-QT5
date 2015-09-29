@@ -40,9 +40,7 @@ void MainWindow::on_generateSceneryButton_clicked()
     QString msg;
     bool unknownTotalTiles = true;
     double tileProgress = 0;
-    double writeProgress = 0;
     double totalTiles = 0;
-    double tileNumber = 0;
     QRegExp exp("([0-9]*) of ([0-9]*)");
 
     int folderCnt = ui->terrainTypesList->count();
