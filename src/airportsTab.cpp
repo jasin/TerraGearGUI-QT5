@@ -66,6 +66,10 @@ void MainWindow::on_generateAirportsButton_clicked()
         QMessageBox::critical(this,"File not found", "Unable to locate airports at \n"+airportFile);
         return;
     }
+    if (!aptFile.fileName().endsWith(".dat")) {
+        QMessageBox::critical(this,"Compressed airport file", "Please uncompress the airport .dat file first");
+        return;
+    }
 
     //+++ Lets Go!
     rt.start();

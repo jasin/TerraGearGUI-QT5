@@ -1,6 +1,6 @@
 // Written by Gijs de Rooy, started March 2010.
 //
-// Copyright (C) 2010-2013  Gijs de Rooy
+// Copyright (C) 2010-2015  Gijs de Rooy
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
