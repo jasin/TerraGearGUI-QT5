@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // TAB: Construct
     ui->shapefilesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->shapefilesTable->setHorizontalHeaderLabels(QStringList() << tr("Shapefile") << tr("Material"));
-    ui->shapefilesTable->horizontalHeader()->setResizeMode( QHeaderView::Stretch);
+    ui->shapefilesTable->horizontalHeader()->setSectionResizeMode( QHeaderView::Stretch);
     ui->shapefilesTable->horizontalHeader()->setStyleSheet("font: bold;");
     ui->shapefilesTable->verticalHeader()->hide();
 

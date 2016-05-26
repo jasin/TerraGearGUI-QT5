@@ -28,64 +28,65 @@
 namespace qmapcontrol
 {
     MapNetwork::MapNetwork(ImageManager* parent)
-        :parent(parent), http(new QHttp(this)), loaded(0)
+        :parent(parent), http(new QNetworkAccessManager(this)), loaded(0)
     {
-        connect(http, SIGNAL(requestFinished(int, bool)),
-                this, SLOT(requestFinished(int, bool)));
+        connect(http, SIGNAL(finished(QNetworkReply*)),
+                this, SLOT(processReply(QNetworkReply*)));
     }
 
     MapNetwork::~MapNetwork()
     {
-        http->clearPendingRequests();
+        //http->clearPendingRequests();
         delete http;
     }
 
 
     void MapNetwork::loadImage(const QString& host, const QString& url)
     {
-        // qDebug() << "getting: " << QString(host).append(url);
+        qDebug() << "getting: " << QString(host).append(url);
         // http->setHost(host);
         // int getId = http->get(url);
 
-        http->setHost(host);
-        QHttpRequestHeader header("GET", url);
-        header.setValue("User-Agent", "TerraGearGUI");
-        header.setValue("Host", host);
-        int getId = http->request(header);
+        request.setUrl(QUrl(QString(host).prepend("http://").append(url)));
+        request.setRawHeader("User-Agent", "TerraGearGUI");
+        request.setRawHeader("Host", host.toLatin1());
+        /* send the request */
+        http->get(request);
 
         if (vectorMutex.tryLock())
         {
-            loadingMap[getId] = url;
+            loadingMap.insert(getId(url), url);
             vectorMutex.unlock();
         }
     }
 
-    void MapNetwork::requestFinished(int id, bool error)
+    void MapNetwork::processReply(QNetworkReply* reply)
     {
         // sleep(1);
-        // qDebug() << "MapNetwork::requestFinished" << http->state() << ", id: " << id;
-        if (error)
+        qDebug() << "MapNetwork::requestFinished";
+        if (reply->error() != QNetworkReply::NoError)
         {
-            qDebug() << "network error: " << http->errorString();
+            qDebug() << "network error: " << reply->errorString();
             //restart query
 
         }
         else if (vectorMutex.tryLock())
         {
+            QString uid = getId(reply->request().url().toString());
             // check if id is in map?
-            if (loadingMap.contains(id))
+            if (loadingMap.contains(uid))
             {
 
-                QString url = loadingMap[id];
-                loadingMap.remove(id);
+                QString url = loadingMap.value(uid);
+                loadingMap.remove(uid);
                 vectorMutex.unlock();
                 // qDebug() << "request finished for id: " << id << ", belongs to: " << notifier.url << endl;
                 QByteArray ax;
 
-                if (http->bytesAvailable()>0)
+                if (reply->bytesAvailable()>0)
                 {
                     QPixmap pm;
-                    ax = http->readAll();
+                    ax = reply->readAll();
 
                     if (pm.loadFromData(ax))
                     {
@@ -111,9 +112,25 @@ namespace qmapcontrol
         }
     }
 
+    QString MapNetwork::getId(QString url)
+    {
+        QString uid;
+        foreach(QString s, QString(url).remove(".png").split("/", QString::SkipEmptyParts))
+        {
+            bool check = false;
+            s.toInt(&check, 10);
+            if(!check){
+                continue;
+            } else {
+                uid.append(s);
+            }
+        }
+        return uid;
+    }
+
     void MapNetwork::abortLoading()
     {
-	http->clearPendingRequests();
+    //http->clearPendingRequests();
         if (vectorMutex.tryLock())
         {
             loadingMap.clear();
@@ -130,7 +147,7 @@ namespace qmapcontrol
     {
 #ifndef Q_WS_QWS
         // do not set proxy on qt/extended
-        http->setProxy(host, port);
+        //http->setProxy(host, port);
 #endif
     }
 }

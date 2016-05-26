@@ -1,4 +1,4 @@
-QT          += core gui
+QT          += core widgets
 QT          += xmlpatterns
 QT          += network
 

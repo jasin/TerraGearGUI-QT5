@@ -28,7 +28,9 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QHttp>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QVector>
 #include <QPixmap>
 #include "imagemanager.h"
@@ -63,16 +65,21 @@ namespace qmapcontrol
         void setProxy(QString host, int port);
 
     private:
+        int i=0;
         ImageManager* parent;
-        QHttp* http;
-        QMap<int, QString> loadingMap;
+        QNetworkAccessManager* http;
+        QNetworkRequest request;
+        QMap<QString, QString> loadingMap;
         qreal loaded;
         QMutex vectorMutex;
         MapNetwork& operator=(const MapNetwork& rhs);
         MapNetwork(const MapNetwork& old);
 
+        QString getId(QString url);
+
     private slots:
-        void requestFinished(int id, bool error);
+        void processReply(QNetworkReply *reply);
+
     };
 }
 #endif

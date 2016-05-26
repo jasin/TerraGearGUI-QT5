@@ -67,11 +67,11 @@ void MainWindow::on_downloadShapefilesButton_clicked()
             }
 
             //== add Query vars
-            url.addQueryItem("layer", layer);
-            url.addQueryItem("xmin", m_west);
-            url.addQueryItem("xmax", m_east);
-            url.addQueryItem("ymin", m_south);
-            url.addQueryItem("ymax", m_north);
+            //url.addQueryItem("layer", layer);
+            //url.addQueryItem("xmin", m_west);
+            //url.addQueryItem("xmax", m_east);
+            //url.addQueryItem("ymin", m_south);
+            //url.addQueryItem("ymax", m_north);
 
             //= save output to log
             GUILog( url.toString() + "\n", "download" );

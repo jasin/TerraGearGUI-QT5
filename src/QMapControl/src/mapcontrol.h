@@ -26,7 +26,7 @@
 #ifndef MAPCONTROL_H
 #define MAPCONTROL_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "layermanager.h"
 #include "layer.h"
