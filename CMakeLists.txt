@@ -2,13 +2,13 @@ cmake_minimum_required (VERSION 2.6.4)
 
 project(TerraGUI)
 
-FIND_PACKAGE(Qt4 REQUIRED)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET(QT_USE_QTNETWORK TRUE)
+find_package(Qt5Widgets REQUIRED)
 
-INCLUDE(${QT_USE_FILE})
-
-SET(TerraGUI_SOURCES
+set(TerraGUI_SOURCES
         src/main.cpp
         src/mainwindow.cpp
         src/newbucket.cpp
@@ -50,11 +50,6 @@ SET(TerraGUI_FORMS
         src/mainwindow.ui
         )
 
-QT4_WRAP_CPP(TerraGUI_HEADERS_MOC ${TerraGUI_HEADERS})
-QT4_WRAP_UI(TerraGUI_FORMS_HEADERS ${TerraGUI_FORMS})
-
-INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-
 if(WIN32)
         set(CMAKE_CXX_FLAGS "/DWIN32 /EHsc /D_CRT_SECURE_NO_WARNINGS /MT")
 endif(WIN32)
@@ -64,8 +59,7 @@ add_executable(TerraGUI
 	${TerraGUI_HEADERS_MOC}
 	${TerraGUI_FORMS_HEADERS}
 	)
-target_link_libraries(TerraGUI
-	${QT_LIBRARIES}
-	)
+
+qt5_use_modules(TerraGUI Widgets XMLPatterns Network)
 
 install(TARGETS TerraGUI RUNTIME DESTINATION bin)
