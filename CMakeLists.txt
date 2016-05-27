@@ -1,15 +1,19 @@
-cmake_minimum_required (VERSION 2.6.4)
+cmake_minimum_required (VERSION 2.8.11)
 
 project(TerraGUI)
+
+option(BUILD_WITH_QT5 "Set OFF to build with Qt4" OFF)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Network REQUIRED)
-#FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtNetwork REQUIRED)
-#INCLUDE(${QT_USE_FILE})
-
+if(${BUILD_WITH_QT5})
+	find_package(Qt5Widgets REQUIRED)
+	find_package(Qt5Network REQUIRED)
+else ()
+	FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtNetwork REQUIRED)
+	INCLUDE(${QT_USE_FILE})
+endif()
 
 SET(TerraGUI_SOURCES
         src/main.cpp
@@ -60,10 +64,15 @@ endif(WIN32)
 add_executable(TerraGUI 
 	${TerraGUI_SOURCES}
 	)
-target_link_libraries(TerraGUI
-	#${QT_LIBRARIES}
-	Qt5::Widgets
-	Qt5::Network
+if(${BUILD_WITH_QT5})
+	target_link_libraries(TerraGUI
+		Qt5::Widgets
+		Qt5::Network
 	)
+else()
+	target_link_libraries(TerraGUI
+		${QT_LIBRARIES}
+	)
+endif()
 
 install(TARGETS TerraGUI RUNTIME DESTINATION bin)
