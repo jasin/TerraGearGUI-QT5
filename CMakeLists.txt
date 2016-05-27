@@ -5,10 +5,13 @@ project(TerraGUI)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Network REQUIRED)
+#FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtNetwork REQUIRED)
+#INCLUDE(${QT_USE_FILE})
 
-set(TerraGUI_SOURCES
+
+SET(TerraGUI_SOURCES
         src/main.cpp
         src/mainwindow.cpp
         src/newbucket.cpp
@@ -56,10 +59,11 @@ endif(WIN32)
 
 add_executable(TerraGUI 
 	${TerraGUI_SOURCES}
-	${TerraGUI_HEADERS_MOC}
-	${TerraGUI_FORMS_HEADERS}
 	)
-
-qt5_use_modules(TerraGUI Widgets XMLPatterns Network)
+target_link_libraries(TerraGUI
+	#${QT_LIBRARIES}
+	Qt5::Widgets
+	Qt5::Network
+	)
 
 install(TARGETS TerraGUI RUNTIME DESTINATION bin)
