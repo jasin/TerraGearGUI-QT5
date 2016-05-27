@@ -26,7 +26,11 @@
 #ifndef MAPCONTROL_H
 #define MAPCONTROL_H
 
+#if QT_VERSION >= 0x050000
 #include <QtWidgets>
+#else
+#include <QtGui>
+#endif
 
 #include "layermanager.h"
 #include "layer.h"
